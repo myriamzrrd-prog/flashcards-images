@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mes flashcards</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      background: #f5f5f5;
+    }
+
+    .card {
+      width: 320px;
+      min-height: 180px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+      font-size: 1.1rem;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+    }
+
+    .controls {
+      margin-top: 16px;
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    button {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      background: #111827;
+      color: white;
+      font-size: 0.9rem;
+    }
+
+    button:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    .info {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="card" class="card"></div>
+
+  <div class="controls">
+    <button id="prevBtn">Précédente</button>
+    <button id="flipBtn">Retourner</button>
+    <button id="nextBtn">Suivante</button>
+  </div>
+
+  <div id="info" class="info"></div>
+
+  <script>
+    // 1) Tes cartes ici
+    const cards = [
+      { front: "urticaire annulaire géante p30.png", back: "Urticaire annulaire géante p.30" },
+      { front: "Triade de Virchow ?", back: "Stase, hypercoagulabilité, lésion endothéliale" },
+      { front: "Score de CHA2DS2-VASc : utilité ?", back: "Évaluer le risque thromboembolique en FA" },
+    ];
+
+    let currentIndex = 0;
+    let isFront = true;
+
+    const cardEl = document.getElementById("card");
+    const infoEl = document.getElementById("info");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const flipBtn = document.getElementById("flipBtn");
+
+    function renderCard() {
+      const current = cards[currentIndex];
+      cardEl.textContent = isFront ? current.front : current.back;
+      infoEl.textContent = `Carte ${currentIndex + 1} / ${cards.length} — ` +
+        (isFront ? "Question" : "Réponse");
+
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.disabled = currentIndex === cards.length - 1;
+    }
+
+    cardEl.addEventListener("click", () => {
+      isFront = !isFront;
+      renderCard();
+    });
+
+    flipBtn.addEventListener("click", () => {
+      isFront = !isFront;
+      renderCard();
+    });
+
+    prevBtn.addEventListener("click", () => {
+      if (currentIndex > 0) {
+        currentIndex--;
+        isFront = true;
+        renderCard();
+      }
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (currentIndex < cards.length - 1) {
+        currentIndex++;
+        isFront = true;
+        renderCard();
+      }
+    });
+
+    // premier affichage
+    renderCard();
+  </script>
+</body>
+</html>
