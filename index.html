@@ -2,27 +2,98 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Mes flashcards</title>
+  <title>Flashcards Bolognia - M. ZERROUDI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body {
-      font-family: system-ui, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       margin: 0;
       background: #f5f5f5;
     }
 
-    .card {
-  width: 80vw;        
-  max-width: 1100px;  
-  min-height: 60vh;   
-  background: white;
-  border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    /* Layout global : colonne gauche + zone principale */
+    .layout {
       display: flex;
+      min-height: 100vh;
+    }
+
+    /* Colonne de gauche */
+    .sidebar {
+      width: 260px;
+      background: #111827;
+      color: #e5e7eb;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar h2 {
+      font-size: 1rem;
+      margin: 0 0 8px;
+    }
+
+    /* Liste scrollable de catégories */
+    .category-list {
+      margin-top: 8px;
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-right: 4px;
+    }
+
+    .category-item {
+      text-align: left;
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: inherit;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .category-item:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .category-item.active {
+      background: #f9fafb;
+      color: #111827;
+      font-weight: 600;
+    }
+
+    /* Zone de droite */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 24px;
+    }
+
+    .title {
+      font-size: 1.6rem;
+      font-weight: 600;
+      margin: 0 0 8px;
+      text-align: center;
+      color: #111827;
+    }
+
+    /* Carte de flashcard */
+    .card {
+      width: 80vw;
+      max-width: 1200px;
+      min-height: 70vh;
+      margin: 0 auto;
+
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 24px;
@@ -35,12 +106,33 @@
 
     .card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
     }
 
+    .card-text {
+      font-size: 1.1rem;
+    }
+
+    .caption {
+      margin-top: 8px;
+      font-size: 0.9rem;
+      color: #6b7280;
+    }
+
+    /* Image dans la carte */
+    #card img {
+      width: 70%;
+      height: auto;
+      display: block;
+      margin: 0 auto 16px;
+      border-radius: 12px;
+    }
+
+    /* Boutons sous la carte */
     .controls {
-      margin-top: 16px;
+      margin-top: 8px;
       display: flex;
+      flex-wrap: wrap;
       gap: 8px;
       justify-content: center;
     }
@@ -61,47 +153,111 @@
     }
 
     .info {
-      margin-top: 8px;
-      font-size: 0.8rem;
+      margin-top: 4px;
+      font-size: 0.85rem;
       color: #6b7280;
+      text-align: center;
+    }
+
+    /* Responsive simple */
+    @media (max-width: 768px) {
+      .layout {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        max-height: 200px;
+      }
+
+      .card {
+        width: 95vw;
+        min-height: 60vh;
+      }
+
+      #card img {
+        width: 90%;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="layout">
+    <!-- Colonne de gauche : catégories -->
+    <aside class="sidebar">
+      <h2>Catégories</h2>
+      <div class="category-list">
+        <!-- Aléatoire en premier et actif par défaut -->
+        <button class="category-item active" data-category="Aléatoire">Aléatoire</button>
+        <button class="category-item" data-category="Prurit et dysesthésies">Prurit et dysesthésies</button>
+        <button class="category-item" data-category="Affections psychocutanées">Affections psychocutanées</button>
+        <button class="category-item" data-category="Psoriasis">Psoriasis</button>
+        <button class="category-item" data-category="Autres affections papulosquameuses">Autres affections papulosquameuses</button>
+        <button class="category-item" data-category="Erythrodermie">Erythrodermie</button>
+        <button class="category-item" data-category="Lichen plan et dermatoses lichénoïdes">Lichen plan et dermatoses lichénoïdes</button>
+        <button class="category-item" data-category="Dermatite atopique">Dermatite atopique</button>
+        <button class="category-item" data-category="Autres éruptions eczémateuses">Autres éruptions eczémateuses</button>
+        <button class="category-item" data-category="Dermatites de contact / pro / aux plantes">Dermatites de contact / pro / aux plantes</button>
+        <button class="category-item" data-category="Approche clinique des dermatoses régionales">Approche clinique des dermatoses régionales</button>
+        <button class="category-item" data-category="Urticaire et angio-oedème">Urticaire et angio-oedème</button>
+        <button class="category-item" data-category="Erythèmes figurés">Erythèmes figurés</button>
+        <button class="category-item" data-category="Erythème polymorphe, SJS et NET">Erythème polymorphe, SJS et NET</button>
+        <button class="category-item" data-category="Réactions aux médicaments">Réactions aux médicaments</button>
+        <button class="category-item" data-category="Purpura et affections dues à une occlusion microvasculaire">Purpura et affections dues à une occlusion microvasculaire</button>
+        <button class="category-item" data-category="Vascularites">Vascularites</button>
+        <button class="category-item" data-category="Dermatoses éosinophiliques">Dermatoses éosinophiliques</button>
+        <button class="category-item" data-category="Dermatoses neutrophiliques">Dermatoses neutrophiliques</button>
+        <button class="category-item" data-category="Dermatoses de la grossesse">Dermatoses de la grossesse</button>
+        <button class="category-item" data-category="Pemphigus">Pemphigus</button>
+        <button class="category-item" data-category="Pemphigoïde et épidermolyse bulleuse acquise">Pemphigoïde et épidermolyse bulleuse acquise</button>
+      </div>
+    </aside>
 
-  <div id="card" class="card"></div>
+    <!-- Partie droite : titre + carte + boutons -->
+    <main class="main">
+      <h1 class="title">Flashcards Bolognia - M. ZERROUDI</h1>
 
-  <div class="controls">
-    <button id="prevBtn">Précédente</button>
-    <button id="flipBtn">Retourner</button>
-    <button id="nextBtn">Suivante</button>
+      <div id="card" class="card"></div>
+
+      <div class="controls">
+        <button id="prevBtn">Précédente</button>
+        <button id="flipBtn">Retourner Q/R</button>
+        <button id="nextBtn">Suivante</button>
+      </div>
+
+      <div id="info" class="info"></div>
+    </main>
   </div>
 
-  <div id="info" class="info"></div>
-
   <script>
-  // 1) Tes cartes ici
-  const cards = [
-    {
-      front: "Que montre cette image p30 ?",
-      back: "Urticaire annulaire géante.",
-      image: "urticaire annulaire géante p30.png", //
-      caption: "Photographie clinique d’urticaire annulaire géante (p.30)."
-    },
-    {
-      front: "Que montre cette image p32 ?",
-      back: "Syndrome d’épidermolyse aiguë staphylococcique chez un enfant de 2 ans (érythème diffus, vésicules flasques, décollements superficiels…).",
-      image: "p32.png", // 
-      caption: "Syndrome d’épidermolyse aiguë staphylococcique (SSSS), enfant de 2 ans (p.32)."
-    },
-    {
-      front: "Score de CHA2DS2-VASc : utilité ?",
-      back: "Évaluer le risque thromboembolique en FA."
-      // pas d'image, donc pas de champ image ici
-    },
-  ];
+    // Toutes les cartes (tu pourras en ajouter autant que tu veux)
+    const allCards = [
+      {
+        category: "Urticaire et angio-oedème",
+        front: "Que montre cette image ?",
+        back: "Urticaire annulaire géante.",
+        image: "urticaire annulaire géante p30.png", // nom EXACT du fichier dans le repo
+        caption: "Photographie clinique d’urticaire annulaire géante (Bolognia p.30)."
+      },
+      {
+        category: "Psoriasis",
+        front: "Psoriasis : quelles sont les localisations typiques des plaques en plaques chroniques ?",
+        back: "Coudes, genoux, région lombo-sacrée, cuir chevelu, ombilic.",
+        image: null,
+        caption: null
+      },
+      {
+        category: "Dermatite atopique",
+        front: "Chez l’adulte, quelles zones sont typiquement atteintes dans la dermatite atopique ?",
+        back: "Régions flexurales (coudes, genoux), cou, visage, paupières, mains.",
+        image: null,
+        caption: null
+      }
+      // Tu peux rajouter d'autres cartes ici avec le même schéma
+    ];
 
-
+    let currentCategory = "Aléatoire";
+    let filteredCards = [];
     let currentIndex = 0;
     let isFront = true;
 
@@ -110,51 +266,78 @@
     const prevBtn = document.getElementById("prevBtn");
     const nextBtn = document.getElementById("nextBtn");
     const flipBtn = document.getElementById("flipBtn");
+    const categoryButtons = document.querySelectorAll(".category-item");
 
-   function renderCard() {
-  const current = cards[currentIndex];
+    function shuffleArray(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
 
-  // On construit le HTML à afficher
-  let html = "";
+    function applyCategory(categoryName) {
+      currentCategory = categoryName;
 
-  // 1) Image si la carte en a une
-  if (current.image) {
-    html += `
-      <img 
-        src="${current.image}" 
-        alt="Image de la carte" 
-        style="width: 70%; height: auto; display: block; margin: 0 auto 16px; border-radius: 12px;"
-      >
-    `;
-  }
+      if (categoryName === "Aléatoire") {
+        filteredCards = shuffleArray(allCards);
+      } else {
+        filteredCards = allCards.filter(card => card.category === categoryName);
+      }
 
-  // 2) Texte (question ou réponse)
-  html += `<div>${isFront ? current.front : current.back}</div>`;
+      currentIndex = 0;
+      isFront = true;
+      renderCard();
+    }
 
-  // 3) Légende optionnelle, affichée seulement quand on est côté "réponse"
-  if (current.caption && !isFront) {
-    html += `<p style="margin-top: 8px; font-size: 0.9rem; color: #6b7280;">${current.caption}</p>`;
-  }
+    function renderCard() {
+      if (!filteredCards || filteredCards.length === 0) {
+        cardEl.innerHTML = "<div>Aucune carte pour cette catégorie pour l’instant.</div>";
+        infoEl.textContent = "";
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+        return;
+      }
 
-  // On injecte le HTML complet dans la carte
-  cardEl.innerHTML = html;
+      const current = filteredCards[currentIndex];
 
-  // Infos en bas
-  infoEl.textContent = `Carte ${currentIndex + 1} / ${cards.length} — ` +
-    (isFront ? "Question" : "Réponse");
+      let html = "";
 
-  // Boutons prev/next
-  prevBtn.disabled = currentIndex === 0;
-  nextBtn.disabled = currentIndex === cards.length - 1;
-}
+      if (current.image) {
+        html += `
+          <img
+            src="${current.image}"
+            alt="Image de la carte"
+          >
+        `;
+      }
 
+      html += `<div class="card-text">${isFront ? current.front : current.back}</div>`;
 
+      if (current.caption && !isFront) {
+        html += `<p class="caption">${current.caption}</p>`;
+      }
+
+      cardEl.innerHTML = html;
+
+      infoEl.textContent =
+        `Catégorie : ${currentCategory} — Carte ${currentIndex + 1} / ${filteredCards.length} — ` +
+        (isFront ? "Question" : "Réponse");
+
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.disabled = currentIndex === filteredCards.length - 1;
+    }
+
+    // Interactions
     cardEl.addEventListener("click", () => {
+      if (!filteredCards.length) return;
       isFront = !isFront;
       renderCard();
     });
 
     flipBtn.addEventListener("click", () => {
+      if (!filteredCards.length) return;
       isFront = !isFront;
       renderCard();
     });
@@ -168,15 +351,24 @@
     });
 
     nextBtn.addEventListener("click", () => {
-      if (currentIndex < cards.length - 1) {
+      if (currentIndex < filteredCards.length - 1) {
         currentIndex++;
         isFront = true;
         renderCard();
       }
     });
 
-    // premier affichage
-    renderCard();
+    categoryButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        categoryButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const cat = btn.dataset.category;
+        applyCategory(cat);
+      });
+    });
+
+    // Initialisation : catégorie Aléatoire
+    applyCategory("Aléatoire");
   </script>
 </body>
 </html>
