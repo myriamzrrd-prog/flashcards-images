@@ -2,8 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Flashcards Bolognia
-  <span class="subtitle-name">– M. ZERROUDI</span></title>
+  <title>Flashcards Bolognia - M. ZERROUDI</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body {
@@ -97,16 +96,17 @@
       text-align: center;
       color: #111827;
     }
+
     .subtitle-name {
-  font-size: 0.85rem;  
-  font-weight: 400;
-  margin-left: 4px;
-  opacity: 0.75;       
-}
+      font-size: 0.85rem;
+      font-weight: 400;
+      margin-left: 4px;
+      opacity: 0.75;
+    }
 
     /* Carte de flashcard */
     .card {
-      width: 60vw;
+      width: 60vw;         /* plus petit qu'avant */
       max-width: 900px;
       min-height: 50vh;
       margin: 0 auto;
@@ -132,7 +132,7 @@
     }
 
     .card-text {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
     }
 
     .caption {
@@ -143,7 +143,7 @@
 
     /* Image dans la carte */
     #card img {
-      width: 55%;
+      width: 55%;          /* plus petite que la carte */
       height: auto;
       display: block;
       margin: 0 auto 12px;
@@ -210,7 +210,7 @@
       }
 
       #card img {
-        width: 90%;
+        width: 80%;
       }
     }
   </style>
@@ -252,7 +252,10 @@
 
     <!-- Partie droite : titre + carte + boutons -->
     <main class="main">
-      <h1 class="title">Flashcards Bolognia - M. ZERROUDI</h1>
+      <h1 class="title">
+        Flashcards Bolognia
+        <span class="subtitle-name">– M. ZERROUDI</span>
+      </h1>
 
       <div id="card" class="card"></div>
 
