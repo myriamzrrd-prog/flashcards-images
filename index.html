@@ -98,15 +98,43 @@ superficiels de la peau" },
     const nextBtn = document.getElementById("nextBtn");
     const flipBtn = document.getElementById("flipBtn");
 
-    function renderCard() {
-      const current = cards[currentIndex];
-      cardEl.textContent = isFront ? current.front : current.back;
-      infoEl.textContent = `Carte ${currentIndex + 1} / ${cards.length} — ` +
-        (isFront ? "Question" : "Réponse");
+   function renderCard() {
+  const current = cards[currentIndex];
 
-      prevBtn.disabled = currentIndex === 0;
-      nextBtn.disabled = currentIndex === cards.length - 1;
-    }
+  // On construit le HTML à afficher
+  let html = "";
+
+  // 1) Image si la carte en a une
+  if (current.image) {
+    html += `
+      <img 
+        src="${current.image}" 
+        alt="Image de la carte" 
+        style="max-width: 100%; max-height: 180px; display: block; margin: 0 auto 12px; border-radius: 12px;"
+      >
+    `;
+  }
+
+  // 2) Texte (question ou réponse)
+  html += `<div>${isFront ? current.front : current.back}</div>`;
+
+  // 3) Légende optionnelle, affichée seulement quand on est côté "réponse"
+  if (current.caption && !isFront) {
+    html += `<p style="margin-top: 8px; font-size: 0.9rem; color: #6b7280;">${current.caption}</p>`;
+  }
+
+  // On injecte le HTML complet dans la carte
+  cardEl.innerHTML = html;
+
+  // Infos en bas
+  infoEl.textContent = `Carte ${currentIndex + 1} / ${cards.length} — ` +
+    (isFront ? "Question" : "Réponse");
+
+  // Boutons prev/next
+  prevBtn.disabled = currentIndex === 0;
+  nextBtn.disabled = currentIndex === cards.length - 1;
+}
+
 
     cardEl.addEventListener("click", () => {
       isFront = !isFront;
