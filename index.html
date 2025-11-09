@@ -229,74 +229,82 @@
     </main>
   </div>
 
-  <script>
-    // Toutes les cartes (tu pourras en ajouter autant que tu veux)
-    const allCards = [
-      {
-        category: "Urticaire et angio-oedème",
-        front: "Que montre cette image ?",
-        back: "Urticaire annulaire géante.",
-        image: "urticaire annulaire géante p30.png", // nom EXACT du fichier dans le repo
-        caption: "Photographie clinique d’urticaire annulaire géante (Bolognia p.30)."
-      },
-      {
-  category: "Pemphigus",  // exactement le même texte que dans la colonne de gauche
-  front: "Que montre cette image ?",
-  back: "Pemphigoïde vulgaire",
-  image: "PV p231.png",         // nom EXACT du fichier
-  caption: "PV : bulles fragiles, éphémères et se rompant facilement, laissant des croûtes et érosions qui deviennent extensives."
-},
-      category: "Pemphigus",  // exactement le même texte que dans la colonne de gauche
-  front: "Que montre cette image ?",
-  back: "Pemphigoïde bulleuse",
-  image: "PB.png",         // nom EXACT du fichier
-  caption: "Dans la PB, de multiples bulles tendues sont observées ; le contenu des bulles est habituellement séreux comme chez ce patient. Les bulles ont une durée de vie supérieure à celles du PV, mais peuvent éventuellement se rompre, conduisant à des érosions et des croûtes."
-},
-   category: "Pemphigus",  // exactement le même texte que dans la colonne de gauche
-  front: "Que montre cette image ?",
-  back: "Pemphigus vulgaire",
-  image: "PV muq.png",         // nom EXACT du fichier
-  caption: " Presque tous les patients développent des érosions douloureuses de la muqueuse orale, les localisations les plus habituelles étant les muqueuses buccale et palatine, mais des lésions peuvent aussi se développer sur la gencive et la langue."
-},
-  category: "Pemphigus",  // exactement le même texte que dans la colonne de gauche
-  front: "Que montre cette image ?",
-  back: "Pemphigus vulgaire",
-  image: "PV.png",         // nom EXACT du fichier
-  caption: "D Les vésicules et bulles flasques sont fragiles et se rompent facilement, laissant des érosions. E Une réponse végétante peut occasionnellement être observée dans les lésions chroniques récalcitrantes."
-},
-  category: "Pemphigus",  // exactement le même texte que dans la colonne de gauche
-  front: "Que montre cette image ?",
-  back: "Pemphigus végétant",
-  image: "pemphi v.png",         // nom EXACT du fichier
-  caption: "laques papillomateuses étendues, végétantes, épaisses, survenant en conjonction avec des érosions. Les lésions cicatrisées montrent une hyperpigmentation post-inflammatoire résiduelle."
-},
-  category: "Pemphigus",  // exactement le même texte que dans la colonne de gauche
-  front: "Que montre cette image ?",
-  back: "Pemphigus foliacé",
-  image: "PF.png",         // nom EXACT du fichier
-  caption: "A Plusieurs érosions survenant sur une base érythémateuse aussi bien que sur une squame-croûte caractéristique ; cette dernière peut varier en épaisseur. Un site fréquent d’atteinte est le tronc. B Quand la maladie progresse, les lésions deviennent confluentes, mais comme les vésicules sont fragiles et se rompent facilement, seules des érosions avec squames-croûtes sont observées. "
-},
-  category: "Pemphigus",  // exactement le même texte que dans la colonne de gauche
-  front: "Que montre cette image ?",
-  back: "Pemphigus érythémateux",
-  image: "PE.png",         // nom EXACT du fichier
-  caption: "Plaques érythémateuses avec des squames-croûtes et des érosions sur le nez et les joues. Initialement, cette affection était considérée comme une combinaison de pemphigus vulgaire et de lupus érythémateux, mais aujourd’hui elle est classée comme une variante localisée de pemphigus foliacé.  "
-},
-  category: "Pemphigus",  // exactement le même texte que dans la colonne de gauche
-  front: "Que montre cette image ?",
-  back: "Pemphigus paranéoplasique",
-  image: "PP.png",         // nom EXACT du fichier
-  caption: "Érosions associées à des croûtes hémorragiques, pouvant s’étendre sur la lèvre vermillon et atteindre la muqueuse nasale ; la lésion du menton ressemble à un pemphigus vulgaire. "
-},
-  category: "Pemphigus",  // exactement le même texte que dans la colonne de gauche
-  front: "Que montre cette image ?",
-  back: "Pemphigus à IgA - type dermatose pustuleuse sous-cornéenne",
-  image: "PIgA.png",         // nom EXACT du fichier
-  caption: "Les pustules tendent par coalescence à former une figure annulaire ou figurée avec érosions, squames-croûtes et hyperpigmentation post-inflammatoire présente au centre. Noter l’accumulation du composant pustuleux dans la portion déclive de la vésiculopustule."
-},
-      }
-      // Tu peux rajouter d'autres cartes ici avec le même schéma
-    ];
+ <script>
+  // Toutes les cartes (tu pourras en ajouter autant que tu veux)
+  const allCards = [
+    {
+      category: "Urticaire et angio-oedème",
+      front: "Que montre cette image ?",
+      back: "Urticaire annulaire géante.",
+      image: "urticaire annulaire géante p30.png", // nom EXACT du fichier dans le repo
+      caption: "Photographie clinique d’urticaire annulaire géante (Bolognia p.30)."
+    },
+    {
+      category: "Pemphigus",
+      front: "Que montre cette image ?",
+      back: "Pemphigoïde vulgaire",
+      image: "PV p231.png",         // nom EXACT du fichier
+      caption: "PV : bulles fragiles, éphémères et se rompant facilement, laissant des croûtes et érosions qui deviennent extensives."
+    },
+    {
+      category: "Pemphigus",
+      front: "Que montre cette image ?",
+      back: "Pemphigoïde bulleuse",
+      image: "PB.png",
+      caption: "Dans la PB, de multiples bulles tendues sont observées ; le contenu des bulles est habituellement séreux comme chez ce patient. Les bulles ont une durée de vie supérieure à celles du PV, mais peuvent éventuellement se rompre, conduisant à des érosions et des croûtes."
+    },
+    {
+      category: "Pemphigus",
+      front: "Que montre cette image ?",
+      back: "Pemphigus vulgaire",
+      image: "PV muq.png",
+      caption: "Presque tous les patients développent des érosions douloureuses de la muqueuse orale, les localisations les plus habituelles étant les muqueuses buccale et palatine, mais des lésions peuvent aussi se développer sur la gencive et la langue."
+    },
+    {
+      category: "Pemphigus",
+      front: "Que montre cette image ?",
+      back: "Pemphigus vulgaire",
+      image: "PV.png",
+      caption: "Les vésicules et bulles flasques sont fragiles et se rompent facilement, laissant des érosions. Une réponse végétante peut occasionnellement être observée dans les lésions chroniques récalcitrantes."
+    },
+    {
+      category: "Pemphigus",
+      front: "Que montre cette image ?",
+      back: "Pemphigus végétant",
+      image: "pemphi v.png",
+      caption: "Plaques papillomateuses étendues, végétantes, épaisses, survenant en conjonction avec des érosions. Les lésions cicatrisées montrent une hyperpigmentation post-inflammatoire résiduelle."
+    },
+    {
+      category: "Pemphigus",
+      front: "Que montre cette image ?",
+      back: "Pemphigus foliacé",
+      image: "PF.png",
+      caption: "Plusieurs érosions survenant sur une base érythémateuse ainsi que des squames-croûtes caractéristiques, variables en épaisseur. Un site fréquent d’atteinte est le tronc. Quand la maladie progresse, les lésions deviennent confluentes ; comme les vésicules sont fragiles et se rompent facilement, seules des érosions avec squames-croûtes sont observées."
+    },
+    {
+      category: "Pemphigus",
+      front: "Que montre cette image ?",
+      back: "Pemphigus érythémateux",
+      image: "PE.png",
+      caption: "Plaques érythémateuses avec des squames-croûtes et des érosions sur le nez et les joues. Initialement considérée comme une combinaison de pemphigus vulgaire et de lupus érythémateux, cette affection est aujourd’hui classée comme une variante localisée de pemphigus foliacé."
+    },
+    {
+      category: "Pemphigus",
+      front: "Que montre cette image ?",
+      back: "Pemphigus paranéoplasique",
+      image: "PP.png",
+      caption: "Érosions associées à des croûtes hémorragiques, pouvant s’étendre sur la lèvre vermillon et atteindre la muqueuse nasale ; la lésion du menton ressemble à un pemphigus vulgaire."
+    },
+    {
+      category: "Pemphigus",
+      front: "Que montre cette image ?",
+      back: "Pemphigus à IgA - type dermatose pustuleuse sous-cornéenne",
+      image: "PIgA.png",
+      caption: "Les pustules tendent par coalescence à former une figure annulaire ou figurée avec érosions, squames-croûtes et hyperpigmentation post-inflammatoire centrale. Noter l’accumulation du composant pustuleux dans la portion déclive de la vésiculopustule."
+    }
+  ];
+</script>
+
 
     let currentCategory = "Aléatoire";
     let filteredCards = [];
