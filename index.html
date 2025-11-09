@@ -116,6 +116,38 @@
       color: #7f1d1d;
     }
 
+    /* Style spécifique pour Aléatoire (rose pastel) */
+    .category-item[data-category="Aléatoire"] {
+      background: #fce7f3;   /* rose très clair */
+      color: #9d174d;        /* texte rose foncé */
+    }
+
+    .category-item[data-category="Aléatoire"]:hover {
+      background: #fbcfe8;
+    }
+
+    .category-item[data-category="Aléatoire"].active {
+      background: #fbcfe8;
+      color: #831843;
+      font-weight: 600;
+    }
+
+    /* Style spécifique pour Dermoscopie (vert clair) */
+    .category-item[data-category="Dermoscopie"] {
+      background: #dcfce7;   /* vert clair */
+      color: #166534;        /* texte vert moyen */
+    }
+
+    .category-item[data-category="Dermoscopie"]:hover {
+      background: #bbf7d0;
+    }
+
+    .category-item[data-category="Dermoscopie"].active {
+      background: #bbf7d0;
+      color: #14532d;
+      font-weight: 600;
+    }
+
     /* Zone de droite */
     .main {
       flex: 1;
@@ -547,7 +579,7 @@
         image: "PIgA.png",
         caption: "Noter le respect de la partie supérieure et médiane du dos (« signe du papillon »)."
       }
-      // Tu ajouteras ici plus tard des cartes avec category: "Dermoscopie" si tu veux.
+      // Tu pourras ajouter ici plus tard des cartes avec category: "Dermoscopie".
     ];
 
     // =========================
@@ -893,3 +925,4 @@
   </script>
 </body>
 </html>
+
