@@ -64,6 +64,21 @@
       font-weight: 600;
     }
 
+    /* Style spécifique pour la catégorie Erreurs (rouge clair) */
+    .category-item[data-category="Erreurs"] {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .category-item[data-category="Erreurs"]:hover {
+      background: #fecaca;
+    }
+
+    .category-item[data-category="Erreurs"].active {
+      background: #fecaca;
+      color: #7f1d1d;
+    }
+
     /* Zone de droite */
     .main {
       flex: 1;
@@ -152,6 +167,18 @@
       cursor: default;
     }
 
+    .btn-know {
+      background: #16a34a; /* vert */
+    }
+
+    .btn-error {
+      background: #dc2626; /* rouge */
+    }
+
+    .btn-error.active-error {
+      box-shadow: 0 0 0 2px #fecaca;
+    }
+
     .info {
       margin-top: 4px;
       font-size: 0.85rem;
@@ -167,7 +194,7 @@
 
       .sidebar {
         width: 100%;
-        max-height: 200px;
+        max-height: 220px;
       }
 
       .card {
@@ -187,8 +214,11 @@
     <aside class="sidebar">
       <h2>Catégories</h2>
       <div class="category-list">
-        <!-- Aléatoire en premier et actif par défaut -->
+        <!-- Erreurs en premier -->
+        <button class="category-item" data-category="Erreurs">Erreurs</button>
+        <!-- Aléatoire ensuite (actif au démarrage) -->
         <button class="category-item active" data-category="Aléatoire">Aléatoire</button>
+
         <button class="category-item" data-category="Prurit et dysesthésies">Prurit et dysesthésies</button>
         <button class="category-item" data-category="Affections psychocutanées">Affections psychocutanées</button>
         <button class="category-item" data-category="Psoriasis">Psoriasis</button>
@@ -223,203 +253,120 @@
         <button id="prevBtn">Précédente</button>
         <button id="flipBtn">Retourner Q/R</button>
         <button id="nextBtn">Suivante</button>
+        <button id="knowBtn" class="btn-know">Je sais ✅</button>
+        <button id="errorBtn" class="btn-error">À revoir ❌</button>
       </div>
 
       <div id="info" class="info"></div>
     </main>
   </div>
 
- <script>
-  // Toutes les cartes (tu pourras en ajouter autant que tu veux)
-  const allCards = [
-    {
-      category: "Urticaire et angio-oedème",
-      front: "Que montre cette image ?",
-      back: "Urticaire annulaire géante.",
-      image: "urticaire annulaire géante p30.png", // nom EXACT du fichier dans le repo
-      caption: "Photographie clinique d’urticaire annulaire géante (Bolognia p.30)."
-    },
-    {
-      category: "Pemphigus",
-      front: "Que montre cette image ?",
-      back: "Pemphigoïde vulgaire",
-      image: "PV p231.png",
-      caption: "PV : bulles fragiles, éphémères et se rompant facilement, laissant des croûtes et érosions qui deviennent extensives."
-    },
-    {
-      category: "Pemphigus",
-      front: "Que montre cette image ?",
-      back: "Pemphigoïde bulleuse",
-      image: "PB.png",
-      caption: "Dans la PB, de multiples bulles tendues sont observées ; le contenu des bulles est habituellement séreux comme chez ce patient. Les bulles ont une durée de vie supérieure à celles du PV, mais peuvent éventuellement se rompre, conduisant à des érosions et des croûtes."
-    },
-    {
-      category: "Pemphigus",
-      front: "Que montre cette image ?",
-      back: "Pemphigus vulgaire",
-      image: "PV muq.png",
-      caption: "Presque tous les patients développent des érosions douloureuses de la muqueuse orale, les localisations les plus habituelles étant les muqueuses buccale et palatine, mais des lésions peuvent aussi se développer sur la gencive et la langue."
-    },
-    {
-      category: "Pemphigus",
-      front: "Que montre cette image ?",
-      back: "Pemphigus vulgaire",
-      image: "PV.png",
-      caption: "Les vésicules et bulles flasques sont fragiles et se rompent facilement, laissant des érosions. Une réponse végétante peut occasionnellement être observée dans les lésions chroniques récalcitrantes."
-    },
-    {
-      category: "Pemphigus",
-      front: "Que montre cette image ?",
-      back: "Pemphigus végétant",
-      image: "pemphi v.png",
-      caption: "Plaques papillomateuses étendues, végétantes, épaisses, survenant en conjonction avec des érosions. Les lésions cicatrisées montrent une hyperpigmentation post-inflammatoire résiduelle."
-    },
-    {
-      category: "Pemphigus",
-      front: "Que montre cette image ?",
-      back: "Pemphigus foliacé",
-      image: "PF.png",
-      caption: "Plusieurs érosions survenant sur une base érythémateuse ainsi que des squames-croûtes caractéristiques, variables en épaisseur. Un site fréquent d’atteinte est le tronc. Quand la maladie progresse, les lésions deviennent confluentes ; comme les vésicules sont fragiles et se rompent facilement, seules des érosions avec squames-croûtes sont observées."
-    },
-    {
-      category: "Pemphigus",
-      front: "Que montre cette image ?",
-      back: "Pemphigus érythémateux",
-      image: "PE.png",
-      caption: "Plaques érythémateuses avec des squames-croûtes et des érosions sur le nez et les joues. Initialement considérée comme une combinaison de pemphigus vulgaire et de lupus érythémateux, cette affection est aujourd’hui classée comme une variante localisée de pemphigus foliacé."
-    },
-    {
-      category: "Pemphigus",
-      front: "Que montre cette image ?",
-      back: "Pemphigus paranéoplasique",
-      image: "PP.png",
-      caption: "Érosions associées à des croûtes hémorragiques, pouvant s’étendre sur la lèvre vermillon et atteindre la muqueuse nasale ; la lésion du menton ressemble à un pemphigus vulgaire."
-    },
-    {
-      category: "Pemphigus",
-      front: "Que montre cette image ?",
-      back: "Pemphigus à IgA - type dermatose pustuleuse sous-cornéenne",
-      image: "PIgA.png",
-      caption: "Les pustules tendent par coalescence à former une figure annulaire ou figurée avec érosions, squames-croûtes et hyperpigmentation post-inflammatoire centrale. Noter l’accumulation du composant pustuleux dans la portion déclive de la vésiculopustule."
-    }
-  ];
+  <script>
+    // =========================
+    // Données des cartes
+    // =========================
+    const allCards = [
+      {
+        category: "Urticaire et angio-oedème",
+        front: "Que montre cette image ?",
+        back: "Urticaire annulaire géante.",
+        image: "urticaire annulaire géante p30.png",
+        caption: "Photographie clinique d’urticaire annulaire géante (Bolognia p.30)."
+      },
+      {
+        category: "Pemphigus",
+        front: "Que montre cette image ?",
+        back: "Pemphigoïde vulgaire",
+        image: "PV p231.png",
+        caption: "PV : bulles fragiles, éphémères et se rompant facilement, laissant des croûtes et érosions qui deviennent extensives."
+      },
+      {
+        category: "Pemphigus",
+        front: "Que montre cette image ?",
+        back: "Pemphigoïde bulleuse",
+        image: "PB.png",
+        caption: "Dans la PB, de multiples bulles tendues sont observées ; le contenu des bulles est habituellement séreux comme chez ce patient. Les bulles ont une durée de vie supérieure à celles du PV, mais peuvent éventuellement se rompre, conduisant à des érosions et des croûtes."
+      },
+      {
+        category: "Pemphigus",
+        front: "Que montre cette image ?",
+        back: "Pemphigus vulgaire",
+        image: "PV muq.png",
+        caption: "Presque tous les patients développent des érosions douloureuses de la muqueuse orale, les localisations les plus habituelles étant les muqueuses buccale et palatine, mais des lésions peuvent aussi se développer sur la gencive et la langue."
+      },
+      {
+        category: "Pemphigus",
+        front: "Que montre cette image ?",
+        back: "Pemphigus vulgaire",
+        image: "PV.png",
+        caption: "Les vésicules et bulles flasques sont fragiles et se rompent facilement, laissant des érosions. Une réponse végétante peut occasionnellement être observée dans les lésions chroniques récalcitrantes."
+      },
+      {
+        category: "Pemphigus",
+        front: "Que montre cette image ?",
+        back: "Pemphigus végétant",
+        image: "pemphi v.png",
+        caption: "Plaques papillomateuses étendues, végétantes, épaisses, survenant en conjonction avec des érosions. Les lésions cicatrisées montrent une hyperpigmentation post-inflammatoire résiduelle."
+      },
+      {
+        category: "Pemphigus",
+        front: "Que montre cette image ?",
+        back: "Pemphigus foliacé",
+        image: "PF.png",
+        caption: "Plusieurs érosions survenant sur une base érythémateuse ainsi que des squames-croûtes caractéristiques, variables en épaisseur. Un site fréquent d’atteinte est le tronc. Quand la maladie progresse, les lésions deviennent confluentes ; comme les vésicules sont fragiles et se rompent facilement, seules des érosions avec squames-croûtes sont observées."
+      },
+      {
+        category: "Pemphigus",
+        front: "Que montre cette image ?",
+        back: "Pemphigus érythémateux",
+        image: "PE.png",
+        caption: "Plaques érythémateuses avec des squames-croûtes et des érosions sur le nez et les joues. Initialement considérée comme une combinaison de pemphigus vulgaire et de lupus érythémateux, cette affection est aujourd’hui classée comme une variante localisée de pemphigus foliacé."
+      },
+      {
+        category: "Pemphigus",
+        front: "Que montre cette image ?",
+        back: "Pemphigus paranéoplasique",
+        image: "PP.png",
+        caption: "Érosions associées à des croûtes hémorragiques, pouvant s’étendre sur la lèvre vermillon et atteindre la muqueuse nasale ; la lésion du menton ressemble à un pemphigus vulgaire."
+      },
+      {
+        category: "Pemphigus",
+        front: "Que montre cette image ?",
+        back: "Pemphigus à IgA - type dermatose pustuleuse sous-cornéenne",
+        image: "PIgA.png",
+        caption: "Les pustules tendent par coalescence à former une figure annulaire ou figurée avec érosions, squames-croûtes et hyperpigmentation post-inflammatoire centrale. Noter l’accumulation du composant pustuleux dans la portion déclive de la vésiculopustule."
+      }
+    ];
 
-  let currentCategory = "Aléatoire";
-  let filteredCards = [];
-  let currentIndex = 0;
-  let isFront = true;
+    // =========================
+    // Sauvegarde locale des erreurs
+    // =========================
+    const STORAGE_KEY = "bologniaErreurs_v1";
+    let erreurIds = [];
 
-  const cardEl = document.getElementById("card");
-  const infoEl = document.getElementById("info");
-  const prevBtn = document.getElementById("prevBtn");
-  const nextBtn = document.getElementById("nextBtn");
-  const flipBtn = document.getElementById("flipBtn");
-  const categoryButtons = document.querySelectorAll(".category-item");
-
-  function shuffleArray(arr) {
-    const a = [...arr];
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-  }
-
-  function applyCategory(categoryName) {
-    currentCategory = categoryName;
-
-    if (categoryName === "Aléatoire") {
-      filteredCards = shuffleArray(allCards);
-    } else {
-      filteredCards = allCards.filter(card => card.category === categoryName);
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          erreurIds = parsed;
+        }
+      }
+    } catch (e) {
+      erreurIds = [];
     }
 
-    currentIndex = 0;
-    isFront = true;
-    renderCard();
-  }
-
-  function renderCard() {
-    if (!filteredCards || filteredCards.length === 0) {
-      cardEl.innerHTML = "<div>Aucune carte pour cette catégorie pour l’instant.</div>";
-      infoEl.textContent = "";
-      prevBtn.disabled = true;
-      nextBtn.disabled = true;
-      return;
+    function saveErreurs() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(erreurIds));
+      } catch (e) {
+        // on ignore si problème de quota
+      }
     }
 
-    const current = filteredCards[currentIndex];
-
-    let html = "";
-
-    if (current.image) {
-      html += `
-        <img
-          src="${current.image}"
-          alt="Image de la carte"
-        >
-      `;
-    }
-
-    html += `<div class="card-text">${isFront ? current.front : current.back}</div>`;
-
-    if (current.caption && !isFront) {
-      html += `<p class="caption">${current.caption}</p>`;
-    }
-
-    cardEl.innerHTML = html;
-
-    infoEl.textContent =
-      `Catégorie : ${currentCategory} — Carte ${currentIndex + 1} / ${filteredCards.length} — ` +
-      (isFront ? "Question" : "Réponse");
-
-    prevBtn.disabled = currentIndex === 0;
-    nextBtn.disabled = currentIndex === filteredCards.length - 1;
-  }
-
-  cardEl.addEventListener("click", () => {
-    if (!filteredCards.length) return;
-    isFront = !isFront;
-    renderCard();
-  });
-
-  flipBtn.addEventListener("click", () => {
-    if (!filteredCards.length) return;
-    isFront = !isFront;
-    renderCard();
-  });
-
-  prevBtn.addEventListener("click", () => {
-    if (currentIndex > 0) {
-      currentIndex--;
-      isFront = true;
-      renderCard();
-    }
-  });
-
-  nextBtn.addEventListener("click", () => {
-    if (currentIndex < filteredCards.length - 1) {
-      currentIndex++;
-      isFront = true;
-      renderCard();
-    }
-  });
-
-  categoryButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      categoryButtons.forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      const cat = btn.dataset.category;
-      applyCategory(cat);
-    });
-  });
-
-  // Initialisation : catégorie Aléatoire
-  applyCategory("Aléatoire");
-</script>
-
-
-
+    // =========================
+    // État courant
+    // =========================
     let currentCategory = "Aléatoire";
     let filteredCards = [];
     let currentIndex = 0;
@@ -430,6 +377,8 @@
     const prevBtn = document.getElementById("prevBtn");
     const nextBtn = document.getElementById("nextBtn");
     const flipBtn = document.getElementById("flipBtn");
+    const knowBtn = document.getElementById("knowBtn");
+    const errorBtn = document.getElementById("errorBtn");
     const categoryButtons = document.querySelectorAll(".category-item");
 
     function shuffleArray(arr) {
@@ -446,6 +395,8 @@
 
       if (categoryName === "Aléatoire") {
         filteredCards = shuffleArray(allCards);
+      } else if (categoryName === "Erreurs") {
+        filteredCards = erreurIds.map(idx => allCards[idx]).filter(Boolean);
       } else {
         filteredCards = allCards.filter(card => card.category === categoryName);
       }
@@ -461,11 +412,14 @@
         infoEl.textContent = "";
         prevBtn.disabled = true;
         nextBtn.disabled = true;
+        flipBtn.disabled = true;
+        knowBtn.disabled = true;
+        errorBtn.disabled = true;
+        errorBtn.classList.remove("active-error");
         return;
       }
 
       const current = filteredCards[currentIndex];
-
       let html = "";
 
       if (current.image) {
@@ -491,9 +445,52 @@
 
       prevBtn.disabled = currentIndex === 0;
       nextBtn.disabled = currentIndex === filteredCards.length - 1;
+      flipBtn.disabled = false;
+      knowBtn.disabled = false;
+      errorBtn.disabled = false;
+
+      // Met à jour l'état visuel du bouton "Erreurs"
+      const globalIndex = allCards.indexOf(current);
+      const isError = globalIndex !== -1 && erreurIds.includes(globalIndex);
+      errorBtn.classList.toggle("active-error", isError);
     }
 
-    // Interactions
+    function markErrorForCurrent() {
+      if (!filteredCards.length) return;
+      const current = filteredCards[currentIndex];
+      const idx = allCards.indexOf(current);
+      if (idx === -1) return;
+      if (!erreurIds.includes(idx)) {
+        erreurIds.push(idx);
+        saveErreurs();
+      }
+      if (currentCategory === "Erreurs") {
+        applyCategory("Erreurs");
+      } else {
+        renderCard();
+      }
+    }
+
+    function unmarkErrorForCurrent() {
+      if (!filteredCards.length) return;
+      const current = filteredCards[currentIndex];
+      const idx = allCards.indexOf(current);
+      if (idx === -1) return;
+      const pos = erreurIds.indexOf(idx);
+      if (pos !== -1) {
+        erreurIds.splice(pos, 1);
+        saveErreurs();
+      }
+      if (currentCategory === "Erreurs") {
+        applyCategory("Erreurs");
+      } else {
+        renderCard();
+      }
+    }
+
+    // =========================
+    // Écouteurs d'événements
+    // =========================
     cardEl.addEventListener("click", () => {
       if (!filteredCards.length) return;
       isFront = !isFront;
@@ -522,6 +519,14 @@
       }
     });
 
+    errorBtn.addEventListener("click", () => {
+      markErrorForCurrent();
+    });
+
+    knowBtn.addEventListener("click", () => {
+      unmarkErrorForCurrent();
+    });
+
     categoryButtons.forEach(btn => {
       btn.addEventListener("click", () => {
         categoryButtons.forEach(b => b.classList.remove("active"));
@@ -536,3 +541,4 @@
   </script>
 </body>
 </html>
+
