@@ -225,6 +225,8 @@
         <button class="category-item" data-category="Erreurs">Erreurs</button>
         <!-- Aléatoire ensuite (actif au démarrage) -->
         <button class="category-item active" data-category="Aléatoire">Aléatoire</button>
+        <!-- Nouvelle catégorie Dermoscopie -->
+        <button class="category-item" data-category="Dermoscopie">Dermoscopie</button>
 
         <button class="category-item" data-category="Prurit et dysesthésies">Prurit et dysesthésies</button>
         <button class="category-item" data-category="Affections psychocutanées">Affections psychocutanées</button>
@@ -538,89 +540,7 @@
     }
 
     function goNextStandard() {
-      if (currentIndex < filteredCards.length - 1) {
-        currentIndex++;
-      }
-      isFront = true;
-      renderCard();
-    }
+      if (currentIndex < f
 
-    // =========================
-    // Écouteurs d'événements
-    // =========================
-    cardEl.addEventListener("click", () => {
-      if (!filteredCards.length) return;
-      isFront = !isFront;
-      renderCard();
-    });
-
-    flipBtn.addEventListener("click", () => {
-      if (!filteredCards.length) return;
-      isFront = !isFront;
-      renderCard();
-    });
-
-    prevBtn.addEventListener("click", () => {
-      if (currentIndex > 0) {
-        currentIndex--;
-        isFront = true;
-        renderCard();
-      }
-    });
-
-    // ❌ À revoir : ajoute aux erreurs + passe à la suivante
-    errorBtn.addEventListener("click", () => {
-      if (!filteredCards.length) return;
-
-      if (currentCategory !== "Erreurs") {
-        markErrorForCurrent();
-        goNextStandard();
-      } else {
-        // Dans Erreurs, ❌ garde la carte comme erreur et passe à la suivante
-        goNextStandard();
-      }
-    });
-
-    // ✅ Je sais : retire des erreurs + passe à la suivante
-    knowBtn.addEventListener("click", () => {
-      if (!filteredCards.length) return;
-
-      if (currentCategory === "Erreurs") {
-        const previousIndex = currentIndex;
-        unmarkErrorForCurrent();
-        filteredCards = buildErrorsCards();
-
-        if (filteredCards.length === 0) {
-          renderCard();
-          return;
-        }
-
-        if (previousIndex >= filteredCards.length) {
-          currentIndex = filteredCards.length - 1;
-        } else {
-          currentIndex = previousIndex;
-        }
-        isFront = true;
-        renderCard();
-      } else {
-        unmarkErrorForCurrent();
-        goNextStandard();
-      }
-    });
-
-    categoryButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        categoryButtons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        const cat = btn.dataset.category;
-        applyCategory(cat);
-      });
-    });
-
-    // Initialisation : catégorie Aléatoire
-    applyCategory("Aléatoire");
-  </script>
-</body>
-</html>
 
 
