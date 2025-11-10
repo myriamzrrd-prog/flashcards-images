@@ -300,9 +300,8 @@
 
     .card {
   position: relative;
-  width: 100%;
+  width: 100%;             /* laisse la carte prendre la largeur dispo */
   max-width: 700px;
-  height: 50vh;                /* ✅ même hauteur pour toutes les cartes */
   margin: 0 auto;
   background: white;
   border-radius: 16px;
@@ -310,14 +309,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;  /* le contenu commence en haut de la carte */
-  padding: 16px;
+  justify-content: center;  /* contenu centré verticalement */
+  padding: 20px;
   text-align: center;
   font-size: 1rem;
   cursor: pointer;
   user-select: none;
-  overflow-y: auto;            /* ✅ scroll si image + légende dépassent */
   transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  /* ✅ pas de height, pas de min-height, pas de overflow-y :
+     la carte s’adapte à la taille image + texte */
 }
 
     .card:hover {
