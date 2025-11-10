@@ -98,6 +98,7 @@
       padding: 16px 12px;
       display: flex;
       flex-direction: column;
+      height: 100vh;           /* prend toute la hauteur de l'écran */
     }
 
     .sidebar h2 {
@@ -108,7 +109,7 @@
     .category-list {
       margin-top: 8px;
       flex: 1;
-      overflow-y: auto;
+      overflow-y: auto;        /* scroll interne */
       display: flex;
       flex-direction: column;
       gap: 6px;
@@ -258,14 +259,43 @@
       background: #020617;
     }
 
-    /* Carte de flashcard */
+    /* ======================
+       MODE RÉVISION
+       ====================== */
     #reviewMode {
       width: 100%;
       max-width: 900px;
       display: flex;
       flex-direction: column;
-      align-items: center;
       gap: 8px;
+      align-items: stretch;
+    }
+
+    .review-layout {
+      display: flex;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .review-left {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .qa-text {
+      background: white;
+      border-radius: 12px;
+      padding: 12px 16px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+      font-size: 1.05rem;
+      text-align: left;
+      cursor: pointer; /* pour indiquer qu'on peut cliquer pour retourner */
+    }
+
+    .qa-text strong {
+      font-weight: 600;
     }
 
     .card {
@@ -294,18 +324,7 @@
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
     }
 
-    .card-text {
-      font-size: 0.9rem;
-      font-weight: 500;
-    }
-
-    .caption {
-      margin-top: 8px;
-      font-size: 0.9rem;
-      color: #6b7280;
-    }
-
-    /* Image dans la carte : plus grande, cadre inchangé */
+    /* Image dans la carte (plus grande, cadre identique) */
     #card img {
       width: 65%;
       height: auto;
@@ -314,12 +333,24 @@
       border-radius: 12px;
     }
 
-    .controls {
+    .caption {
       margin-top: 8px;
+      font-size: 0.9rem;
+      color: #6b7280;
+      text-align: left;
+      max-width: 90%;
+    }
+
+    .controls-column {
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
       gap: 8px;
-      justify-content: center;
+      align-items: stretch;
+      justify-content: flex-start;
+    }
+
+    .controls-column button {
+      width: 140px;
     }
 
     button {
@@ -356,7 +387,9 @@
       text-align: center;
     }
 
-    /* Mode recherche : liste de cartes */
+    /* ======================
+       MODE RECHERCHE
+       ====================== */
     .search-mode {
       width: 100%;
       max-width: 900px;
@@ -454,7 +487,25 @@
       cursor: pointer;
     }
 
-    /* Responsive */
+    /* ======================
+       RESPONSIVE
+       ====================== */
+    @media (max-width: 900px) {
+      .review-layout {
+        flex-direction: column;
+      }
+
+      .controls-column {
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .controls-column button {
+        width: auto;
+      }
+    }
+
     @media (max-width: 768px) {
       .layout {
         flex-direction: column;
@@ -462,6 +513,7 @@
 
       .sidebar {
         width: 100%;
+        height: auto;
         max-height: 260px;
       }
 
@@ -538,93 +590,94 @@
           <button class="category-item" data-category="Dermatoses de la grossesse">Dermatoses de la grossesse</button>
           <button class="category-item" data-category="Pemphigus">Pemphigus</button>
           <button class="category-item" data-category="Pemphigoïde et épidermolyse bulleuse acquise">Pemphigoïde et épidermolyse bulleuse acquise</button>
-            <button class="category-item" data-category="Dermatite herpétiforme et dermatose bulleuse à IgA linéaires">Dermatite herpétiforme et dermatose bulleuse à IgA linéaires</button>
-  <button class="category-item" data-category="Épidermolyses bulleuses">Épidermolyses bulleuses</button>
-  <button class="category-item" data-category="Autres maladies vésiculobulleuses">Autres maladies vésiculobulleuses</button>
-  <button class="category-item" data-category="Affections vésiculopustuleuses et érosives chez les nouveau-nés et nourrissons">Affections vésiculopustuleuses et érosives chez les nouveau-nés et nourrissons</button>
 
-  <button class="category-item" data-category="Acné vulgaire">Acné vulgaire</button>
-  <button class="category-item" data-category="Rosacée et dermatite périorificielle">Rosacée et dermatite périorificielle</button>
-  <button class="category-item" data-category="Folliculites">Folliculites</button>
-  <button class="category-item" data-category="Affections des glandes eccrines et apocrines">Affections des glandes eccrines et apocrines</button>
+          <button class="category-item" data-category="Dermatite herpétiforme et dermatose bulleuse à IgA linéaires">Dermatite herpétiforme et dermatose bulleuse à IgA linéaires</button>
+          <button class="category-item" data-category="Épidermolyses bulleuses">Épidermolyses bulleuses</button>
+          <button class="category-item" data-category="Autres maladies vésiculobulleuses">Autres maladies vésiculobulleuses</button>
+          <button class="category-item" data-category="Affections vésiculopustuleuses et érosives chez les nouveau-nés et nourrissons">Affections vésiculopustuleuses et érosives chez les nouveau-nés et nourrissons</button>
 
-  <button class="category-item" data-category="Lupus érythémateux">Lupus érythémateux</button>
-  <button class="category-item" data-category="Dermatomyosite">Dermatomyosite</button>
-  <button class="category-item" data-category="Sclérodermie systémique et affections sclérodermoïdes">Sclérodermie systémique et affections sclérodermoïdes</button>
-  <button class="category-item" data-category="Morphée et lichen scléreux">Morphée et lichen scléreux</button>
-  <button class="category-item" data-category="Autres maladies rhumatologiques et maladies auto-inflammatoires">Autres maladies rhumatologiques et maladies auto-inflammatoires</button>
+          <button class="category-item" data-category="Acné vulgaire">Acné vulgaire</button>
+          <button class="category-item" data-category="Rosacée et dermatite périorificielle">Rosacée et dermatite périorificielle</button>
+          <button class="category-item" data-category="Folliculites">Folliculites</button>
+          <button class="category-item" data-category="Affections des glandes eccrines et apocrines">Affections des glandes eccrines et apocrines</button>
 
-  <button class="category-item" data-category="Mucinoses">Mucinoses</button>
-  <button class="category-item" data-category="Amylose">Amylose</button>
-  <button class="category-item" data-category="Maladies de surcharge">Maladies de surcharge</button>
-  <button class="category-item" data-category="Porphyries">Porphyries</button>
-  <button class="category-item" data-category="Calcinose cutanée et ostéome cutané">Calcinose cutanée et ostéome cutané</button>
-  <button class="category-item" data-category="Désordres nutritionnels">Désordres nutritionnels</button>
-  <button class="category-item" data-category="Maladie du greffon contre l'hôte">Maladie du greffon contre l'hôte</button>
-  <button class="category-item" data-category="Manifestations cutanées des maladies systémiques">Manifestations cutanées des maladies systémiques</button>
+          <button class="category-item" data-category="Lupus érythémateux">Lupus érythémateux</button>
+          <button class="category-item" data-category="Dermatomyosite">Dermatomyosite</button>
+          <button class="category-item" data-category="Sclérodermie systémique et affections sclérodermoïdes">Sclérodermie systémique et affections sclérodermoïdes</button>
+          <button class="category-item" data-category="Morphée et lichen scléreux">Morphée et lichen scléreux</button>
+          <button class="category-item" data-category="Autres maladies rhumatologiques et maladies auto-inflammatoires">Autres maladies rhumatologiques et maladies auto-inflammatoires</button>
 
-  <button class="category-item" data-category="Ichtyoses et érythrokératodermies">Ichtyoses et érythrokératodermies</button>
-  <button class="category-item" data-category="Kératodermies">Kératodermies</button>
-  <button class="category-item" data-category="Maladie de Darier et maladie de Hailey-Hailey">Maladie de Darier et maladie de Hailey-Hailey</button>
+          <button class="category-item" data-category="Mucinoses">Mucinoses</button>
+          <button class="category-item" data-category="Amylose">Amylose</button>
+          <button class="category-item" data-category="Maladies de surcharge">Maladies de surcharge</button>
+          <button class="category-item" data-category="Porphyries">Porphyries</button>
+          <button class="category-item" data-category="Calcinose cutanée et ostéome cutané">Calcinose cutanée et ostéome cutané</button>
+          <button class="category-item" data-category="Désordres nutritionnels">Désordres nutritionnels</button>
+          <button class="category-item" data-category="Maladie du greffon contre l'hôte">Maladie du greffon contre l'hôte</button>
+          <button class="category-item" data-category="Manifestations cutanées des maladies systémiques">Manifestations cutanées des maladies systémiques</button>
 
-  <button class="category-item" data-category="Déficits immunitaires primitifs">Déficits immunitaires primitifs</button>
-  <button class="category-item" data-category="Neurofibromatose et sclérose tubéreuse de Bourneville">Neurofibromatose et sclérose tubéreuse de Bourneville</button>
-  <button class="category-item" data-category="Mosaïques cutanées">Mosaïques cutanées</button>
-  <button class="category-item" data-category="Autres génodermatoses">Autres génodermatoses</button>
-  <button class="category-item" data-category="Anomalies du développement">Anomalies du développement</button>
+          <button class="category-item" data-category="Ichtyoses et érythrokératodermies">Ichtyoses et érythrokératodermies</button>
+          <button class="category-item" data-category="Kératodermies">Kératodermies</button>
+          <button class="category-item" data-category="Maladie de Darier et maladie de Hailey-Hailey">Maladie de Darier et maladie de Hailey-Hailey</button>
 
-  <button class="category-item" data-category="Vitiligo et autres affections avec hypopigmentation">Vitiligo et autres affections avec hypopigmentation</button>
-  <button class="category-item" data-category="Maladies avec hyperpigmentation">Maladies avec hyperpigmentation</button>
-  <button class="category-item" data-category="Alopécies">Alopécies</button>
-  <button class="category-item" data-category="Hypertrichose et hirsutisme">Hypertrichose et hirsutisme</button>
-  <button class="category-item" data-category="Affections des ongles">Affections des ongles</button>
-  <button class="category-item" data-category="Affections orales">Affections orales</button>
-  <button class="category-item" data-category="Maladies anogénitales">Maladies anogénitales</button>
+          <button class="category-item" data-category="Déficits immunitaires primitifs">Déficits immunitaires primitifs</button>
+          <button class="category-item" data-category="Neurofibromatose et sclérose tubéreuse de Bourneville">Neurofibromatose et sclérose tubéreuse de Bourneville</button>
+          <button class="category-item" data-category="Mosaïques cutanées">Mosaïques cutanées</button>
+          <button class="category-item" data-category="Autres génodermatoses">Autres génodermatoses</button>
+          <button class="category-item" data-category="Anomalies du développement">Anomalies du développement</button>
 
-  <button class="category-item" data-category="Infections à mycobactéries">Infections à mycobactéries</button>
-  <button class="category-item" data-category="Rickettsioses">Rickettsioses</button>
-  <button class="category-item" data-category="Maladies fongiques">Maladies fongiques</button>
-  <button class="category-item" data-category="Manifestations cutanées de l’infection VIH">Manifestations cutanées de l’infection VIH</button>
-  <button class="category-item" data-category="Papillomavirus humains">Papillomavirus humains</button>
-  <button class="category-item" data-category="Herpèsvirus humains">Herpèsvirus humains</button>
-  <button class="category-item" data-category="Autres maladies virales">Autres maladies virales</button>
-  <button class="category-item" data-category="Infections sexuellement transmissibles">Infections sexuellement transmissibles</button>
-  <button class="category-item" data-category="Protozoaires et vers">Protozoaires et vers</button>
-  <button class="category-item" data-category="Infestations">Infestations</button>
-  <button class="category-item" data-category="Morsures et piqûres">Morsures et piqûres</button>
+          <button class="category-item" data-category="Vitiligo et autres affections avec hypopigmentation">Vitiligo et autres affections avec hypopigmentation</button>
+          <button class="category-item" data-category="Maladies avec hyperpigmentation">Maladies avec hyperpigmentation</button>
+          <button class="category-item" data-category="Alopécies">Alopécies</button>
+          <button class="category-item" data-category="Hypertrichose et hirsutisme">Hypertrichose et hirsutisme</button>
+          <button class="category-item" data-category="Affections des ongles">Affections des ongles</button>
+          <button class="category-item" data-category="Affections orales">Affections orales</button>
+          <button class="category-item" data-category="Maladies anogénitales">Maladies anogénitales</button>
 
-  <button class="category-item" data-category="Photodermatoses">Photodermatoses</button>
-  <button class="category-item" data-category="Atteintes cutanées liées à l'environnement et au sport">Atteintes cutanées liées à l'environnement et au sport</button>
-  <button class="category-item" data-category="Signes cutanés des toxicomanies, maltraitances">Signes cutanés des toxicomanies, maltraitances</button>
+          <button class="category-item" data-category="Infections à mycobactéries">Infections à mycobactéries</button>
+          <button class="category-item" data-category="Rickettsioses">Rickettsioses</button>
+          <button class="category-item" data-category="Maladies fongiques">Maladies fongiques</button>
+          <button class="category-item" data-category="Manifestations cutanées de l’infection VIH">Manifestations cutanées de l’infection VIH</button>
+          <button class="category-item" data-category="Papillomavirus humains">Papillomavirus humains</button>
+          <button class="category-item" data-category="Herpèsvirus humains">Herpèsvirus humains</button>
+          <button class="category-item" data-category="Autres maladies virales">Autres maladies virales</button>
+          <button class="category-item" data-category="Infections sexuellement transmissibles">Infections sexuellement transmissibles</button>
+          <button class="category-item" data-category="Protozoaires et vers">Protozoaires et vers</button>
+          <button class="category-item" data-category="Infestations">Infestations</button>
+          <button class="category-item" data-category="Morsures et piqûres">Morsures et piqûres</button>
 
-  <button class="category-item" data-category="Histiocytoses">Histiocytoses</button>
-  <button class="category-item" data-category="Xanthomes">Xanthomes</button>
-  <button class="category-item" data-category="Affections granulomateuses non infectieuses">Affections granulomateuses non infectieuses</button>
-  <button class="category-item" data-category="Affections perforantes">Affections perforantes</button>
-  <button class="category-item" data-category="Anomalies héréditaires du tissu conjonctif">Anomalies héréditaires du tissu conjonctif</button>
-  <button class="category-item" data-category="Hypertrophies dermiques">Hypertrophies dermiques</button>
-  <button class="category-item" data-category="Atrophies du tissu conjonctif">Atrophies du tissu conjonctif</button>
-  <button class="category-item" data-category="Panniculites">Panniculites</button>
-  <button class="category-item" data-category="Lipodystrophies">Lipodystrophies</button>
+          <button class="category-item" data-category="Photodermatoses">Photodermatoses</button>
+          <button class="category-item" data-category="Atteintes cutanées liées à l'environnement et au sport">Atteintes cutanées liées à l'environnement et au sport</button>
+          <button class="category-item" data-category="Signes cutanés des toxicomanies, maltraitances">Signes cutanés des toxicomanies, maltraitances</button>
 
-  <button class="category-item" data-category="Hémangiomes infantiles et malformations vasculaires">Hémangiomes infantiles et malformations vasculaires</button>
-  <button class="category-item" data-category="Ulcères">Ulcères</button>
-  <button class="category-item" data-category="Autres affections vasculaires">Autres affections vasculaires</button>
+          <button class="category-item" data-category="Histiocytoses">Histiocytoses</button>
+          <button class="category-item" data-category="Xanthomes">Xanthomes</button>
+          <button class="category-item" data-category="Affections granulomateuses non infectieuses">Affections granulomateuses non infectieuses</button>
+          <button class="category-item" data-category="Affections perforantes">Affections perforantes</button>
+          <button class="category-item" data-category="Anomalies héréditaires du tissu conjonctif">Anomalies héréditaires du tissu conjonctif</button>
+          <button class="category-item" data-category="Hypertrophies dermiques">Hypertrophies dermiques</button>
+          <button class="category-item" data-category="Atrophies du tissu conjonctif">Atrophies du tissu conjonctif</button>
+          <button class="category-item" data-category="Panniculites">Panniculites</button>
+          <button class="category-item" data-category="Lipodystrophies">Lipodystrophies</button>
 
-  <button class="category-item" data-category="Kératose actinique, CBC et CE">Kératose actinique, CBC et CE</button>
-  <button class="category-item" data-category="Tumeurs et proliférations épithéliales bénignes">Tumeurs et proliférations épithéliales bénignes</button>
-  <button class="category-item" data-category="Kystes">Kystes</button>
-  <button class="category-item" data-category="Tumeurs annexielles">Tumeurs annexielles</button>
-  <button class="category-item" data-category="Néoplasmes mélanocytaires bénins">Néoplasmes mélanocytaires bénins</button>
-  <button class="category-item" data-category="Mélanome cutané">Mélanome cutané</button>
-  <button class="category-item" data-category="Tumeurs vasculaires et proliférations réactionnelles">Tumeurs vasculaires et proliférations réactionnelles</button>
-  <button class="category-item" data-category="Tumeurs fréquentes des tissus mous/ Proliférations">Tumeurs fréquentes des tissus mous/ Proliférations</button>
-  <button class="category-item" data-category="Mastocytose">Mastocytose</button>
+          <button class="category-item" data-category="Hémangiomes infantiles et malformations vasculaires">Hémangiomes infantiles et malformations vasculaires</button>
+          <button class="category-item" data-category="Ulcères">Ulcères</button>
+          <button class="category-item" data-category="Autres affections vasculaires">Autres affections vasculaires</button>
 
-  <button class="category-item" data-category="Lymphomes cutanés à cellules B">Lymphomes cutanés à cellules B</button>
-  <button class="category-item" data-category="Lymphomes cutanés à cellules T">Lymphomes cutanés à cellules T</button>
-  <button class="category-item" data-category="Autres maladies lymphoprolifératives et myéloprolifératives">Autres maladies lymphoprolifératives et myéloprolifératives</button>
-  <button class="category-item" data-category="Métastases cutanées">Métastases cutanées</button>
+          <button class="category-item" data-category="Kératose actinique, CBC et CE">Kératose actinique, CBC et CE</button>
+          <button class="category-item" data-category="Tumeurs et proliférations épithéliales bénignes">Tumeurs et proliférations épithéliales bénignes</button>
+          <button class="category-item" data-category="Kystes">Kystes</button>
+          <button class="category-item" data-category="Tumeurs annexielles">Tumeurs annexielles</button>
+          <button class="category-item" data-category="Néoplasmes mélanocytaires bénins">Néoplasmes mélanocytaires bénins</button>
+          <button class="category-item" data-category="Mélanome cutané">Mélanome cutané</button>
+          <button class="category-item" data-category="Tumeurs vasculaires et proliférations réactionnelles">Tumeurs vasculaires et proliférations réactionnelles</button>
+          <button class="category-item" data-category="Tumeurs fréquentes des tissus mous/ Proliférations">Tumeurs fréquentes des tissus mous/ Proliférations</button>
+          <button class="category-item" data-category="Mastocytose">Mastocytose</button>
+
+          <button class="category-item" data-category="Lymphomes cutanés à cellules B">Lymphomes cutanés à cellules B</button>
+          <button class="category-item" data-category="Lymphomes cutanés à cellules T">Lymphomes cutanés à cellules T</button>
+          <button class="category-item" data-category="Autres maladies lymphoprolifératives et myéloprolifératives">Autres maladies lymphoprolifératives et myéloprolifératives</button>
+          <button class="category-item" data-category="Métastases cutanées">Métastases cutanées</button>
         </div>
       </aside>
 
@@ -644,12 +697,17 @@
 
         <!-- Mode révision -->
         <section id="reviewMode">
-          <div id="card" class="card"></div>
-          <div class="controls">
-            <button id="prevBtn">Précédente</button>
-            <button id="flipBtn">Retourner Q/R</button>
-            <button id="knowBtn" class="btn-know">Je sais ✅</button>
-            <button id="errorBtn" class="btn-error">À revoir ❌</button>
+          <div class="review-layout">
+            <div class="review-left">
+              <div id="qaText" class="qa-text"></div>
+              <div id="card" class="card"></div>
+            </div>
+            <div class="controls-column">
+              <button id="prevBtn">Précédente</button>
+              <button id="flipBtn">Retourner Q/R</button>
+              <button id="knowBtn" class="btn-know">Je sais ✅</button>
+              <button id="errorBtn" class="btn-error">À revoir ❌</button>
+            </div>
           </div>
           <div id="info" class="info"></div>
         </section>
@@ -1191,6 +1249,7 @@
     let currentIndex = 0;
     let isFront = true;
 
+    const qaTextEl = document.getElementById("qaText");
     const cardEl = document.getElementById("card");
     const infoEl = document.getElementById("info");
     const prevBtn = document.getElementById("prevBtn");
@@ -1249,6 +1308,7 @@
     function renderCard() {
       if (!filteredCards || filteredCards.length === 0) {
         cardEl.innerHTML = "<div>Aucune carte pour cette catégorie pour l’instant.</div>";
+        if (qaTextEl) qaTextEl.textContent = "";
         infoEl.textContent = "";
         prevBtn.disabled = true;
         flipBtn.disabled = true;
@@ -1259,35 +1319,27 @@
       }
 
       const current = filteredCards[currentIndex];
+
+      // Texte question / réponse au-dessus de la carte
+      if (qaTextEl) {
+        if (isFront) {
+          qaTextEl.innerHTML = `<strong>Question :</strong> ${current.front || ""}`;
+        } else {
+          qaTextEl.innerHTML = `<strong>Réponse :</strong> ${current.back || ""}`;
+        }
+      }
+
+      // Contenu de la carte : image + légende (uniquement en mode réponse)
       let html = "";
-
-      // Badge Q/R
-      const badge = isFront ? "Q" : "R";
-      html += `
-        <div style="
-          position:absolute;
-          top:12px;
-          right:16px;
-          font-size:0.8rem;
-          background:#111827;
-          color:white;
-          padding:2px 8px;
-          border-radius:999px;
-        ">
-          ${badge}
-        </div>
-      `;
-
       if (current.image) {
         html += `<img src="${current.image}" alt="Image de la carte">`;
       }
-
-      html += `<div class="card-text">${isFront ? current.front : current.back}</div>`;
-
       if (current.caption && !isFront) {
         html += `<p class="caption">${current.caption}</p>`;
       }
-
+      if (!html) {
+        html = "<div>Aucune image pour cette carte.</div>";
+      }
       cardEl.innerHTML = html;
 
       infoEl.textContent =
@@ -1426,9 +1478,17 @@
     }
 
     // =========================
-    // Écouteurs d'événements
+    // Événements
     // =========================
+    // Click sur la carte = flip Q/R
     cardEl.addEventListener("click", () => {
+      if (!filteredCards.length) return;
+      isFront = !isFront;
+      renderCard();
+    });
+
+    // Click sur le texte Q/R au-dessus = flip aussi
+    qaTextEl.addEventListener("click", () => {
       if (!filteredCards.length) return;
       isFront = !isFront;
       renderCard();
@@ -1560,6 +1620,7 @@
   </script>
 </body>
 </html>
+
 
 
 
