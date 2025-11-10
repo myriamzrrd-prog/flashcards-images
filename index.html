@@ -98,7 +98,7 @@
       padding: 16px 12px;
       display: flex;
       flex-direction: column;
-      height: 100vh;           /* prend toute la hauteur de l'écran */
+      height: 100vh;
     }
 
     .sidebar h2 {
@@ -109,7 +109,7 @@
     .category-list {
       margin-top: 8px;
       flex: 1;
-      overflow-y: auto;        /* scroll interne */
+      overflow-y: auto;
       display: flex;
       flex-direction: column;
       gap: 6px;
@@ -284,65 +284,60 @@
       gap: 8px;
     }
 
-    .qa-text {
-      background: white;
-      border-radius: 12px;
-      padding: 12px 16px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-      font-size: 1.05rem;
-      text-align: left;
-      cursor: pointer; /* pour indiquer qu'on peut cliquer pour retourner */
-    }
-
-    .qa-text strong {
-      font-weight: 600;
-    }
-
+    /* Carte agrandie (~15%) */
     .card {
-  position: relative;
-  width: 100%;             /* laisse la carte prendre la largeur dispo */
-  max-width: 700px;
-  margin: 0 auto;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;  /* contenu centré verticalement */
-  padding: 20px;
-  text-align: center;
-  font-size: 1rem;
-  cursor: pointer;
-  user-select: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-  /* ✅ pas de height, pas de min-height, pas de overflow-y :
-     la carte s’adapte à la taille image + texte */
-}
+      position: relative;
+      width: 100%;
+      max-width: 805px;  /* 700px → 805px ≈ +15% */
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 24px;     /* un peu plus de padding */
+      text-align: center;
+      font-size: 1.05rem;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    }
 
     .card:hover {
       transform: translateY(-2px);
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
     }
 
-    /* Image dans la carte (plus grande, cadre identique) */
-    #card img {
-  max-height: 28vh;
-  max-width: 100%;
-  width: 80%;
-  height: auto;
-  display: block;
-  margin: 0 auto 12px;
-  border-radius: 12px;
-  object-fit: contain;
-}
+    /* Texte Q/R dans la carte */
+    .card-text {
+      margin-bottom: 12px;      /* espace avant la légende ou l'image */
+      font-size: 1.08rem;
+      text-align: left;
+      max-width: 90%;
+    }
 
+    /* Légende (au-dessus de la photo en mode réponse) */
     .caption {
-      margin-top: 8px;
+      margin-top: 4px;
+      margin-bottom: 12px;      /* pas trop collé à l’image */
       font-size: 0.9rem;
       color: #6b7280;
       text-align: left;
       max-width: 90%;
+    }
+
+    /* Image agrandie (~15%) */
+    #card img {
+      max-height: 32vh;         /* 28vh → 32vh ≈ +15% */
+      width: 90%;               /* 80% → 90% ≈ +15% */
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto 12px;
+      border-radius: 12px;
+      object-fit: contain;
     }
 
     .controls-column {
@@ -528,11 +523,10 @@
 
       .card {
         width: 100%;
-        min-height: 50vh;
       }
 
       #card img {
-        width: 80%;
+        width: 90%;
       }
 
       .search-card img {
@@ -701,20 +695,19 @@
 
         <!-- Mode révision -->
         <section id="reviewMode">
-  <div class="review-layout">
-    <div class="review-left">
-      <div id="card" class="card"></div>
-    </div>
-    <div class="controls-column">
-      <button id="prevBtn">Précédente</button>
-      <button id="flipBtn">Retourner Q/R</button>
-      <button id="knowBtn" class="btn-know">Je sais ✅</button>
-      <button id="errorBtn" class="btn-error">À revoir ❌</button>
-    </div>
-  </div>
-  <div id="info" class="info"></div>
-</section>
-
+          <div class="review-layout">
+            <div class="review-left">
+              <div id="card" class="card"></div>
+            </div>
+            <div class="controls-column">
+              <button id="prevBtn">Précédente</button>
+              <button id="flipBtn">Retourner Q/R</button>
+              <button id="knowBtn" class="btn-know">Je sais ✅</button>
+              <button id="errorBtn" class="btn-error">À revoir ❌</button>
+            </div>
+          </div>
+          <div id="info" class="info"></div>
+        </section>
 
         <!-- Mode recherche -->
         <section id="searchMode" class="search-mode" style="display:none;">
@@ -1310,58 +1303,55 @@
 
     function renderCard() {
       if (!filteredCards || filteredCards.length === 0) {
-    cardEl.innerHTML = "<div>Aucune carte pour cette catégorie pour l’instant.</div>";
-    infoEl.textContent = "";
-    prevBtn.disabled = true;
-    flipBtn.disabled = true;
-    knowBtn.disabled = true;
-    errorBtn.disabled = true;
-    errorBtn.classList.remove("active-error");
-    return;
-  }
+        cardEl.innerHTML = "<div>Aucune carte pour cette catégorie pour l’instant.</div>";
+        infoEl.textContent = "";
+        prevBtn.disabled = true;
+        flipBtn.disabled = true;
+        knowBtn.disabled = true;
+        errorBtn.disabled = true;
+        errorBtn.classList.remove("active-error");
+        return;
+      }
 
-  const current = filteredCards[currentIndex];
+      const current = filteredCards[currentIndex];
 
-  // 👉 Texte à l’intérieur de la carte, SANS "Question :" ni "Réponse :"
-  const mainText = isFront
-    ? (current.front || "")
-    : (current.back || "");
+      const mainText = isFront
+        ? (current.front || "")
+        : (current.back || "");
 
-  let html = "";
+      let html = "";
 
-  if (mainText) {
-    html += `<div class="card-text">${mainText}</div>`;
-  }
+      if (mainText) {
+        html += `<div class="card-text">${mainText}</div>`;
+      }
 
-  // Image toujours dans la carte
-  if (current.image) {
-    html += `<img src="${current.image}" alt="Image de la carte">`;
-  }
+      // Légende au-dessus de la photo, uniquement en mode réponse
+      if (current.caption && !isFront) {
+        html += `<p class="caption">${current.caption}</p>`;
+      }
 
-  // Légende seulement côté réponse
-  if (current.caption && !isFront) {
-    html += `<p class="caption">${current.caption}</p>`;
-  }
+      if (current.image) {
+        html += `<img src="${current.image}" alt="Image de la carte">`;
+      }
 
-  if (!html) {
-    html = "<div>Aucun contenu pour cette carte.</div>";
-  }
+      if (!html) {
+        html = "<div>Aucun contenu pour cette carte.</div>";
+      }
 
-  cardEl.innerHTML = html;
+      cardEl.innerHTML = html;
 
-  // 👉 Ligne d’info SANS les mots "Question"/"Réponse"
-  infoEl.textContent =
-    `Catégorie : ${currentCategory} — Carte ${currentIndex + 1} / ${filteredCards.length}`;
+      infoEl.textContent =
+        `Catégorie : ${currentCategory} — Carte ${currentIndex + 1} / ${filteredCards.length}`;
 
-  prevBtn.disabled = currentIndex === 0;
-  flipBtn.disabled = false;
-  knowBtn.disabled = false;
-  errorBtn.disabled = false;
+      prevBtn.disabled = currentIndex === 0;
+      flipBtn.disabled = false;
+      knowBtn.disabled = false;
+      errorBtn.disabled = false;
 
-  const globalIndex = allCards.indexOf(current);
-  const isError = globalIndex !== -1 && erreurIds.includes(globalIndex);
-  errorBtn.classList.toggle("active-error", isError);
-}
+      const globalIndex = allCards.indexOf(current);
+      const isError = globalIndex !== -1 && erreurIds.includes(globalIndex);
+      errorBtn.classList.toggle("active-error", isError);
+    }
 
     function markErrorForCurrent() {
       if (!filteredCards.length) return;
@@ -1494,8 +1484,6 @@
       renderCard();
     });
 
-    // Click sur le texte Q/R au-dessus = flip aussi
-
     flipBtn.addEventListener("click", () => {
       if (!filteredCards.length) return;
       isFront = !isFront;
@@ -1622,6 +1610,7 @@
   </script>
 </body>
 </html>
+
 
 
 
