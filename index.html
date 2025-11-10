@@ -269,6 +269,7 @@
     }
 
     .card {
+      position: relative;
       width: 100%;
       max-width: 700px;
       min-height: 40vh;
@@ -285,7 +286,7 @@
       font-size: 1rem;
       cursor: pointer;
       user-select: none;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
     }
 
     .card:hover {
@@ -294,18 +295,19 @@
     }
 
     .card-text {
-      font-size: 1.2rem;
+      font-size: 0.9rem;
+      font-weight: 500;
     }
 
     .caption {
       margin-top: 8px;
-      font-size: 1.5rem;
+      font-size: 0.9rem;
       color: #6b7280;
     }
 
     /* Image dans la carte : plus grande, cadre inchangé */
     #card img {
-      width: 65%;      /* agrandies */
+      width: 65%;
       height: auto;
       display: block;
       margin: 0 auto 12px;
@@ -457,20 +459,30 @@
       .layout {
         flex-direction: column;
       }
+
       .sidebar {
         width: 100%;
         max-height: 260px;
       }
+
+      .category-item {
+        font-size: 0.8rem;
+        padding: 4px 6px;
+      }
+
       .card {
         width: 100%;
         min-height: 50vh;
       }
+
       #card img {
         width: 80%;
       }
+
       .search-card img {
         width: 60%;
       }
+
       .top-bar {
         align-items: flex-start;
       }
@@ -1162,6 +1174,23 @@
       const current = filteredCards[currentIndex];
       let html = "";
 
+      // Badge Q/R
+      const badge = isFront ? "Q" : "R";
+      html += `
+        <div style="
+          position:absolute;
+          top:12px;
+          right:16px;
+          font-size:0.8rem;
+          background:#111827;
+          color:white;
+          padding:2px 8px;
+          border-radius:999px;
+        ">
+          ${badge}
+        </div>
+      `;
+
       if (current.image) {
         html += `<img src="${current.image}" alt="Image de la carte">`;
       }
@@ -1217,6 +1246,14 @@
       }
       isFront = true;
       renderCard();
+    }
+
+    // Petit flash coloré sur la carte
+    function flashCard(color) {
+      cardEl.style.backgroundColor = color;
+      setTimeout(() => {
+        cardEl.style.backgroundColor = "white";
+      }, 200);
     }
 
     // ============== Recherche ==============
@@ -1324,9 +1361,11 @@
       }
     });
 
-    // ❌ À revoir : ajoute aux erreurs + passe à la suivante
+    // ❌ À revoir : ajoute aux erreurs + passe à la suivante + flash rouge
     errorBtn.addEventListener("click", () => {
       if (!filteredCards.length) return;
+
+      flashCard("#fee2e2");
 
       if (currentCategory !== "Erreurs") {
         markErrorForCurrent();
@@ -1336,9 +1375,11 @@
       }
     });
 
-    // ✅ Je sais : retire des erreurs + passe à la suivante
+    // ✅ Je sais : retire des erreurs + passe à la suivante + flash vert
     knowBtn.addEventListener("click", () => {
       if (!filteredCards.length) return;
+
+      flashCard("#dcfce7");
 
       if (currentCategory === "Erreurs") {
         const previousIndex = currentIndex;
@@ -1398,11 +1439,41 @@
       }
     });
 
+    // ============== Raccourcis clavier ==============
+    document.addEventListener("keydown", (e) => {
+      // Si l'écran de code est visible, on ignore
+      if (lockScreenEl.style.display !== "none") return;
+
+      const target = e.target;
+      // Ne pas intercepter quand on tape dans les champs
+      if (target === searchInput || target === codeInput) return;
+
+      if (e.key === " ") {
+        e.preventDefault();
+        if (!filteredCards.length) return;
+        isFront = !isFront;
+        renderCard();
+      } else if (e.key === "ArrowLeft") {
+        if (currentIndex > 0) {
+          currentIndex--;
+          isFront = true;
+          renderCard();
+        }
+      } else if (e.key === "1") {
+        e.preventDefault();
+        knowBtn.click();
+      } else if (e.key === "2") {
+        e.preventDefault();
+        errorBtn.click();
+      }
+    });
+
     // Initialisation
     applyCategory("Aléatoire");
   </script>
 </body>
 </html>
+
 
 
 
