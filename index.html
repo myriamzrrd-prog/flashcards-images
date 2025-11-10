@@ -1335,11 +1335,11 @@
 
       // Contenu de la carte : image + légende (uniquement en mode réponse)
       let html = "";
-      if (current.image) {
-        html += `<img src="${current.image}" alt="Image de la carte">`;
-      }
       if (current.caption && !isFront) {
-        html += `<p class="caption">${current.caption}</p>`;
+  html += `<p class="caption">${current.caption}</p>`;
+      }
+      if (current.image) {
+  html += `<img src="${current.image}" alt="Image de la carte">`;
       }
       if (!html) {
         html = "<div>Aucune image pour cette carte.</div>";
