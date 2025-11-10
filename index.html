@@ -701,20 +701,20 @@
 
         <!-- Mode révision -->
         <section id="reviewMode">
-          <div class="review-layout">
-            <div class="review-left">
-              <div id="qaText" class="qa-text"></div>
-              <div id="card" class="card"></div>
-            </div>
-            <div class="controls-column">
-              <button id="prevBtn">Précédente</button>
-              <button id="flipBtn">Retourner Q/R</button>
-              <button id="knowBtn" class="btn-know">Je sais ✅</button>
-              <button id="errorBtn" class="btn-error">À revoir ❌</button>
-            </div>
-          </div>
-          <div id="info" class="info"></div>
-        </section>
+  <div class="review-layout">
+    <div class="review-left">
+      <div id="card" class="card"></div>
+    </div>
+    <div class="controls-column">
+      <button id="prevBtn">Précédente</button>
+      <button id="flipBtn">Retourner Q/R</button>
+      <button id="knowBtn" class="btn-know">Je sais ✅</button>
+      <button id="errorBtn" class="btn-error">À revoir ❌</button>
+    </div>
+  </div>
+  <div id="info" class="info"></div>
+</section>
+
 
         <!-- Mode recherche -->
         <section id="searchMode" class="search-mode" style="display:none;">
@@ -1253,7 +1253,6 @@
     let currentIndex = 0;
     let isFront = true;
 
-    const qaTextEl = document.getElementById("qaText");
     const cardEl = document.getElementById("card");
     const infoEl = document.getElementById("info");
     const prevBtn = document.getElementById("prevBtn");
@@ -1311,54 +1310,58 @@
 
     function renderCard() {
       if (!filteredCards || filteredCards.length === 0) {
-        cardEl.innerHTML = "<div>Aucune carte pour cette catégorie pour l’instant.</div>";
-        if (qaTextEl) qaTextEl.textContent = "";
-        infoEl.textContent = "";
-        prevBtn.disabled = true;
-        flipBtn.disabled = true;
-        knowBtn.disabled = true;
-        errorBtn.disabled = true;
-        errorBtn.classList.remove("active-error");
-        return;
-      }
+    cardEl.innerHTML = "<div>Aucune carte pour cette catégorie pour l’instant.</div>";
+    infoEl.textContent = "";
+    prevBtn.disabled = true;
+    flipBtn.disabled = true;
+    knowBtn.disabled = true;
+    errorBtn.disabled = true;
+    errorBtn.classList.remove("active-error");
+    return;
+  }
 
-      const current = filteredCards[currentIndex];
+  const current = filteredCards[currentIndex];
 
-      // Texte question / réponse au-dessus de la carte
-      if (qaTextEl) {
-        if (isFront) {
-          qaTextEl.innerHTML = `<strong>Question :</strong> ${current.front || ""}`;
-        } else {
-          qaTextEl.innerHTML = `<strong>Réponse :</strong> ${current.back || ""}`;
-        }
-      }
+  // 👉 Texte à l’intérieur de la carte, SANS "Question :" ni "Réponse :"
+  const mainText = isFront
+    ? (current.front || "")
+    : (current.back || "");
 
-      // Contenu de la carte : image + légende (uniquement en mode réponse)
-      let html = "";
-      if (current.caption && !isFront) {
-  html += `<p class="caption">${current.caption}</p>`;
-      }
-      if (current.image) {
-  html += `<img src="${current.image}" alt="Image de la carte">`;
-      }
-      if (!html) {
-        html = "<div>Aucune image pour cette carte.</div>";
-      }
-      cardEl.innerHTML = html;
+  let html = "";
 
-      infoEl.textContent =
-        `Catégorie : ${currentCategory} — Carte ${currentIndex + 1} / ${filteredCards.length} — ` +
-        (isFront ? "Question" : "Réponse");
+  if (mainText) {
+    html += `<div class="card-text">${mainText}</div>`;
+  }
 
-      prevBtn.disabled = currentIndex === 0;
-      flipBtn.disabled = false;
-      knowBtn.disabled = false;
-      errorBtn.disabled = false;
+  // Image toujours dans la carte
+  if (current.image) {
+    html += `<img src="${current.image}" alt="Image de la carte">`;
+  }
 
-      const globalIndex = allCards.indexOf(current);
-      const isError = globalIndex !== -1 && erreurIds.includes(globalIndex);
-      errorBtn.classList.toggle("active-error", isError);
-    }
+  // Légende seulement côté réponse
+  if (current.caption && !isFront) {
+    html += `<p class="caption">${current.caption}</p>`;
+  }
+
+  if (!html) {
+    html = "<div>Aucun contenu pour cette carte.</div>";
+  }
+
+  cardEl.innerHTML = html;
+
+  // 👉 Ligne d’info SANS les mots "Question"/"Réponse"
+  infoEl.textContent =
+    `Catégorie : ${currentCategory} — Carte ${currentIndex + 1} / ${filteredCards.length}`;
+
+  prevBtn.disabled = currentIndex === 0;
+  flipBtn.disabled = false;
+  knowBtn.disabled = false;
+  errorBtn.disabled = false;
+
+  const globalIndex = allCards.indexOf(current);
+  const isError = globalIndex !== -1 && erreurIds.includes(globalIndex);
+  errorBtn.classList.toggle("active-error", isError);
+}
 
     function markErrorForCurrent() {
       if (!filteredCards.length) return;
@@ -1492,11 +1495,6 @@
     });
 
     // Click sur le texte Q/R au-dessus = flip aussi
-    qaTextEl.addEventListener("click", () => {
-      if (!filteredCards.length) return;
-      isFront = !isFront;
-      renderCard();
-    });
 
     flipBtn.addEventListener("click", () => {
       if (!filteredCards.length) return;
