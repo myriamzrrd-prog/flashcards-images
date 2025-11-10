@@ -192,10 +192,13 @@
       flex-direction: column;
       gap: 16px;
       padding: 24px;
+      align-items: center;
     }
 
     /* Bandeau titre + recherche */
     .top-bar {
+      width: 100%;
+      max-width: 900px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -255,25 +258,16 @@
       background: #020617;
     }
 
-    /* Zone centrale : 70% cartes / 30% cours */
-    .content-area {
-      display: flex;
-      gap: 16px;
-      align-items: stretch;
-      flex: 1;
-      min-height: 0;
-    }
-
-    .cards-column {
-      flex: 3;
+    /* Carte de flashcard */
+    #reviewMode {
+      width: 100%;
+      max-width: 900px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
-      min-width: 0;
+      gap: 8px;
     }
 
-    /* Carte de flashcard */
     .card {
       width: 100%;
       max-width: 700px;
@@ -309,8 +303,9 @@
       color: #6b7280;
     }
 
+    /* Image dans la carte : plus grande, cadre inchangé */
     #card img {
-      width: 65%;
+      width: 65%;      /* agrandies */
       height: auto;
       display: block;
       margin: 0 auto 12px;
@@ -457,115 +452,7 @@
       cursor: pointer;
     }
 
-    /* ======================
-       COLONNE COURS (30%)
-       ====================== */
-    .course-column {
-      flex: 2;
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      max-height: calc(100vh - 140px);
-      min-width: 0;
-    }
-
-    .course-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .course-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: #111827;
-    }
-
-    .course-toggle {
-      background: #f3f4f6;
-      color: #111827;
-      padding: 4px 8px;
-      border-radius: 999px;
-      font-size: 0.9rem;
-      cursor: pointer;
-    }
-
-    .course-toggle:hover {
-      background: #e5e7eb;
-    }
-
-    .course-body {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      min-height: 0;
-    }
-
-    .course-info {
-      font-size: 0.85rem;
-      color: #4b5563;
-    }
-
-    .course-frame-wrapper {
-      flex: 1;
-      min-height: 0;
-      border-radius: 8px;
-      overflow: hidden;
-      background: #f9fafb;
-      position: relative;
-    }
-
-    #courseFrame {
-      width: 100%;
-      height: 100%;
-      border: none;
-      display: none;
-    }
-
-    #courseEmpty {
-      padding: 8px;
-      font-size: 0.85rem;
-      color: #6b7280;
-    }
-
-    .course-note {
-      font-size: 0.75rem;
-      color: #9ca3af;
-      margin: 0;
-    }
-
-    /* Colonne cours repliée */
-    .course-column.collapsed {
-      flex: 0 0 34px;
-      max-width: 34px;
-      padding: 8px 4px;
-    }
-
-    .course-column.collapsed .course-title,
-    .course-column.collapsed .course-body {
-      display: none;
-    }
-
-    .course-column.collapsed .course-header {
-      justify-content: center;
-    }
-
     /* Responsive */
-    @media (max-width: 1024px) {
-      .content-area {
-        flex-direction: column;
-      }
-      .course-column {
-        max-height: 300px;
-      }
-    }
-
     @media (max-width: 768px) {
       .layout {
         flex-direction: column;
@@ -579,7 +466,7 @@
         min-height: 50vh;
       }
       #card img {
-        width: 70%;
+        width: 80%;
       }
       .search-card img {
         width: 60%;
@@ -642,7 +529,7 @@
         </div>
       </aside>
 
-      <!-- Partie droite -->
+      <!-- Partie droite : titre + recherche + cartes -->
       <main class="main">
         <!-- Titre + recherche -->
         <div class="top-bar">
@@ -656,54 +543,29 @@
           </div>
         </div>
 
-        <div class="content-area">
-          <!-- Colonne 70% : cartes + recherche -->
-          <section class="cards-column">
-            <!-- Mode révision -->
-            <section id="reviewMode">
-              <div id="card" class="card"></div>
-              <div class="controls">
-                <button id="prevBtn">Précédente</button>
-                <button id="flipBtn">Retourner Q/R</button>
-                <button id="knowBtn" class="btn-know">Je sais ✅</button>
-                <button id="errorBtn" class="btn-error">À revoir ❌</button>
-              </div>
-              <div id="info" class="info"></div>
-            </section>
+        <!-- Mode révision -->
+        <section id="reviewMode">
+          <div id="card" class="card"></div>
+          <div class="controls">
+            <button id="prevBtn">Précédente</button>
+            <button id="flipBtn">Retourner Q/R</button>
+            <button id="knowBtn" class="btn-know">Je sais ✅</button>
+            <button id="errorBtn" class="btn-error">À revoir ❌</button>
+          </div>
+          <div id="info" class="info"></div>
+        </section>
 
-            <!-- Mode recherche -->
-            <section id="searchMode" class="search-mode" style="display: none;">
-              <div class="search-mode-header">
-                <h2>Résultats de recherche</h2>
-                <p class="search-query-label">
-                  Mot(s) recherché(s) : <span id="searchQueryLabel"></span>
-                </p>
-                <button id="exitSearchBtn">Retour au mode révision</button>
-              </div>
-              <div id="searchResults" class="search-results"></div>
-            </section>
-          </section>
-
-          <!-- Colonne 30% : cours -->
-          <aside class="course-column" id="courseColumn">
-            <div class="course-header">
-              <span class="course-title">Cours</span>
-              <button id="toggleCourseBtn" class="course-toggle" title="Masquer / afficher le cours">⯇</button>
-            </div>
-            <div id="courseBody" class="course-body">
-              <div id="courseInfo" class="course-info">
-                Cours pour : <span id="courseCategoryLabel">Aléatoire</span>
-              </div>
-              <div class="course-frame-wrapper">
-                <iframe id="courseFrame" src="" title="Cours" loading="lazy"></iframe>
-                <div id="courseEmpty">Aucun document associé à cette catégorie pour le moment.</div>
-              </div>
-              <p class="course-note">
-                
-              </p>
-            </div>
-          </aside>
-        </div>
+        <!-- Mode recherche -->
+        <section id="searchMode" class="search-mode" style="display:none;">
+          <div class="search-mode-header">
+            <h2>Résultats de recherche</h2>
+            <p class="search-query-label">
+              Mot(s) recherché(s) : <span id="searchQueryLabel"></span>
+            </p>
+            <button id="exitSearchBtn">Retour au mode révision</button>
+          </div>
+          <div id="searchResults" class="search-results"></div>
+        </section>
       </main>
     </div>
   </div>
@@ -1143,38 +1005,6 @@
     ];
 
     // =========================
-    // Cours associés par catégorie
-    // (à remplir avec tes PDF/PNG)
-    // =========================
-    const courseByCategory = {
-      "Erreurs": "",
-      "Aléatoire": "",
-      "Dermoscopie": "",
-      "Prurit et dysesthésies": "A.pdf",
-      "Affections psychocutanées": "",
-      "Psoriasis": "",
-      "Autres affections papulosquameuses": "",
-      "Erythrodermie": "",
-      "Lichen plan et dermatoses lichénoïdes": "",
-      "Dermatite atopique": "",
-      "Autres éruptions eczémateuses": "",
-      "Dermatites de contact / pro / aux plantes": "",
-      "Approche clinique des dermatoses régionales": "",
-      "Urticaire et angio-oedème": "",
-      "Erythèmes figurés": "",
-      "Erythème polymorphe, SJS et NET": "",
-      "Réactions aux médicaments": "",
-      "Purpura et affections dues à une occlusion microvasculaire": "",
-      "Vascularites": "",
-      "Dermatoses éosinophiliques": "",
-      "Dermatoses neutrophiliques": "",
-      "Dermatoses de la grossesse": "",
-      "Pemphigus": "",
-      "Pemphigoïde et épidermolyse bulleuse acquise": ""
-      // Exemple : "Psoriasis": "cours/psoriasis.pdf"
-    };
-
-    // =========================
     // Verrou d'accès (code 1234)
     // =========================
     const ACCESS_KEY = "bologniaAccess_v1";
@@ -1278,14 +1108,6 @@
     const searchInput = document.getElementById("searchInput");
     const searchBtn = document.getElementById("searchBtn");
 
-    const courseColumn = document.getElementById("courseColumn");
-    const toggleCourseBtn = document.getElementById("toggleCourseBtn");
-    const courseCategoryLabel = document.getElementById("courseCategoryLabel");
-    const courseFrame = document.getElementById("courseFrame");
-    const courseEmpty = document.getElementById("courseEmpty");
-
-    let courseCollapsed = false;
-
     function shuffleArray(arr) {
       const a = [...arr];
       for (let i = a.length - 1; i > 0; i--) {
@@ -1297,24 +1119,6 @@
 
     function buildErrorsCards() {
       return erreurIds.map(idx => allCards[idx]).filter(Boolean);
-    }
-
-    // Mise à jour du panneau cours
-    function updateCoursePanel(categoryName) {
-      const cat = categoryName || "Aléatoire";
-      if (courseCategoryLabel) {
-        courseCategoryLabel.textContent = cat;
-      }
-      const src = (courseByCategory[cat] || "").trim();
-      if (src) {
-        courseFrame.src = src;
-        courseFrame.style.display = "block";
-        courseEmpty.style.display = "none";
-      } else {
-        courseFrame.src = "about:blank";
-        courseFrame.style.display = "none";
-        courseEmpty.style.display = "block";
-      }
     }
 
     function enterSearchMode() {
@@ -1340,7 +1144,6 @@
 
       currentIndex = 0;
       isFront = true;
-      updateCoursePanel(categoryName);
       renderCard();
     }
 
@@ -1595,17 +1398,11 @@
       }
     });
 
-    // Toggle panneau cours
-    toggleCourseBtn.addEventListener("click", () => {
-      courseCollapsed = !courseCollapsed;
-      courseColumn.classList.toggle("collapsed", courseCollapsed);
-      toggleCourseBtn.textContent = courseCollapsed ? "⯈" : "⯇";
-    });
-
     // Initialisation
     applyCategory("Aléatoire");
   </script>
 </body>
 </html>
+
 
 
