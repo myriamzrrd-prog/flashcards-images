@@ -2,566 +2,338 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <title>Admin Flashcards — Uploader & cards.json</title>
+  <title>Admin Flashcards – Bolognia</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    :root { --bg:#0b1220; --panel:#101827; --muted:#9CA3AF; --ok:#16a34a; --warn:#eab308; --err:#dc2626; --ink:#e5e7eb; }
-    * { box-sizing: border-box; }
-    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:#0b1220; color:#e5e7eb; }
-    header { padding:16px 20px; background:#101827; border-bottom:1px solid #1f2937; display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
-    header h1 { margin:0; font-size:18px; font-weight:600; }
-    .wrap { padding:18px; display:grid; grid-template-columns:320px 1fr; gap:16px; }
-    @media (max-width: 980px){ .wrap{ grid-template-columns:1fr; } }
-
-    .card { background:#111827; border:1px solid #1f2937; border-radius:14px; padding:14px; }
-    .card h2 { margin:0 0 8px; font-size:16px; }
-    .row { display:flex; gap:8px; margin-bottom:8px; align-items:center; }
-    .row label { font-size:12px; color:var(--muted); width:120px; }
-    .row input[type="text"], .row input[type="password"], .row input[type="number"], .row textarea, .row select {
-      width:100%; padding:8px 10px; border-radius:10px; border:1px solid #374151; background:#0b1220; color:#e5e7eb; font-size:14px; outline:none;
-    }
-    .row textarea { min-height:60px; resize:vertical; }
-    .muted { color:var(--muted); font-size:12px; }
-    .inline { display:inline-flex; gap:10px; align-items:center; }
-    .btn { padding:8px 12px; border:1px solid #374151; background:#0b1220; color:#e5e7eb; border-radius:999px; cursor:pointer; font-size:14px; }
-    .btn:hover { background:#0a1020; }
-    .btn-primary { background:#2563eb; border-color:#1d4ed8; }
-    .btn-ok { background: var(--ok); border-color:#15803d; }
-    .btn-warn { background: var(--warn); color:#111827; border-color:#a16207; }
-    .btn-ghost { background:transparent; }
-    .danger { color:var(--err); }
-
-    .dropzone {
-      border:2px dashed #334155; border-radius:12px; padding:18px; text-align:center; color:#cbd5e1;
-    }
-    .dropzone.drag { background:#0d1a2f; border-color:#3b82f6; }
-    .list { display:flex; flex-direction:column; gap:10px; max-height:65vh; overflow:auto; padding-right:6px; }
-    .item { border:1px solid #1f2937; border-radius:12px; padding:10px; background:#0b1220; display:grid; grid-template-columns:120px 1fr; gap:10px; }
-    .thumb { width:120px; height:120px; border-radius:8px; object-fit:cover; background:#0a1020; border:1px solid #1f2937; }
-    .grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-    .grid .row label { width:auto; }
-    .log { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:12px; background:#0a0f1a; color:#d1d5db; border-radius:10px; padding:10px; max-height:180px; overflow:auto; white-space:pre-wrap; }
-    .pill { font-size:12px; padding:2px 8px; border-radius:999px; background:#0b1220; border:1px solid #374151; color:#cbd5e1; }
-    .switch { display:inline-flex; gap:6px; align-items:center; }
-    .rightbar .card { margin-bottom:12px; }
-    .sticky { position:sticky; top:12px; }
+    :root { --bg:#0f172a; --card:#fff; --ink:#111827; --muted:#6b7280; --ok:#16a34a; --err:#dc2626; }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;background:#f5f7fb;color:#111827}
+    header{background:var(--bg);color:#e5e7eb;padding:16px}
+    header h1{margin:0;font-size:1.2rem}
+    main{max-width:960px;margin:24px auto;padding:0 16px;display:grid;gap:16px}
+    .card{background:var(--card);border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.08);padding:16px}
+    .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    label{font-size:.85rem;color:#374151}
+    input,textarea,select{width:100%;padding:8px 10px;border:1px solid #d1d5db;border-radius:10px;outline:none}
+    input:focus,textarea:focus{border-color:#111827}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+    button{padding:9px 14px;border:none;border-radius:999px;background:#111827;color:#fff;cursor:pointer}
+    button.secondary{background:#334155}
+    button.ok{background:var(--ok)}
+    button.err{background:var(--err)}
+    small.muted{color:var(--muted)}
+    #log{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#0b1220;color:#e5e7eb;border-radius:8px;padding:12px;max-height:260px;overflow:auto}
+    ul#list{margin:8px 0 0 0;padding:0;list-style:none;max-height:280px;overflow:auto}
+    ul#list li{padding:6px 8px;border-bottom:1px solid #eee;font-size:.92rem}
+    .hint{font-size:.85rem;color:#475569}
+    .pill{display:inline-block;padding:2px 8px;background:#eef2ff;border-radius:999px;font-size:.75rem;margin-left:6px}
   </style>
 </head>
 <body>
   <header>
-    <h1>Admin Flashcards — Uploader & cards.json</h1>
-    <span class="pill">Local-only (token non stocké)</span>
+    <h1>Admin Flashcards Bolognia <span class="pill">Édition JSON + Upload images</span></h1>
   </header>
 
-  <div class="wrap">
-    <!-- PARAMS -->
-    <div class="leftbar">
-      <div class="card">
-        <h2>Authentification GitHub</h2>
-        <div class="row"><label>Token (PAT)</label><input id="ghToken" type="password" placeholder="ghp_..." /></div>
-        <div class="row"><label>Afficher</label><input id="showTok" type="checkbox" /><span class="muted">Afficher/masquer le token</span></div>
-        <hr style="border-color:#1f2937; margin:10px 0;">
-        <h2>Dépôt cible</h2>
-        <div class="row"><label>Owner</label><input id="ghOwner" type="text" value="myriamzrrd-prog" /></div>
-        <div class="row"><label>Repo</label><input id="ghRepo" type="text" value="flashcards-images" /></div>
-        <div class="row"><label>Branche</label><input id="ghBranch" type="text" value="main" /></div>
-        <div class="row"><label>Dossier images</label><input id="imgFolder" type="text" value="images" /></div>
-        <div class="row"><label>cards.json</label><input id="jsonPath" type="text" value="cards.json" /></div>
-        <div class="row"><label>Message commit</label><input id="commitMsg" type="text" value="Add/Update flashcards (admin upload)" /></div>
-        <div class="row switch">
-          <input id="useSubfolders" type="checkbox" checked>
-          <label for="useSubfolders">Mettre les images dans des sous-dossiers par catégorie</label>
+  <main>
+    <!-- 1) Connexion au repo -->
+    <section class="card">
+      <h2 style="margin-top:0">1) Réglages GitHub</h2>
+      <div class="grid-3">
+        <div>
+          <label>Owner (utilisateur/orga)</label>
+          <input id="ghOwner" value="myriamzrrd-prog">
         </div>
-        <div class="row switch">
-          <input id="doResize" type="checkbox">
-          <label for="doResize">Redimensionner côté client (long côté)</label>
-          <input id="resizeMax" type="number" value="1600" style="width:90px;" />
-          <span class="muted">px</span>
+        <div>
+          <label>Repo</label>
+          <input id="ghRepo" value="flashcards-images">
         </div>
-        <div class="row switch">
-          <input id="convertWebp" type="checkbox">
-          <label for="convertWebp">Convertir en WebP (qualité)</label>
-          <input id="webpQ" type="number" value="0.85" step="0.05" min="0.1" max="1" style="width:90px;" />
+        <div>
+          <label>Branche</label>
+          <input id="ghBranch" value="main">
         </div>
       </div>
-
-      <div class="card">
-        <h2>Import d’images</h2>
-        <div id="dz" class="dropzone">
-          Glisse-dépose tes images ici (ou clique)
-          <br><span class="muted">PNG / JPG / JPEG / WEBP</span>
-          <input id="filePick" type="file" accept="image/*" multiple style="display:none;">
+      <div class="row" style="margin-top:8px">
+        <div style="flex:1">
+          <label>Token GitHub (fine-grained, <em>Contents: Read &amp; Write</em>)</label>
+          <input id="ghToken" type="password" placeholder="ghp_xxx…">
+          <small class="muted">Le token n’est jamais stocké, seulement utilisé côté navigateur.</small>
         </div>
-        <div class="row inline">
-          <button id="btnClear" class="btn">Vider la liste</button>
-          <button id="btnDemo" class="btn btn-ghost">Ajouter 1 démo</button>
-        </div>
+        <button id="btnLoad" class="secondary">Charger cards.json</button>
       </div>
+    </section>
 
-      <div class="card">
-        <h2>JSON & GitHub</h2>
-        <div class="row inline">
-          <button id="btnPreviewJson" class="btn">Aperçu JSON</button>
-          <button id="btnDownloadJson" class="btn">Télécharger cards.json</button>
+    <!-- 2) Upload image dans le repo -->
+    <section class="card">
+      <h2 style="margin-top:0">2) Uploader une image</h2>
+      <div class="grid-2">
+        <div>
+          <label>Fichier image</label>
+          <input id="imgFile" type="file" accept="image/*">
         </div>
-        <div class="row inline">
-          <button id="btnPush" class="btn btn-primary">Pousser sur GitHub</button>
-          <span class="muted">Enverra images + <code>cards.json</code></span>
+        <div>
+          <label>Chemin cible dans le repo (créé si absent)</label>
+          <input id="imgPath" placeholder="ex: images/dermoscopie/141.png">
         </div>
       </div>
-
-      <div class="card">
-        <h2>Log</h2>
-        <div id="log" class="log">Prêt.</div>
+      <div class="row" style="margin-top:8px">
+        <button id="btnUploadImg">Uploader l’image</button>
+        <small class="hint">Conseil : range par dossiers (ex. <code>images/dermoscopie/</code>).</small>
       </div>
-    </div>
+    </section>
 
-    <!-- LISTE ÉDITABLE -->
-    <div class="rightbar">
-      <div class="card sticky">
-        <h2>Lot en cours</h2>
-        <div id="list" class="list"></div>
+    <!-- 3) Ajouter une carte -->
+    <section class="card">
+      <h2 style="margin-top:0">3) Ajouter une carte</h2>
+      <div class="grid-2">
+        <div>
+          <label>Catégorie</label>
+          <input id="cat" placeholder="ex: Dermoscopie">
+        </div>
+        <div>
+          <label>Chemin image (identique au champ ci-dessus si tu viens d’uploader)</label>
+          <input id="imgRel" placeholder="ex: images/dermoscopie/141.png">
+        </div>
       </div>
-    </div>
-  </div>
+      <div class="grid-2" style="margin-top:8px">
+        <div>
+          <label>Question (recto)</label>
+          <textarea id="front" rows="2" placeholder="Que montre cette image ?"></textarea>
+        </div>
+        <div>
+          <label>Réponse (verso)</label>
+          <textarea id="back" rows="2" placeholder="Hyperplasie sébacée"></textarea>
+        </div>
+      </div>
+      <div style="margin-top:8px">
+        <label>Description / légende (optionnelle)</label>
+        <textarea id="caption" rows="2" placeholder="Texte complémentaire…"></textarea>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button id="btnAdd" class="ok">Ajouter à la liste</button>
+        <button id="btnSaveJson">Enregistrer cards.json</button>
+        <button id="btnAddAndSave" class="ok">Ajouter + Enregistrer</button>
+        <small class="hint">Le JSON est <em>data/cards.json</em> dans le repo.</small>
+      </div>
+    </section>
 
-  <!-- datalist de catégories (suggestions) -->
-  <datalist id="cats">
-    <option>Dermoscopie</option>
-<option>Prurit et dysesthésies</option>
-<option>Affections psychocutanées</option>
-<option>Psoriasis</option>
-<option>Autres affections papulosquameuses</option>
-<option>Erythrodermie</option>
-<option>Lichen plan et dermatoses lichénoïdes</option>
-<option>Dermatite atopique</option>
-<option>Autres éruptions eczémateuses</option>
-<option>Dermatites de contact / pro / aux plantes</option>
-<option>Approche clinique des dermatoses régionales</option>
-<option>Urticaire et angio-oedème</option>
-<option>Erythèmes figurés</option>
-<option>Erythème polymorphe, SJS et NET</option>
-<option>Réactions aux médicaments</option>
-<option>Purpura et affections dues à une occlusion microvasculaire</option>
-<option>Vascularites</option>
-<option>Dermatoses éosinophiliques</option>
-<option>Dermatoses neutrophiliques</option>
-<option>Dermatoses de la grossesse</option>
-<option>Pemphigus</option>
-<option>Pemphigoïde et épidermolyse bulleuse acquise</option>
-<option>Dermatite herpétiforme et dermatose bulleuse à IgA linéaires</option>
-<option>Épidermolyses bulleuses</option>
-<option>Autres maladies vésiculobulleuses</option>
-<option>Affections vésiculopustuleuses et érosives chez les nouveau-nés et nourrissons</option>
-<option>Acné vulgaire</option>
-<option>Rosacée et dermatite périorificielle</option>
-<option>Folliculites</option>
-<option>Affections des glandes eccrines et apocrines</option>
-<option>Lupus érythémateux</option>
-<option>Dermatomyosite</option>
-<option>Sclérodermie systémique et affections sclérodermoïdes</option>
-<option>Morphée et lichen scléreux</option>
-<option>Autres maladies rhumatologiques et maladies auto-inflammatoires</option>
-<option>Mucinoses</option>
-<option>Amylose</option>
-<option>Maladies de surcharge</option>
-<option>Porphyries</option>
-<option>Calcinose cutanée et ostéome cutané</option>
-<option>Désordres nutritionnels</option>
-<option>Maladie du greffon contre l'hôte</option>
-<option>Manifestations cutanées des maladies systémiques</option>
-<option>Ichtyoses et érythrokératodermies</option>
-<option>Kératodermies</option>
-<option>Maladie de Darier et maladie de Hailey-Hailey</option>
-<option>Déficits immunitaires primitifs</option>
-<option>Neurofibromatose et sclérose tubéreuse de Bourneville</option>
-<option>Mosaïques cutanées</option>
-<option>Autres génodermatoses</option>
-<option>Anomalies du développement</option>
-<option>Vitiligo et autres affections avec hypopigmentation</option>
-<option>Maladies avec hyperpigmentation</option>
-<option>Alopécies</option>
-<option>Hypertrichose et hirsutisme</option>
-<option>Affections des ongles</option>
-<option>Affections orales</option>
-<option>Maladies anogénitales</option>
-<option>Infections à mycobactéries</option>
-<option>Rickettsioses</option>
-<option>Maladies fongiques</option>
-<option>Manifestations cutanées de l’infection VIH</option>
-<option>Papillomavirus humains</option>
-<option>Herpèsvirus humains</option>
-<option>Autres maladies virales</option>
-<option>Infections sexuellement transmissibles</option>
-<option>Protozoaires et vers</option>
-<option>Infestations</option>
-<option>Morsures et piqûres</option>
-<option>Photodermatoses</option>
-<option>Atteintes cutanées liées à l'environnement et au sport</option>
-<option>Signes cutanés des toxicomanies, maltraitances</option>
-<option>Histiocytoses</option>
-<option>Xanthomes</option>
-<option>Affections granulomateuses non infectieuses</option>
-<option>Affections perforantes</option>
-<option>Anomalies héréditaires du tissu conjonctif</option>
-<option>Hypertrophies dermiques</option>
-<option>Atrophies du tissu conjonctif</option>
-<option>Panniculites</option>
-<option>Lipodystrophies</option>
-<option>Hémangiomes infantiles et malformations vasculaires</option>
-<option>Ulcères</option>
-<option>Autres affections vasculaires</option>
-<option>Kératose actinique, CBC et CE</option>
-<option>Tumeurs et proliférations épithéliales bénignes</option>
-<option>Kystes</option>
-<option>Tumeurs annexielles</option>
-<option>Néoplasmes mélanocytaires bénins</option>
-<option>Mélanome cutané</option>
-<option>Tumeurs vasculaires et proliférations réactionnelles</option>
-<option>Tumeurs fréquentes des tissus mous/ Proliférations</option>
-<option>Mastocytose</option>
-<option>Lymphomes cutanés à cellules B</option>
-<option>Lymphomes cutanés à cellules T</option>
-<option>Autres maladies lymphoprolifératives et myéloprolifératives</option>
-<option>Métastases cutanées</option>
-    <!-- ajoute ce que tu veux ici -->
-  </datalist>
+    <!-- 4) État / liste -->
+    <section class="card">
+      <h2 style="margin-top:0">4) État</h2>
+      <div class="row">
+        <button id="btnRefresh" class="secondary">Rafraîchir depuis GitHub</button>
+        <button id="btnClearLocal" class="err">Vider la liste locale</button>
+        <small class="hint">Cartes chargées (local) :</small>
+      </div>
+      <ul id="list"></ul>
+      <h3>Journal</h3>
+      <pre id="log">Prêt.</pre>
+    </section>
+  </main>
 
   <script>
-    // ============= Utils =============
-    const $ = sel => document.querySelector(sel);
-    const $$ = sel => Array.from(document.querySelectorAll(sel));
-    const logEl = $('#log');
-    function log(msg, type="info"){
-      const p = document.createElement('div');
-      p.textContent = msg;
-      if(type==="error") p.style.color = "#fecaca";
-      if(type==="ok") p.style.color = "#86efac";
-      logEl.appendChild(p);
-      logEl.scrollTop = logEl.scrollHeight;
-    }
+    // ---------- Utils ----------
+    const $ = s => document.querySelector(s);
+    const api = "https://api.github.com";
+    function b64encodeUtf8(str){ return btoa(unescape(encodeURIComponent(str))); }
+    function b64decodeUtf8(b64){ return decodeURIComponent(escape(atob(b64))); }
 
-    const slug = (s) => (s || "")
-      .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
-      .toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
-
-    const isImg = (f) => /image\/(png|jpe?g|webp)/i.test(f.type);
-
-    function arrayBufferToBase64(buffer){
-      let binary = '';
-      const bytes = new Uint8Array(buffer);
-      const chunk = 0x8000;
-      for(let i=0;i<bytes.length;i+=chunk){
-        binary += String.fromCharCode(...bytes.subarray(i,i+chunk));
-      }
-      return btoa(binary);
-    }
-
-    async function fileToBase64(file){
-      const buf = await file.arrayBuffer();
-      return arrayBufferToBase64(buf);
-    }
-
-    // Canvas resize / convert
-    async function processImage(file, opts){
-      const { doResize, maxSide, toWebp, webpQ } = opts;
-      const img = new Image();
-      img.src = URL.createObjectURL(file);
-      await img.decode();
-
-      let type = file.type;
-      let w = img.naturalWidth, h = img.naturalHeight;
-      let needResize = doResize && (Math.max(w,h) > maxSide);
-
-      if(!needResize && !toWebp){
-        // rien à faire
-        const base64 = await fileToBase64(file);
-        return { base64, mime: file.type, ext: file.name.split('.').pop().toLowerCase() };
-      }
-
-      const canvas = document.createElement('canvas');
-      if(needResize){
-        if(w >= h){ const ratio = maxSide / w; w = maxSide; h = Math.round(h * ratio); }
-        else { const ratio = maxSide / h; h = maxSide; w = Math.round(w * ratio); }
-      }
-      canvas.width = w; canvas.height = h;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, w, h);
-
-      let mime = type;
-      let ext = file.name.split('.').pop().toLowerCase();
-
-      if(toWebp){
-        mime = 'image/webp';
-        ext = 'webp';
-      }
-      const blob = await new Promise(res => canvas.toBlob(res, mime, toWebp ? webpQ : 0.92));
-      const buf = await blob.arrayBuffer();
-      const base64 = arrayBufferToBase64(buf);
-      return { base64, mime, ext };
-    }
-
-    // ============= État =============
-    const state = {
-      items: [] // { id, file, previewURL, category, front, back, caption, filename }
-    };
-
-    function addItems(files){
-      const arr = Array.from(files).filter(isImg);
-      if(!arr.length){ log("Aucune image valide détectée.", "error"); return; }
-      for(const f of arr){
-        const id = crypto.randomUUID();
-        const previewURL = URL.createObjectURL(f);
-        const stem = f.name.replace(/\.[^.]+$/, '');
-        state.items.push({
-          id, file: f, previewURL,
-          category: "", front: "Que montre cette image ?",
-          back: stem, caption: "",
-          filename: f.name
-        });
-      }
-      renderList();
-      log(`${arr.length} image(s) ajoutée(s).`, "ok");
-    }
-
-    function clearItems(){
-      state.items.forEach(it => URL.revokeObjectURL(it.previewURL));
-      state.items = [];
-      renderList();
-      log("Liste vidée.");
-    }
-
-    function renderList(){
-      const list = $('#list');
-      list.innerHTML = '';
-      if(!state.items.length){
-        list.innerHTML = '<div class="muted">Aucune image pour l’instant.</div>';
-        return;
-      }
-      for(const it of state.items){
-        const el = document.createElement('div');
-        el.className = 'item';
-        el.innerHTML = `
-          <img class="thumb" src="${it.previewURL}">
-          <div>
-            <div class="grid">
-              <div class="row"><label>Catégorie</label><input list="cats" data-k="category" data-id="${it.id}" type="text" value="${it.category}"></div>
-              <div class="row"><label>Nom fichier</label><input data-k="filename" data-id="${it.id}" type="text" value="${it.filename}"></div>
-              <div class="row"><label>Question</label><input data-k="front" data-id="${it.id}" type="text" value="${escapeHtml(it.front)}"></div>
-              <div class="row"><label>Réponse</label><input data-k="back" data-id="${it.id}" type="text" value="${escapeHtml(it.back)}"></div>
-            </div>
-            <div class="row"><label>Légende</label><textarea data-k="caption" data-id="${it.id}">${escapeHtml(it.caption)}</textarea></div>
-            <div class="row inline">
-              <button class="btn" data-act="slugName" data-id="${it.id}">Slugifier nom</button>
-              <button class="btn" data-act="slugCat" data-id="${it.id}">Slugifier catégorie</button>
-              <button class="btn btn-ghost danger" data-act="remove" data-id="${it.id}">Retirer</button>
-            </div>
-          </div>
-        `;
-        list.appendChild(el);
-      }
-      // bind inputs
-      list.querySelectorAll('input,textarea').forEach(inp=>{
-        inp.addEventListener('input', (e)=>{
-          const id = e.target.dataset.id;
-          const k = e.target.dataset.k;
-          const item = state.items.find(x=>x.id===id);
-          if(item){ item[k] = e.target.value; }
-        });
+    async function ghGetContent({owner, repo, path, token, ref}){
+      const r = await fetch(`${api}/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}?ref=${encodeURIComponent(ref)}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
-      // bind buttons
-      list.querySelectorAll('button[data-act]').forEach(btn=>{
-        btn.addEventListener('click', (e)=>{
-          const id = btn.dataset.id;
-          const item = state.items.find(x=>x.id===id);
-          if(!item) return;
-          const act = btn.dataset.act;
-          if(act === 'remove'){
-            state.items = state.items.filter(x=>x.id!==id);
-            renderList();
-          } else if(act === 'slugName'){
-            const ext = (item.filename.match(/\.[^.]+$/)?.[0]||"").toLowerCase();
-            const stem = item.filename.replace(/\.[^.]+$/,'');
-            item.filename = slug(stem) + ext;
-            renderList();
-          } else if(act === 'slugCat'){
-            item.category = slug(item.category);
-            renderList();
-          }
-        });
-      });
-    }
-
-    function escapeHtml(s=''){
-      return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-    }
-
-    function buildCardsJSON(baseFolder, useSubfolders){
-      const cards = state.items.map(it=>{
-        const cat = it.category?.trim() || "Divers";
-        const catSlug = slug(cat);
-        const path = useSubfolders ? `${baseFolder}/${catSlug}/${it.filename}` : `${baseFolder}/${it.filename}`;
-        return {
-          category: cat || "Divers",
-          front: it.front || "Que montre cette image ?",
-          back: it.back || "",
-          image: path,
-          caption: it.caption || ""
-        };
-      });
-      return cards;
-    }
-
-    // ============= GitHub API =============
-    function ghHeaders(token){
-      return {
-        "Authorization": `Bearer ${token}`,
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-        "Content-Type": "application/json"
-      };
-    }
-
-    async function ghGetContent({owner, repo, path, ref, token}){
-      const url = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}?ref=${encodeURIComponent(ref)}`;
-      const r = await fetch(url, { headers: ghHeaders(token) });
       if(r.status === 404) return null;
-      if(!r.ok) throw new Error(`GET ${path} -> ${r.status}`);
-      return await r.json(); // contient "sha" si existe
+      if(!r.ok) throw new Error(`GET ${path} -> ${r.status} ${await r.text()}`);
+      return await r.json(); // {sha, content(base64), ...}
     }
 
-    async function ghPutContent({owner, repo, path, branch, token, contentB64, message, sha=null}){
-      const url = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`;
-      const body = { message, content: contentB64, branch };
-      if(sha) body.sha = sha;
-      const r = await fetch(url, { method:"PUT", headers: ghHeaders(token), body: JSON.stringify(body) });
-      if(!r.ok){
-        const t = await r.text();
-        throw new Error(`PUT ${path} -> ${r.status} ${t}`);
-      }
+    async function ghPutText({owner, repo, path, message, text, token, branch, sha}){
+      const body = {
+        message,
+        content: b64encodeUtf8(text),
+        branch,
+        ...(sha ? { sha } : {})
+      };
+      const r = await fetch(`${api}/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+      });
+      if(!r.ok) throw new Error(`PUT ${path} -> ${r.status} ${await r.text()}`);
       return await r.json();
     }
 
-    async function ensurePathAndPutFile({owner, repo, branch, token, path, fileObj, opts}){
-      // fileObj: File (brut) OU { base64, mime, ext }
-      let payload;
-      if(fileObj.base64){
-        payload = fileObj.base64;
-      } else {
-        // process potential resize/webp
-        const p = await processImage(fileObj, opts);
-        payload = p.base64;
-      }
-      const existing = await ghGetContent({owner, repo, path, ref:branch, token});
-      const sha = existing?.sha || null;
-      const res = await ghPutContent({
-        owner, repo, path, branch, token,
-        contentB64: payload,
-        message: $('#commitMsg').value || 'Add/Update file',
-        sha
+    async function ghPutBinary({owner, repo, path, message, base64Content, token, branch, sha}){
+      const body = {
+        message,
+        content: base64Content, // BINAIRE déjà base64
+        branch,
+        ...(sha ? { sha } : {})
+      };
+      const r = await fetch(`${api}/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
       });
-      return res;
+      if(!r.ok) throw new Error(`PUT ${path} -> ${r.status} ${await r.text()}`);
+      return await r.json();
     }
 
-    // ============= Actions UI =============
-    $('#showTok').addEventListener('change', (e)=>{
-      $('#ghToken').type = e.target.checked ? 'text' : 'password';
-    });
+    // ---------- État local ----------
+    let cards = [];      // tableau local (ce qu'on édite)
+    let jsonSha = null;  // sha du fichier data/cards.json (pour màj)
 
-    // Dropzone
-    const dz = $('#dz'), filePick = $('#filePick');
-    dz.addEventListener('click', ()=> filePick.click());
-    dz.addEventListener('dragover', e=>{ e.preventDefault(); dz.classList.add('drag'); });
-    dz.addEventListener('dragleave', e=>{ dz.classList.remove('drag'); });
-    dz.addEventListener('drop', e=>{
-      e.preventDefault(); dz.classList.remove('drag');
-      addItems(e.dataTransfer.files);
-    });
-    filePick.addEventListener('change', e=> addItems(e.target.files));
-    $('#btnClear').addEventListener('click', clearItems);
-    $('#btnDemo').addEventListener('click', ()=>{
-      // génère un faux fichier via canvas
-      const c = document.createElement('canvas'); c.width=400; c.height=300;
-      const ctx = c.getContext('2d'); ctx.fillStyle="#0ea5e9"; ctx.fillRect(0,0,400,300);
-      ctx.fillStyle="white"; ctx.font="20px system-ui"; ctx.fillText("DEMO", 160, 150);
-      c.toBlob(b=>{
-        const f = new File([b], "demo.png", { type:"image/png" });
-        addItems([f]);
-      }, "image/png");
-    });
+    function repoCfg(){
+      return {
+        owner:  $('#ghOwner').value.trim(),
+        repo:   $('#ghRepo').value.trim(),
+        branch: $('#ghBranch').value.trim(),
+        token:  $('#ghToken').value.trim()
+      };
+    }
 
-    $('#btnPreviewJson').addEventListener('click', ()=>{
-      const base = $('#imgFolder').value.trim() || 'images';
-      const use = $('#useSubfolders').checked;
-      const cards = buildCardsJSON(base, use);
-      const pretty = JSON.stringify(cards, null, 2);
-      const w = window.open("", "_blank");
-      w.document.write(`<pre>${escapeHtml(pretty)}</pre>`);
-      w.document.close();
-    });
+    function log(msg){
+      const el = $('#log');
+      el.textContent = (el.textContent ? el.textContent + "\n" : "") + msg;
+      el.scrollTop = el.scrollHeight;
+    }
 
-    $('#btnDownloadJson').addEventListener('click', ()=>{
-      const base = $('#imgFolder').value.trim() || 'images';
-      const use = $('#useSubfolders').checked;
-      const cards = buildCardsJSON(base, use);
-      const blob = new Blob([JSON.stringify(cards, null, 2)], {type:"application/json"});
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = ($('#jsonPath').value || 'cards.json').split('/').pop();
-      a.click();
-    });
+    function renderList(){
+      const ul = $('#list');
+      if(!cards.length){ ul.innerHTML = "<li><em>Aucune carte en mémoire.</em></li>"; return; }
+      ul.innerHTML = cards.map((c,i)=>(
+        `<li>#${i+1} — <strong>${c.category||'-'}</strong> | ${c.front||''} | <span style="color:#475569">${c.image||''}</span></li>`
+      )).join("");
+    }
 
-    $('#btnPush').addEventListener('click', async ()=>{
-      const token = $('#ghToken').value.trim();
-      if(!token){ alert("Token GitHub requis"); return; }
-      const owner = $('#ghOwner').value.trim();
-      const repo  = $('#ghRepo').value.trim();
-      const branch= $('#ghBranch').value.trim() || 'main';
-      const base  = $('#imgFolder').value.trim() || 'images';
-      const use   = $('#useSubfolders').checked;
-      const doResize = $('#doResize').checked;
-      const maxSide = parseInt($('#resizeMax').value,10) || 1600;
-      const toWebp  = $('#convertWebp').checked;
-      const webpQ   = parseFloat($('#webpQ').value) || 0.85;
-
-      if(!state.items.length){ alert("Ajoute au moins une image."); return; }
-
-      log("Début de l’upload…");
-      try {
-        // 1) Upload images séquentiellement (plus simple sur quotas)
-        for(let i=0;i<state.items.length;i++){
-          const it = state.items[i];
-          const catSlug = slug(it.category?.trim() || "Divers");
-          const dir = use ? `${base}/${catSlug}` : base;
-          const path = `${dir}/${it.filename}`;
-          log(`→ Upload image (${i+1}/${state.items.length}) ${path}`);
-          const processed = await processImage(it.file, { doResize, maxSide, toWebp, webpQ });
-          await ensurePathAndPutFile({ owner, repo, branch, token, path, fileObj: processed });
+    // ---------- Actions ----------
+    async function loadCardsJson(){
+      const {owner, repo, branch, token} = repoCfg();
+      try{
+        const cur = await ghGetContent({owner, repo, path:"data/cards.json", token, ref: branch});
+        if(cur && cur.content){
+          const text = b64decodeUtf8(cur.content);
+          const json = JSON.parse(text);
+          cards = Array.isArray(json.cards) ? json.cards : [];
+          jsonSha = cur.sha || null;
+          log(`Chargé ${cards.length} carte(s) depuis data/cards.json (sha: ${jsonSha?.slice(0,7) || 'new'})`);
+        }else{
+          cards = [];
+          jsonSha = null;
+          log("data/cards.json introuvable : il sera créé au prochain enregistrement.");
         }
-        log("Images : OK", "ok");
+        renderList();
+      }catch(e){
+        log("Erreur chargement JSON: " + e.message);
+        alert("Erreur chargement JSON (voir journal).");
+      }
+    }
 
-        // 2) Générer et pousser cards.json
-        const cards = buildCardsJSON(base, use);
-        const jsonStr = JSON.stringify(cards, null, 2);
-        const jsonB64 = btoa(unescape(encodeURIComponent(jsonStr))); // base64 utf8
-        const existing = await ghGetContent({ owner, repo, path: $('#jsonPath').value || 'cards.json', ref: branch, token });
-        const sha = existing?.sha || null;
-        await ghPutContent({
-          owner, repo, branch, token,
-          path: $('#jsonPath').value || 'cards.json',
-          contentB64: jsonB64,
-          message: $('#commitMsg').value || 'Update cards.json',
-          sha
+    async function uploadImage(){
+      const {owner, repo, branch, token} = repoCfg();
+      const file = $('#imgFile').files[0];
+      const path = $('#imgPath').value.trim();
+      if(!token) return alert("Token requis");
+      if(!file)  return alert("Sélectionne un fichier");
+      if(!path)  return alert("Renseigne un chemin cible (ex: images/dermoscopie/141.png)");
+
+      try{
+        // lire le fichier en ArrayBuffer -> base64
+        const buf = await file.arrayBuffer();
+        let binary = '';
+        const bytes = new Uint8Array(buf);
+        const chunk = 0x8000;
+        for(let i=0; i<bytes.length; i+=chunk){
+          binary += String.fromCharCode.apply(null, bytes.subarray(i, i+chunk));
+        }
+        const b64 = btoa(binary);
+
+        // récupérer sha si le fichier existe déjà
+        let sha = null;
+        const existing = await ghGetContent({owner, repo, path, token, ref: branch});
+        if(existing?.sha) sha = existing.sha;
+
+        await ghPutBinary({
+          owner, repo, path,
+          message:`feat(image): ${path}`,
+          base64Content: b64,
+          token, branch, sha
         });
-        log("cards.json : OK", "ok");
-        log("Terminé ✅", "ok");
-        alert("Upload terminé (images + cards.json).");
-      } catch (e){
-        console.error(e);
-        log(String(e), "error");
-        alert("Erreur: " + e.message);
+        log(`Image uploadée → ${path}`);
+        // On copie le chemin vers le champ image de la carte pour enchaîner
+        if(!$('#imgRel').value) $('#imgRel').value = path;
+      }catch(e){
+        log("Upload image KO: " + e.message);
+        alert("Upload image échoué (voir journal).");
+      }
+    }
+
+    function addCardLocal(){
+      const card = {
+        category: $('#cat').value.trim(),
+        front:    $('#front').value.trim(),
+        back:     $('#back').value.trim(),
+        caption:  $('#caption').value.trim(),
+        image:    $('#imgRel').value.trim()
+      };
+      if(!card.category || !card.front || !card.back){
+        alert("Catégorie, question et réponse sont requis.");
+        return;
+      }
+      cards.push(card);
+      renderList();
+      log("Carte ajoutée en mémoire.");
+    }
+
+    async function saveJson(){
+      const {owner, repo, branch, token} = repoCfg();
+      if(!token) return alert("Token requis");
+      try{
+        const contentStr = JSON.stringify({ cards }, null, 2);
+        const res = await ghPutText({
+          owner, repo, path:"data/cards.json",
+          message:"chore: update cards.json via admin",
+          text: contentStr,
+          token, branch, sha: jsonSha || undefined
+        });
+        jsonSha = res.content?.sha || null;
+        log(`cards.json enregistré (${cards.length} cartes) — sha: ${jsonSha?.slice(0,7) || 'new'}`);
+        alert("JSON enregistré ✅");
+      }catch(e){
+        log("Enregistrement JSON KO: " + e.message);
+        alert("Échec enregistrement (voir journal).");
+      }
+    }
+
+    // ---------- Wiring UI ----------
+    $('#btnLoad').addEventListener('click', loadCardsJson);
+    $('#btnUploadImg').addEventListener('click', uploadImage);
+    $('#btnAdd').addEventListener('click', addCardLocal);
+    $('#btnSaveJson').addEventListener('click', saveJson);
+    $('#btnAddAndSave').addEventListener('click', async ()=>{
+      addCardLocal(); await saveJson();
+    });
+    $('#btnRefresh').addEventListener('click', loadCardsJson);
+    $('#btnClearLocal').addEventListener('click', ()=>{
+      if(confirm("Vider la liste locale (non poussé) ?")){
+        cards = []; renderList(); log("Liste locale vidée.");
       }
     });
+
+    // Pré-remplir automatiquement imgRel quand on tape dans imgPath
+    $('#imgPath').addEventListener('input', e=>{
+      if(!$('#imgRel').value) $('#imgRel').value = e.target.value.trim();
+    });
+
+    // Auto-focus token au chargement
+    window.addEventListener('DOMContentLoaded', ()=> $('#ghToken').focus());
   </script>
 </body>
 </html>
+
