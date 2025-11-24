@@ -142,46 +142,27 @@
       background: #fee2e2;
       color: #991b1b;
     }
-
-    .category-item[data-category="Erreurs"]:hover {
-      background: #fecaca;
-    }
-
+    .category-item[data-category="Erreurs"]:hover { background: #fecaca; }
     .category-item[data-category="Erreurs"].active {
-      background: #fecaca;
-      color: #7f1d1d;
+      background: #fecaca; color: #7f1d1d;
     }
 
     /* Aléatoire (rose pastel) */
     .category-item[data-category="Aléatoire"] {
-      background: #fce7f3;
-      color: #9d174d;
+      background: #fce7f3; color: #9d174d;
     }
-
-    .category-item[data-category="Aléatoire"]:hover {
-      background: #fbcfe8;
-    }
-
+    .category-item[data-category="Aléatoire"]:hover { background: #fbcfe8; }
     .category-item[data-category="Aléatoire"].active {
-      background: #fbcfe8;
-      color: #831843;
-      font-weight: 600;
+      background: #fbcfe8; color: #831843; font-weight: 600;
     }
 
     /* Dermoscopie (vert clair) */
     .category-item[data-category="Dermoscopie"] {
-      background: #dcfce7;
-      color: #166534;
+      background: #dcfce7; color: #166534;
     }
-
-    .category-item[data-category="Dermoscopie"]:hover {
-      background: #bbf7d0;
-    }
-
+    .category-item[data-category="Dermoscopie"]:hover { background: #bbf7d0; }
     .category-item[data-category="Dermoscopie"].active {
-      background: #bbf7d0;
-      color: #14532d;
-      font-weight: 600;
+      background: #bbf7d0; color: #14532d; font-weight: 600;
     }
 
     /* ======================
@@ -196,7 +177,6 @@
       align-items: center;
     }
 
-    /* Bandeau titre + recherche */
     .top-bar {
       width: 100%;
       max-width: 900px;
@@ -216,326 +196,122 @@
       align-items: baseline;
       gap: 4px;
     }
-
-    .subtitle-name {
-      font-size: 0.9rem;
-      font-weight: 400;
-      opacity: 0.75;
-    }
+    .subtitle-name { font-size: 0.9rem; font-weight: 400; opacity: 0.75; }
 
     .header-search {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: nowrap;
+      display: flex; align-items: center; gap: 8px; flex-wrap: nowrap;
     }
-
     .header-search input {
-      padding: 8px 12px;
-      border-radius: 999px;
-      border: 1px solid #d1d5db;
-      font-size: 1rem;
-      min-width: 240px;
-      max-width: 320px;
-      outline: none;
+      padding: 8px 12px; border-radius: 999px; border: 1px solid #d1d5db;
+      font-size: 1rem; min-width: 240px; max-width: 320px; outline: none;
     }
-
-    .header-search input::placeholder {
-      color: #9ca3af;
-    }
-
+    .header-search input::placeholder { color: #9ca3af; }
     .header-search button {
-      padding: 8px 12px;
-      border-radius: 999px;
-      border: none;
-      background: #111827;
-      color: white;
-      font-size: 0.9rem;
-      cursor: pointer;
-      white-space: nowrap;
+      padding: 8px 12px; border-radius: 999px; border: none; background: #111827;
+      color: white; font-size: 0.9rem; cursor: pointer; white-space: nowrap;
     }
-
-    .header-search button:hover {
-      background: #020617;
-    }
+    .header-search button:hover { background: #020617; }
 
     /* ======================
        MODE RÉVISION
        ====================== */
     #reviewMode {
-      width: 100%;
-      max-width: 900px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      align-items: stretch;
+      width: 100%; max-width: 900px; display: flex; flex-direction: column;
+      gap: 8px; align-items: stretch;
     }
 
-    .review-layout {
-      display: flex;
-      gap: 16px;
-      align-items: stretch;
-    }
+    .review-layout { display: flex; gap: 16px; align-items: stretch; }
+    .review-left { flex: 1; display: flex; flex-direction: column; gap: 8px; }
 
-    .review-left {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    /* Carte agrandie (~15%) */
     .card {
-      position: relative;
-      width: 100%;
-      max-width: 600px;  /* 700px → 805px ≈ +15% */
-      margin: 0 auto;
-      background: white;
-      border-radius: 16px;
+      position: relative; width: 100%; max-width: 600px; margin: 0 auto;
+      background: white; border-radius: 16px;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      padding: 24px;     /* un peu plus de padding */
-      text-align: center;
-      font-size: 1.05rem;
-      cursor: pointer;
-      user-select: none;
-      transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+      padding: 24px; text-align: center; font-size: 1.05rem; cursor: pointer;
+      user-select: none; transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
     }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(0,0,0,0.12); }
 
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
-    }
-
-    /* Texte Q/R dans la carte */
     .card-text {
-      margin-bottom: 12px;      /* espace avant la légende ou l'image */
-      font-size: 1.08rem;
-      text-align: left;
-      max-width: 90%;
+      margin-bottom: 12px; font-size: 1.08rem; text-align: left; max-width: 90%;
     }
 
-    /* Légende (au-dessus de la photo en mode réponse) */
     .caption {
-      margin-top: 4px;
-      margin-bottom: 12px;      /* pas trop collé à l’image */
-      font-size: 0.9rem;
-      color: #6b7280;
-      text-align: left;
-      max-width: 90%;
+      margin-top: 4px; margin-bottom: 12px; font-size: 0.9rem; color: #6b7280;
+      text-align: left; max-width: 90%;
     }
 
-    /* Image agrandie (~15%) */
     #card img {
-      max-height: 55vh;         /* 28vh → 32vh ≈ +15% */
-      width: 95%;               /* 80% → 90% ≈ +15% */
-      max-width: 100%;
-      height: auto;
-      display: block;
-      margin: 0 auto 12px;
-      border-radius: 12px;
-      object-fit: contain;
+      max-height: 55vh; width: 95%; max-width: 100%; height: auto; display: block;
+      margin: 0 auto 12px; border-radius: 12px; object-fit: contain;
     }
 
     .controls-column {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      align-items: stretch;
-      justify-content: flex-start;
+      display: flex; flex-direction: column; gap: 8px; align-items: stretch; justify-content: flex-start;
     }
-
-    .controls-column button {
-      width: 140px;
-    }
+    .controls-column button { width: 140px; }
 
     button {
-      padding: 8px 14px;
-      border-radius: 999px;
-      border: none;
-      cursor: pointer;
-      background: #111827;
-      color: white;
-      font-size: 0.9rem;
+      padding: 8px 14px; border-radius: 999px; border: none; cursor: pointer;
+      background: #111827; color: white; font-size: 0.9rem;
     }
+    button:disabled { opacity: 0.4; cursor: default; }
 
-    button:disabled {
-      opacity: 0.4;
-      cursor: default;
-    }
+    .btn-know { background: #16a34a; }
+    .btn-error { background: #dc2626; }
+    .btn-error.active-error { box-shadow: 0 0 0 2px #fecaca; }
 
-    .btn-know {
-      background: #16a34a;
-    }
-
-    .btn-error {
-      background: #dc2626;
-    }
-
-    .btn-error.active-error {
-      box-shadow: 0 0 0 2px #fecaca;
-    }
-
-    .info {
-      margin-top: 4px;
-      font-size: 0.85rem;
-      color: #6b7280;
-      text-align: center;
-    }
+    .info { margin-top: 4px; font-size: 0.85rem; color: #6b7280; text-align: center; }
 
     /* ======================
        MODE RECHERCHE
        ====================== */
-    .search-mode {
-      width: 100%;
-      max-width: 900px;
-    }
-
+    .search-mode { width: 100%; max-width: 900px; }
     .search-mode-header {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 12px;
-      margin-bottom: 12px;
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between;
+      margin-top: 12px; margin-bottom: 12px;
     }
-
-    .search-mode-header h2 {
-      font-size: 1.1rem;
-      margin: 0;
-    }
-
-    .search-query-label {
-      font-size: 0.9rem;
-      color: #4b5563;
-      margin: 0;
-    }
-
+    .search-mode-header h2 { font-size: 1.1rem; margin: 0; }
+    .search-query-label { font-size: 0.9rem; color: #4b5563; margin: 0; }
     #exitSearchBtn {
-      font-size: 0.8rem;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: none;
-      background: #111827;
-      color: white;
-      cursor: pointer;
-      white-space: nowrap;
+      font-size: 0.8rem; padding: 6px 10px; border-radius: 999px; border: none;
+      background: #111827; color: white; cursor: pointer; white-space: nowrap;
     }
 
     .search-results {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      max-height: 60vh;
-      overflow-y: auto;
-      padding-right: 4px;
+      display: flex; flex-direction: column; gap: 12px; max-height: 60vh; overflow-y: auto; padding-right: 4px;
     }
-
     .search-card {
-      background: white;
-      border-radius: 12px;
-      padding: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      background: white; border-radius: 12px; padding: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
       text-align: left;
     }
-
-    .search-card-header {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.8rem;
-      margin-bottom: 6px;
-      color: #6b7280;
-    }
-
-    .search-card-index {
-      font-weight: 500;
-    }
-
-    .search-card-category {
-      font-weight: 500;
-    }
-
-    .search-card img {
-      width: 40%;
-      max-width: 260px;
-      height: auto;
-      display: block;
-      margin-bottom: 8px;
-      border-radius: 8px;
-    }
-
-    .search-card-front,
-    .search-card-back,
-    .search-card-caption {
-      font-size: 0.9rem;
-      margin-bottom: 4px;
-    }
-
+    .search-card-header { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px; color: #6b7280; }
+    .search-card-index { font-weight: 500; }
+    .search-card-category { font-weight: 500; }
+    .search-card img { width: 40%; max-width: 260px; height: auto; display: block; margin-bottom: 8px; border-radius: 8px; }
+    .search-card-front, .search-card-back, .search-card-caption { font-size: 0.9rem; margin-bottom: 4px; }
     .search-card-jump {
-      margin-top: 6px;
-      font-size: 0.8rem;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: none;
-      background: #111827;
-      color: white;
-      cursor: pointer;
+      margin-top: 6px; font-size: 0.8rem; padding: 6px 10px; border-radius: 999px; border: none;
+      background: #111827; color: white; cursor: pointer;
     }
 
     /* ======================
        RESPONSIVE
        ====================== */
     @media (max-width: 900px) {
-      .review-layout {
-        flex-direction: column;
-      }
-
-      .controls-column {
-        flex-direction: row;
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-
-      .controls-column button {
-        width: auto;
-      }
+      .review-layout { flex-direction: column; }
+      .controls-column { flex-direction: row; justify-content: center; flex-wrap: wrap; }
+      .controls-column button { width: auto; }
     }
-
     @media (max-width: 768px) {
-      .layout {
-        flex-direction: column;
-      }
-
-      .sidebar {
-        width: 100%;
-        height: auto;
-        max-height: 260px;
-      }
-
-      .category-item {
-        font-size: 0.8rem;
-        padding: 4px 6px;
-      }
-
-      .card {
-        width: 100%;
-      }
-
-      #card img {
-        width: 90%;
-      }
-
-      .search-card img {
-        width: 60%;
-      }
-
-      .top-bar {
-        align-items: flex-start;
-      }
+      .layout { flex-direction: column; }
+      .sidebar { width: 100%; height: auto; max-height: 260px; }
+      .category-item { font-size: 0.8rem; padding: 4px 6px; }
+      .card { width: 100%; }
+      #card img { width: 90%; }
+      .search-card img { width: 60%; }
+      .top-bar { align-items: flex-start; }
     }
   </style>
 </head>
@@ -545,12 +321,7 @@
     <div class="lock-card">
       <h1>Flashcards Bolognia</h1>
       <p>Accès réservé – entre le code :</p>
-      <input
-        id="codeInput"
-        type="password"
-        class="lock-input"
-        placeholder="Code d’accès"
-      >
+      <input id="codeInput" type="password" class="lock-input" placeholder="Code d’accès">
       <button id="codeBtn" class="lock-btn">Valider</button>
       <p id="codeError" class="lock-error" style="display:none;">Code incorrect</p>
     </div>
@@ -713,9 +484,7 @@
         <section id="searchMode" class="search-mode" style="display:none;">
           <div class="search-mode-header">
             <h2>Résultats de recherche</h2>
-            <p class="search-query-label">
-              Mot(s) recherché(s) : <span id="searchQueryLabel"></span>
-            </p>
+            <p class="search-query-label">Mot(s) recherché(s) : <span id="searchQueryLabel"></span></p>
             <button id="exitSearchBtn">Retour au mode révision</button>
           </div>
           <div id="searchResults" class="search-results"></div>
@@ -726,9 +495,43 @@
 
   <script>
     // =========================
-    // Données des cartes
+    // Verrou d'accès (code 1234)
     // =========================
-    const allCards = [
+    const ACCESS_KEY = "bologniaAccess_v1";
+    const CORRECT_CODE = "1234";
+
+    const lockScreenEl = document.getElementById("lockScreen");
+    const appEl = document.getElementById("app");
+    const codeInput = document.getElementById("codeInput");
+    const codeBtn = document.getElementById("codeBtn");
+    const codeError = document.getElementById("codeError");
+
+    function grantAccess() {
+      lockScreenEl.style.display = "none";
+      appEl.style.display = "block";
+      try { localStorage.setItem(ACCESS_KEY, "ok"); } catch (e) {}
+    }
+    function showLock() {
+      lockScreenEl.style.display = "flex";
+      appEl.style.display = "none";
+      if (codeInput) setTimeout(() => codeInput.focus(), 50);
+    }
+    function checkCodeAndEnter() {
+      const val = (codeInput.value || "").trim();
+      if (val === CORRECT_CODE) { codeError.style.display = "none"; grantAccess(); }
+      else { codeError.style.display = "block"; }
+    }
+    codeBtn.addEventListener("click", checkCodeAndEnter);
+    codeInput.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); checkCodeAndEnter(); }});
+
+    try {
+      if (localStorage.getItem(ACCESS_KEY) === "ok") grantAccess(); else showLock();
+    } catch (e) { showLock(); }
+
+    // =========================
+    // Données des cartes (LOCALES)
+    // =========================
+    const LOCAL_CARDS = [
       {
         category: "Urticaire et angio-oedème",
         front: "Que montre cette image ?",
@@ -1758,7 +1561,7 @@
         image: "67.png",
         caption: "Lésions bulleuses et érosives chez un patient qui a un myélome multiple."
       },
-       {
+      {
         category: "Pemphigoïde et épidermolyse bulleuse acquise",
         front: "Que montre cette image ?",
         back: "Épidermolyse bulleuse acquise – lésions orales",
@@ -1774,95 +1577,78 @@
       }
     ];
 
-    // =========================
-    // Verrou d'accès (code 1234)
-    // =========================
-    const ACCESS_KEY = "bologniaAccess_v1";
-    const CORRECT_CODE = "1234";
-
-    const lockScreenEl = document.getElementById("lockScreen");
-    const appEl = document.getElementById("app");
-    const codeInput = document.getElementById("codeInput");
-    const codeBtn = document.getElementById("codeBtn");
-    const codeError = document.getElementById("codeError");
-
-    function grantAccess() {
-      lockScreenEl.style.display = "none";
-      appEl.style.display = "block";
-      try {
-        localStorage.setItem(ACCESS_KEY, "ok");
-      } catch (e) {}
-    }
-
-    function showLock() {
-      lockScreenEl.style.display = "flex";
-      appEl.style.display = "none";
-      if (codeInput) {
-        setTimeout(() => codeInput.focus(), 50);
-      }
-    }
-
-    function checkCodeAndEnter() {
-      const val = (codeInput.value || "").trim();
-      if (val === CORRECT_CODE) {
-        codeError.style.display = "none";
-        grantAccess();
-      } else {
-        codeError.style.display = "block";
-      }
-    }
-
-    codeBtn.addEventListener("click", checkCodeAndEnter);
-    codeInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        checkCodeAndEnter();
-      }
-    });
-
-    try {
-      if (localStorage.getItem(ACCESS_KEY) === "ok") {
-        grantAccess();
-      } else {
-        showLock();
-      }
-    } catch (e) {
-      showLock();
-    }
+    // Variable globale utilisée partout dans l’app
+    let allCards = [...LOCAL_CARDS];
 
     // =========================
     // Sauvegarde locale des erreurs
     // =========================
     const STORAGE_KEY = "bologniaErreurs_v1";
     let erreurIds = [];
-
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          erreurIds = parsed;
-        }
+        if (Array.isArray(parsed)) erreurIds = parsed;
       }
-    } catch (e) {
-      erreurIds = [];
-    }
-
+    } catch (e) { erreurIds = []; }
     function saveErreurs() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(erreurIds));
-      } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(erreurIds)); } catch (e) {}
     }
 
     // =========================
-    // État courant
+    // Chargement REMOTE (GitHub) + fusion
+    // =========================
+    const OWNER  = "myriamzrrd-prog";
+    const REPO   = "flashcards-images";
+    const BRANCH = "main";
+
+    // Pendant les tests : RAW (pas de cache CDN)
+    const DATA_URL = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/data/cards.json`;
+    const IMG_BASE = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/`;
+
+    function dedupeCards(cards) {
+      const seen = new Set();
+      const res = [];
+      for (const c of cards) {
+        const key = (c.category||"")+"||"+(c.front||"")+"||"+(c.image||"");
+        if (!seen.has(key)) { seen.add(key); res.push(c); }
+      }
+      return res;
+    }
+
+    async function loadCards() {
+      const cardEl = document.getElementById("card");
+      if (cardEl) cardEl.innerHTML = "<div>Chargement des cartes…</div>";
+
+      try {
+        const res = await fetch(DATA_URL + `?t=${Date.now()}`, { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+
+        const remote = (json.cards || []).map(c => ({
+          ...c,
+          image: c.image ? (c.image.startsWith("http") ? c.image : (IMG_BASE + c.image)) : ""
+        }));
+
+        allCards = dedupeCards([...LOCAL_CARDS, ...remote]);
+      } catch (e) {
+        console.warn("Chargement distant impossible, fallback sur LOCAL_CARDS uniquement.", e);
+        allCards = dedupeCards([...LOCAL_CARDS]);
+      }
+
+      applyCategory("Aléatoire");
+    }
+
+    // =========================
+    // État courant + refs DOM
     // =========================
     let currentCategory = "Aléatoire";
     let filteredCards = [];
     let currentIndex = 0;
     let isFront = true;
 
-    const cardEl = document.getElementById("card");
+    const cardDiv = document.getElementById("card");
     const infoEl = document.getElementById("info");
     const prevBtn = document.getElementById("prevBtn");
     const flipBtn = document.getElementById("flipBtn");
@@ -1891,15 +1677,8 @@
       return erreurIds.map(idx => allCards[idx]).filter(Boolean);
     }
 
-    function enterSearchMode() {
-      reviewModeEl.style.display = "none";
-      searchModeEl.style.display = "block";
-    }
-
-    function exitSearchMode() {
-      searchModeEl.style.display = "none";
-      reviewModeEl.style.display = "block";
-    }
+    function enterSearchMode() { reviewModeEl.style.display = "none"; searchModeEl.style.display = "block"; }
+    function exitSearchMode() { searchModeEl.style.display = "none"; reviewModeEl.style.display = "block"; }
 
     function applyCategory(categoryName) {
       currentCategory = categoryName;
@@ -1919,7 +1698,7 @@
 
     function renderCard() {
       if (!filteredCards || filteredCards.length === 0) {
-        cardEl.innerHTML = "<div>Aucune carte pour cette catégorie pour l’instant.</div>";
+        cardDiv.innerHTML = "<div>Aucune carte pour cette catégorie pour l’instant.</div>";
         infoEl.textContent = "";
         prevBtn.disabled = true;
         flipBtn.disabled = true;
@@ -1930,34 +1709,17 @@
       }
 
       const current = filteredCards[currentIndex];
-
-      const mainText = isFront
-        ? (current.front || "")
-        : (current.back || "");
-
+      const mainText = isFront ? (current.front || "") : (current.back || "");
       let html = "";
 
-      if (mainText) {
-        html += `<div class="card-text">${mainText}</div>`;
-      }
+      if (mainText) html += `<div class="card-text">${mainText}</div>`;
+      if (current.caption && !isFront) html += `<p class="caption">${current.caption}</p>`;
+      if (current.image) html += `<img src="${current.image}" alt="Image de la carte">`;
+      if (!html) html = "<div>Aucun contenu pour cette carte.</div>";
 
-      // Légende au-dessus de la photo, uniquement en mode réponse
-      if (current.caption && !isFront) {
-        html += `<p class="caption">${current.caption}</p>`;
-      }
+      cardDiv.innerHTML = html;
 
-      if (current.image) {
-        html += `<img src="${current.image}" alt="Image de la carte">`;
-      }
-
-      if (!html) {
-        html = "<div>Aucun contenu pour cette carte.</div>";
-      }
-
-      cardEl.innerHTML = html;
-
-      infoEl.textContent =
-        `Catégorie : ${currentCategory} — Carte ${currentIndex + 1} / ${filteredCards.length}`;
+      infoEl.textContent = `Catégorie : ${currentCategory} — Carte ${currentIndex + 1} / ${filteredCards.length}`;
 
       prevBtn.disabled = currentIndex === 0;
       flipBtn.disabled = false;
@@ -1974,10 +1736,7 @@
       const current = filteredCards[currentIndex];
       const idx = allCards.indexOf(current);
       if (idx === -1) return;
-      if (!erreurIds.includes(idx)) {
-        erreurIds.push(idx);
-        saveErreurs();
-      }
+      if (!erreurIds.includes(idx)) { erreurIds.push(idx); saveErreurs(); }
     }
 
     function unmarkErrorForCurrent() {
@@ -1986,26 +1745,18 @@
       const idx = allCards.indexOf(current);
       if (idx === -1) return;
       const pos = erreurIds.indexOf(idx);
-      if (pos !== -1) {
-        erreurIds.splice(pos, 1);
-        saveErreurs();
-      }
+      if (pos !== -1) { erreurIds.splice(pos, 1); saveErreurs(); }
     }
 
     function goNextStandard() {
-      if (currentIndex < filteredCards.length - 1) {
-        currentIndex++;
-      }
+      if (currentIndex < filteredCards.length - 1) currentIndex++;
       isFront = true;
       renderCard();
     }
 
-    // Petit flash coloré sur la carte
     function flashCard(color) {
-      cardEl.style.backgroundColor = color;
-      setTimeout(() => {
-        cardEl.style.backgroundColor = "white";
-      }, 200);
+      cardDiv.style.backgroundColor = color;
+      setTimeout(() => { cardDiv.style.backgroundColor = "white"; }, 200);
     }
 
     // ============== Recherche ==============
@@ -2024,7 +1775,6 @@
             (card.caption || "") + " " +
             (card.category || "")
           ).toLowerCase();
-
           return words.every(w => text.includes(w));
         });
 
@@ -2048,18 +1798,10 @@
               <span class="search-card-index">#${i + 1}</span>
               <span class="search-card-category">${card.category || "Sans catégorie"}</span>
             </div>
-        `;
-        if (card.image) {
-          html += `<img src="${card.image}" alt="Image de la carte">`;
-        }
-        html += `
+            ${card.image ? `<img src="${card.image}" alt="Image de la carte">` : ""}
             <div class="search-card-front"><strong>Question :</strong> ${card.front || ""}</div>
             <div class="search-card-back"><strong>Réponse :</strong> ${card.back || ""}</div>
-        `;
-        if (card.caption) {
-          html += `<div class="search-card-caption"><strong>Légende :</strong> ${card.caption}</div>`;
-        }
-        html += `
+            ${card.caption ? `<div class="search-card-caption"><strong>Légende :</strong> ${card.caption}</div>` : ""}
             <button class="search-card-jump" data-index="${index}">Réviser cette carte</button>
           </article>
         `;
@@ -2074,9 +1816,7 @@
 
       const targetCategory = card.category || "Aléatoire";
 
-      categoryButtons.forEach(b => {
-        b.classList.toggle("active", b.dataset.category === targetCategory);
-      });
+      categoryButtons.forEach(b => { b.classList.toggle("active", b.dataset.category === targetCategory); });
 
       applyCategory(targetCategory);
 
@@ -2093,45 +1833,25 @@
     // =========================
     // Événements
     // =========================
-    // Click sur la carte = flip Q/R
-    cardEl.addEventListener("click", () => {
-      if (!filteredCards.length) return;
-      isFront = !isFront;
-      renderCard();
-    });
-
-    flipBtn.addEventListener("click", () => {
-      if (!filteredCards.length) return;
-      isFront = !isFront;
-      renderCard();
-    });
+    const cardEl = document.getElementById("card"); // pour le click flip
+    cardEl.addEventListener("click", () => { if (!filteredCards.length) return; isFront = !isFront; renderCard(); });
+    flipBtn.addEventListener("click", () => { if (!filteredCards.length) return; isFront = !isFront; renderCard(); });
 
     prevBtn.addEventListener("click", () => {
-      if (currentIndex > 0) {
-        currentIndex--;
-        isFront = true;
-        renderCard();
-      }
+      if (currentIndex > 0) { currentIndex--; isFront = true; renderCard(); }
     });
 
-    // ❌ À revoir : ajoute aux erreurs + passe à la suivante + flash rouge
+    // ❌ À revoir
     errorBtn.addEventListener("click", () => {
       if (!filteredCards.length) return;
-
       flashCard("#fee2e2");
-
-      if (currentCategory !== "Erreurs") {
-        markErrorForCurrent();
-        goNextStandard();
-      } else {
-        goNextStandard();
-      }
+      if (currentCategory !== "Erreurs") { markErrorForCurrent(); goNextStandard(); }
+      else { goNextStandard(); }
     });
 
-    // ✅ Je sais : retire des erreurs + passe à la suivante + flash vert
+    // ✅ Je sais
     knowBtn.addEventListener("click", () => {
       if (!filteredCards.length) return;
-
       flashCard("#dcfce7");
 
       if (currentCategory === "Erreurs") {
@@ -2139,18 +1859,10 @@
         unmarkErrorForCurrent();
         filteredCards = buildErrorsCards();
 
-        if (filteredCards.length === 0) {
-          renderCard();
-          return;
-        }
+        if (filteredCards.length === 0) { renderCard(); return; }
 
-        if (previousIndex >= filteredCards.length) {
-          currentIndex = filteredCards.length - 1;
-        } else {
-          currentIndex = previousIndex;
-        }
-        isFront = true;
-        renderCard();
+        currentIndex = Math.min(previousIndex, filteredCards.length - 1);
+        isFront = true; renderCard();
       } else {
         unmarkErrorForCurrent();
         goNextStandard();
@@ -2167,65 +1879,43 @@
       });
     });
 
-    // Recherche : bouton + Entrée
-    searchBtn.addEventListener("click", () => {
-      performSearch();
-    });
-
-    searchInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        performSearch();
-      }
-    });
-
-    exitSearchBtn.addEventListener("click", () => {
-      exitSearchMode();
-    });
+    // Recherche
+    searchBtn.addEventListener("click", performSearch);
+    searchInput.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); performSearch(); }});
+    exitSearchBtn.addEventListener("click", exitSearchMode);
 
     searchResultsEl.addEventListener("click", (e) => {
       const btn = e.target.closest(".search-card-jump");
       if (!btn) return;
       const idx = parseInt(btn.dataset.index, 10);
-      if (!Number.isNaN(idx)) {
-        jumpToCard(idx);
-      }
+      if (!Number.isNaN(idx)) jumpToCard(idx);
     });
 
     // ============== Raccourcis clavier ==============
     document.addEventListener("keydown", (e) => {
-      // Si l'écran de code est visible, on ignore
-      if (lockScreenEl.style.display !== "none") return;
-
+      if (lockScreenEl.style.display !== "none") return; // si verrou visible
       const target = e.target;
-      // Ne pas intercepter quand on tape dans les champs
       if (target === searchInput || target === codeInput) return;
 
       if (e.key === " ") {
         e.preventDefault();
         if (!filteredCards.length) return;
-        isFront = !isFront;
-        renderCard();
+        isFront = !isFront; renderCard();
       } else if (e.key === "ArrowLeft") {
-        if (currentIndex > 0) {
-          currentIndex--;
-          isFront = true;
-          renderCard();
-        }
+        if (currentIndex > 0) { currentIndex--; isFront = true; renderCard(); }
       } else if (e.key === "1") {
-        e.preventDefault();
-        knowBtn.click();
+        e.preventDefault(); knowBtn.click();
       } else if (e.key === "2") {
-        e.preventDefault();
-        errorBtn.click();
+        e.preventDefault(); errorBtn.click();
       }
     });
 
-    // Initialisation
-    applyCategory("Aléatoire");
+    // Initialisation : CHARGER depuis GitHub puis fusionner avec LOCAL_CARDS
+    loadCards();
   </script>
 </body>
 </html>
+
 
 
 
