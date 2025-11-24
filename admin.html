@@ -1,339 +1,517 @@
+
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <title>Admin Flashcards – Bolognia</title>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Flashcards – Bolognia</title>
   <style>
-    :root { --bg:#0f172a; --card:#fff; --ink:#111827; --muted:#6b7280; --ok:#16a34a; --err:#dc2626; }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;background:#f5f7fb;color:#111827}
-    header{background:var(--bg);color:#e5e7eb;padding:16px}
-    header h1{margin:0;font-size:1.2rem}
-    main{max-width:960px;margin:24px auto;padding:0 16px;display:grid;gap:16px}
-    .card{background:var(--card);border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.08);padding:16px}
-    .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-    label{font-size:.85rem;color:#374151}
-    input,textarea,select{width:100%;padding:8px 10px;border:1px solid #d1d5db;border-radius:10px;outline:none}
-    input:focus,textarea:focus{border-color:#111827}
-    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-    button{padding:9px 14px;border:none;border-radius:999px;background:#111827;color:#fff;cursor:pointer}
-    button.secondary{background:#334155}
-    button.ok{background:var(--ok)}
-    button.err{background:var(--err)}
-    small.muted{color:var(--muted)}
-    #log{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#0b1220;color:#e5e7eb;border-radius:8px;padding:12px;max-height:260px;overflow:auto}
-    ul#list{margin:8px 0 0 0;padding:0;list-style:none;max-height:280px;overflow:auto}
-    ul#list li{padding:6px 8px;border-bottom:1px solid #eee;font-size:.92rem}
-    .hint{font-size:.85rem;color:#475569}
-    .pill{display:inline-block;padding:2px 8px;background:#eef2ff;border-radius:999px;font-size:.75rem;margin-left:6px}
+    :root { --bg:#f6f7fb; --ink:#0f172a; --muted:#6b7280; --brand:#111827; --ok:#16a34a; --err:#dc2626; }
+    * { box-sizing:border-box; }
+    html,body{ margin:0; padding:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background:var(--bg); color:var(--ink); }
+    header{ position:sticky; top:0; background:white; border-bottom:1px solid #e5e7eb; padding:12px 16px; z-index:5; display:flex; gap:16px; align-items:center; justify-content:space-between; }
+    header h1{ margin:0; font-size:1.1rem; font-weight:700; }
+
+    .wrap{ display:grid; grid-template-columns: 380px 1fr; gap:16px; padding:16px; }
+    @media (max-width: 980px){ .wrap{ grid-template-columns: 1fr; } }
+
+    .card{ background:white; border-radius:14px; box-shadow: 0 6px 20px rgba(0,0,0,.06); }
+    .card h2{ margin:0 0 12px; font-size:1rem; }
+    .pane{ padding:16px; }
+    .row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .row > * { flex:1 1 auto; }
+    .muted{ color:var(--muted); font-size:.9rem; }
+    .hint{ color:var(--muted); font-size:.8rem; margin-top:6px; }
+
+    label{ display:block; font-size:.9rem; margin:10px 0 6px; }
+    input[type="text"], select, textarea{ width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:.95rem; outline:none; }
+    textarea{ min-height:96px; resize:vertical; }
+
+    .btn{ appearance:none; border:none; background:var(--brand); color:white; padding:10px 14px; border-radius:999px; cursor:pointer; font-weight:600; font-size:.9rem; }
+    .btn.secondary{ background:#334155; }
+    .btn.ghost{ background:transparent; color:var(--brand); border:1px solid #cbd5e1; }
+    .btn.warn{ background:var(--err); }
+    .btn.ok{ background:var(--ok); }
+    .btn:disabled{ opacity:.45; cursor:default; }
+
+    .toolbar{ display:flex; gap:8px; flex-wrap:wrap; }
+
+    .list-head, .list-item{ display:grid; grid-template-columns: 56px 190px 1fr 110px 210px; gap:10px; align-items:center; }
+    .list-head{ padding:10px 12px; font-size:.8rem; color:#475569; border-bottom:1px solid #e5e7eb; }
+    .list-item{ padding:10px 12px; border-bottom:1px solid #f1f5f9; background:white; }
+    .list-item:hover{ background:#fbfdff; }
+
+    .pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:999px; background:#eef2ff; color:#3730a3; font-size:.75rem; }
+    .thumb{ width:100px; height:70px; border-radius:8px; background:#f3f4f6; object-fit:cover; }
+
+    .tiny{ font-size:.8rem; color:#64748b; }
+    .actions{ display:flex; gap:6px; justify-content:flex-end; }
+    .actions .btn{ padding:6px 10px; font-size:.8rem; }
+
+    .preview-box{ display:flex; gap:12px; align-items:flex-start; }
+    .preview-box img{ width:180px; height:130px; object-fit:contain; background:#f3f4f6; border:1px solid #e5e7eb; border-radius:12px; }
+
+    .footer{ padding:12px 16px; text-align:center; color:#94a3b8; font-size:.85rem; }
+
+    .badge{ background:#ecfeff; color:#155e75; font-weight:700; padding:2px 8px; border-radius:999px; font-size:.75rem; }
   </style>
 </head>
 <body>
   <header>
-    <h1>Admin Flashcards Bolognia <span class="pill">Édition JSON + Upload images</span></h1>
+    <h1>Admin Flashcards – Bolognia <span class="badge">v1</span></h1>
+    <div class="toolbar">
+      <button id="loadGithubBtn" class="btn">Charger depuis GitHub</button>
+      <label class="btn ghost" for="fileInput">Importer JSON<input id="fileInput" type="file" accept="application/json" style="display:none;"></label>
+      <button id="exportBtn" class="btn ok">Exporter cards.json</button>
+      <button id="resetBtn" class="btn warn">Réinitialiser (vide)</button>
+    </div>
   </header>
 
-  <main>
-    <!-- 1) Connexion au repo -->
-    <section class="card">
-      <h2 style="margin-top:0">1) Réglages GitHub</h2>
-      <div class="grid-3">
-        <div>
-          <label>Owner (utilisateur/orga)</label>
-          <input id="ghOwner" value="myriamzrrd-prog">
-        </div>
-        <div>
-          <label>Repo</label>
-          <input id="ghRepo" value="flashcards-images">
-        </div>
-        <div>
-          <label>Branche</label>
-          <input id="ghBranch" value="main">
+  <div class="wrap">
+    <!-- FORMULAIRE -->
+    <section class="card pane">
+      <h2>Éditer une carte</h2>
+      <p class="muted" id="editState">Mode : <strong>création</strong> (aucune carte sélectionnée)</p>
+
+      <label for="category">Catégorie</label>
+      <select id="category"></select>
+      <p class="hint">Les catégories « Aléatoire » et « Erreurs » sont virtuelles et ne doivent pas être utilisées pour créer des cartes.</p>
+
+      <label for="front">Question (front)</label>
+      <textarea id="front" placeholder="Ex: Que montre cette image ?"></textarea>
+
+      <label for="back">Réponse (back)</label>
+      <textarea id="back" placeholder="Ex: Urticaire annulaire géante."></textarea>
+
+      <label for="caption">Légende (caption)</label>
+      <textarea id="caption" placeholder="Contexte, détails, page du Bolognia, etc."></textarea>
+
+      <label for="image">Image (chemin relatif dans le repo)</label>
+      <input id="image" type="text" placeholder="Ex: images/urticaire_01.png ou 105.png" />
+
+      <div class="preview-box" style="margin-top:10px;">
+        <img id="imgPreview" src="" alt="aperçu" />
+        <div class="tiny">
+          <div>Prévisualisation (si image relative, on affiche via le RAW GitHub ci‑dessous) :</div>
+          <div id="previewUrl" style="word-break: break-all;"></div>
         </div>
       </div>
-      <div class="row" style="margin-top:8px">
-        <div style="flex:1">
-          <label>Token GitHub (fine-grained, <em>Contents: Read &amp; Write</em>)</label>
-          <input id="ghToken" type="password" placeholder="ghp_xxx…">
-          <small class="muted">Le token n’est jamais stocké, seulement utilisé côté navigateur.</small>
-        </div>
-        <button id="btnLoad" class="secondary">Charger cards.json</button>
+
+      <div class="row" style="margin-top:14px;">
+        <button id="saveBtn" class="btn ok">Enregistrer (créer / maj)</button>
+        <button id="clearBtn" class="btn ghost">Vider le formulaire</button>
+        <button id="duplicateBtn" class="btn secondary" disabled>Dupliquer</button>
+        <button id="deleteBtn" class="btn warn" disabled>Supprimer</button>
       </div>
     </section>
 
-    <!-- 2) Upload image dans le repo -->
+    <!-- LISTE CARTES -->
     <section class="card">
-      <h2 style="margin-top:0">2) Uploader une image</h2>
-      <div class="grid-2">
-        <div>
-          <label>Fichier image</label>
-          <input id="imgFile" type="file" accept="image/*">
-        </div>
-        <div>
-          <label>Chemin cible dans le repo (créé si absent)</label>
-          <input id="imgPath" placeholder="ex: images/dermoscopie/141.png">
+      <div class="pane">
+        <h2>Cartes <span id="countLabel" class="muted"></span></h2>
+        <div class="row" style="margin-bottom:10px;">
+          <select id="filterCategory"></select>
+          <input id="search" type="text" placeholder="Filtrer (mots dans question / réponse / légende)" />
         </div>
       </div>
-      <div class="row" style="margin-top:8px">
-        <button id="btnUploadImg">Uploader l’image</button>
-        <small class="hint">Conseil : range par dossiers (ex. <code>images/dermoscopie/</code>).</small>
+      <div class="list-head">
+        <div>#</div>
+        <div>Catégorie</div>
+        <div>Question</div>
+        <div>Image</div>
+        <div class="actions">Actions</div>
       </div>
+      <div id="list"></div>
     </section>
+  </div>
 
-    <!-- 3) Ajouter une carte -->
-    <section class="card">
-      <h2 style="margin-top:0">3) Ajouter une carte</h2>
-      <div class="grid-2">
-        <div>
-          <label>Catégorie</label>
-          <input id="cat" placeholder="ex: Dermoscopie">
-        </div>
-        <div>
-          <label>Chemin image (identique au champ ci-dessus si tu viens d’uploader)</label>
-          <input id="imgRel" placeholder="ex: images/dermoscopie/141.png">
-        </div>
-      </div>
-      <div class="grid-2" style="margin-top:8px">
-        <div>
-          <label>Question (recto)</label>
-          <textarea id="front" rows="2" placeholder="Que montre cette image ?"></textarea>
-        </div>
-        <div>
-          <label>Réponse (verso)</label>
-          <textarea id="back" rows="2" placeholder="Hyperplasie sébacée"></textarea>
-        </div>
-      </div>
-      <div style="margin-top:8px">
-        <label>Description / légende (optionnelle)</label>
-        <textarea id="caption" rows="2" placeholder="Texte complémentaire…"></textarea>
-      </div>
-      <div class="row" style="margin-top:10px">
-        <button id="btnAdd" class="ok">Ajouter à la liste</button>
-        <button id="btnSaveJson">Enregistrer cards.json</button>
-        <button id="btnAddAndSave" class="ok">Ajouter + Enregistrer</button>
-        <small class="hint">Le JSON est <em>data/cards.json</em> dans le repo.</small>
-      </div>
-    </section>
-
-    <!-- 4) État / liste -->
-    <section class="card">
-      <h2 style="margin-top:0">4) État</h2>
-      <div class="row">
-        <button id="btnRefresh" class="secondary">Rafraîchir depuis GitHub</button>
-        <button id="btnClearLocal" class="err">Vider la liste locale</button>
-        <small class="hint">Cartes chargées (local) :</small>
-      </div>
-      <ul id="list"></ul>
-      <h3>Journal</h3>
-      <pre id="log">Prêt.</pre>
-    </section>
-  </main>
+  <div class="footer">Export = fichier <code>cards.json</code> au format { cards: [...] }. Les chemins d'images sont exportés tels quels.</div>
 
   <script>
-    // ---------- Utils ----------
-    const $ = s => document.querySelector(s);
-    const api = "https://api.github.com";
-    function b64encodeUtf8(str){ return btoa(unescape(encodeURIComponent(str))); }
-    function b64decodeUtf8(b64){ return decodeURIComponent(escape(atob(b64))); }
+    // =============================
+    // CONFIG GITHUB (pour aperçu)
+    // =============================
+    const OWNER = "myriamzrrd-prog";
+    const REPO  = "flashcards-images";
+    const BRANCH= "main";
+    const DATA_URL = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/data/cards.json`;
+    const IMG_BASE = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/`;
 
-    async function ghGetContent({owner, repo, path, token, ref}){
-      const r = await fetch(`${api}/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}?ref=${encodeURIComponent(ref)}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
+    // =============================
+    // Catégories (liste complète)
+    // =============================
+    const CATEGORIES = [
+      // Virtuelles (non sélectionnables pour création)
+      { name: "Aléatoire", virtual: true },
+      { name: "Erreurs", virtual: true },
+      // Réelles
+      { name: "Dermoscopie" },
+      { name: "Prurit et dysesthésies" },
+      { name: "Affections psychocutanées" },
+      { name: "Psoriasis" },
+      { name: "Autres affections papulosquameuses" },
+      { name: "Erythrodermie" },
+      { name: "Lichen plan et dermatoses lichénoïdes" },
+      { name: "Dermatite atopique" },
+      { name: "Autres éruptions eczémateuses" },
+      { name: "Dermatites de contact / pro / aux plantes" },
+      { name: "Approche clinique des dermatoses régionales" },
+      { name: "Urticaire et angio-oedème" },
+      { name: "Erythèmes figurés" },
+      { name: "Erythème polymorphe, SJS et NET" },
+      { name: "Réactions aux médicaments" },
+      { name: "Purpura et affections dues à une occlusion microvasculaire" },
+      { name: "Vascularites" },
+      { name: "Dermatoses éosinophiliques" },
+      { name: "Dermatoses neutrophiliques" },
+      { name: "Dermatoses de la grossesse" },
+      { name: "Pemphigus" },
+      { name: "Pemphigoïde et épidermolyse bulleuse acquise" },
+      { name: "Dermatite herpétiforme et dermatose bulleuse à IgA linéaires" },
+      { name: "Épidermolyses bulleuses" },
+      { name: "Autres maladies vésiculobulleuses" },
+      { name: "Affections vésiculopustuleuses et érosives chez les nouveau-nés et nourrissons" },
+      { name: "Acné vulgaire" },
+      { name: "Rosacée et dermatite périorificielle" },
+      { name: "Folliculites" },
+      { name: "Affections des glandes eccrines et apocrines" },
+      { name: "Lupus érythémateux" },
+      { name: "Dermatomyosite" },
+      { name: "Sclérodermie systémique et affections sclérodermoïdes" },
+      { name: "Morphée et lichen scléreux" },
+      { name: "Autres maladies rhumatologiques et maladies auto-inflammatoires" },
+      { name: "Mucinoses" },
+      { name: "Amylose" },
+      { name: "Maladies de surcharge" },
+      { name: "Porphyries" },
+      { name: "Calcinose cutanée et ostéome cutané" },
+      { name: "Désordres nutritionnels" },
+      { name: "Maladie du greffon contre l'hôte" },
+      { name: "Manifestations cutanées des maladies systémiques" },
+      { name: "Ichtyoses et érythrokératodermies" },
+      { name: "Kératodermies" },
+      { name: "Maladie de Darier et maladie de Hailey-Hailey" },
+      { name: "Déficits immunitaires primitifs" },
+      { name: "Neurofibromatose et sclérose tubéreuse de Bourneville" },
+      { name: "Mosaïques cutanées" },
+      { name: "Autres génodermatoses" },
+      { name: "Anomalies du développement" },
+      { name: "Vitiligo et autres affections avec hypopigmentation" },
+      { name: "Maladies avec hyperpigmentation" },
+      { name: "Alopécies" },
+      { name: "Hypertrichose et hirsutisme" },
+      { name: "Affections des ongles" },
+      { name: "Affections orales" },
+      { name: "Maladies anogénitales" },
+      { name: "Infections à mycobactéries" },
+      { name: "Rickettsioses" },
+      { name: "Maladies fongiques" },
+      { name: "Manifestations cutanées de l’infection VIH" },
+      { name: "Papillomavirus humains" },
+      { name: "Herpèsvirus humains" },
+      { name: "Autres maladies virales" },
+      { name: "Infections sexuellement transmissibles" },
+      { name: "Protozoaires et vers" },
+      { name: "Infestations" },
+      { name: "Morsures et piqûres" },
+      { name: "Photodermatoses" },
+      { name: "Atteintes cutanées liées à l'environnement et au sport" },
+      { name: "Signes cutanés des toxicomanies, maltraitances" },
+      { name: "Histiocytoses" },
+      { name: "Xanthomes" },
+      { name: "Affections granulomateuses non infectieuses" },
+      { name: "Affections perforantes" },
+      { name: "Anomalies héréditaires du tissu conjonctif" },
+      { name: "Hypertrophies dermiques" },
+      { name: "Atrophies du tissu conjonctif" },
+      { name: "Panniculites" },
+      { name: "Lipodystrophies" },
+      { name: "Hémangiomes infantiles et malformations vasculaires" },
+      { name: "Ulcères" },
+      { name: "Autres affections vasculaires" },
+      { name: "Kératose actinique, CBC et CE" },
+      { name: "Tumeurs et proliférations épithéliales bénignes" },
+      { name: "Kystes" },
+      { name: "Tumeurs annexielles" },
+      { name: "Néoplasmes mélanocytaires bénins" },
+      { name: "Mélanome cutané" },
+      { name: "Tumeurs vasculaires et proliférations réactionnelles" },
+      { name: "Tumeurs fréquentes des tissus mous/ Proliférations" },
+      { name: "Mastocytose" },
+      { name: "Lymphomes cutanés à cellules B" },
+      { name: "Lymphomes cutanés à cellules T" },
+      { name: "Autres maladies lymphoprolifératives et myéloprolifératives" },
+      { name: "Métastases cutanées" }
+    ];
+
+    // =============================
+    // État & refs DOM
+    // =============================
+    let cards = [];
+    let editedIndex = -1; // index dans cards actuellement édité
+
+    const categorySel = document.getElementById('category');
+    const frontEl = document.getElementById('front');
+    const backEl = document.getElementById('back');
+    const captionEl = document.getElementById('caption');
+    const imageEl = document.getElementById('image');
+    const imgPreview = document.getElementById('imgPreview');
+    const previewUrl = document.getElementById('previewUrl');
+
+    const editState = document.getElementById('editState');
+    const duplicateBtn = document.getElementById('duplicateBtn');
+    const deleteBtn = document.getElementById('deleteBtn');
+
+    const listEl = document.getElementById('list');
+    const countLabel = document.getElementById('countLabel');
+    const filterCategory = document.getElementById('filterCategory');
+    const searchInput = document.getElementById('search');
+
+    const loadGithubBtn = document.getElementById('loadGithubBtn');
+    const fileInput = document.getElementById('fileInput');
+    const exportBtn = document.getElementById('exportBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const clearBtn = document.getElementById('clearBtn');
+
+    const LS_KEY = 'adminCardsDraft_v1';
+
+    // =============================
+    // Helpers
+    // =============================
+    function short(s, n=110){ if(!s) return ''; s = String(s); return s.length>n ? s.slice(0,n-1)+'…' : s; }
+    function computePreview(path){
+      if(!path) return '';
+      if(/^https?:\/\//i.test(path)) return path; // déjà absolu
+      return IMG_BASE + path.replace(/^\/?/, '');
+    }
+    function saveDraft(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(cards)); }catch(e){} }
+    function loadDraft(){ try{ const raw = localStorage.getItem(LS_KEY); if(raw){ const val = JSON.parse(raw); if(Array.isArray(val)) cards = val; } }catch(e){} }
+    function dedupe(arr){ const seen = new Set(); const out=[]; for(const c of arr){ const k = (c.category||'')+'||'+(c.front||'')+'||'+(c.image||''); if(!seen.has(k)){ seen.add(k); out.push(c); } } return out; }
+
+    // =============================
+    // UI: remplir selects catégories
+    // =============================
+    function populateCategorySelects(){
+      categorySel.innerHTML = '';
+      filterCategory.innerHTML = '';
+
+      // select de création/édition: on désactive les virtuelles
+      CATEGORIES.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.name; opt.textContent = c.name + (c.virtual ? ' (virtuel)' : '');
+        if(c.virtual) opt.disabled = true;
+        categorySel.appendChild(opt);
       });
-      if(r.status === 404) return null;
-      if(!r.ok) throw new Error(`GET ${path} -> ${r.status} ${await r.text()}`);
-      return await r.json(); // {sha, content(base64), ...}
-    }
-
-    async function ghPutText({owner, repo, path, message, text, token, branch, sha}){
-      const body = {
-        message,
-        content: b64encodeUtf8(text),
-        branch,
-        ...(sha ? { sha } : {})
-      };
-      const r = await fetch(`${api}/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(body)
+      // select de filtre: inclure « Toutes » + toutes y.c virtuelles
+      const any = document.createElement('option'); any.value = '__ALL__'; any.textContent = 'Toutes les catégories';
+      filterCategory.appendChild(any);
+      CATEGORIES.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.name; opt.textContent = c.name + (c.virtual ? ' (virtuel)' : '');
+        filterCategory.appendChild(opt);
       });
-      if(!r.ok) throw new Error(`PUT ${path} -> ${r.status} ${await r.text()}`);
-      return await r.json();
+      filterCategory.value = '__ALL__';
     }
 
-    async function ghPutBinary({owner, repo, path, message, base64Content, token, branch, sha}){
-      const body = {
-        message,
-        content: base64Content, // BINAIRE déjà base64
-        branch,
-        ...(sha ? { sha } : {})
-      };
-      const r = await fetch(`${api}/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(body)
-      });
-      if(!r.ok) throw new Error(`PUT ${path} -> ${r.status} ${await r.text()}`);
-      return await r.json();
-    }
-
-    // ---------- État local ----------
-    let cards = [];      // tableau local (ce qu'on édite)
-    let jsonSha = null;  // sha du fichier data/cards.json (pour màj)
-
-    function repoCfg(){
-      return {
-        owner:  $('#ghOwner').value.trim(),
-        repo:   $('#ghRepo').value.trim(),
-        branch: $('#ghBranch').value.trim(),
-        token:  $('#ghToken').value.trim()
-      };
-    }
-
-    function log(msg){
-      const el = $('#log');
-      el.textContent = (el.textContent ? el.textContent + "\n" : "") + msg;
-      el.scrollTop = el.scrollHeight;
-    }
-
+    // =============================
+    // Rendu liste
+    // =============================
     function renderList(){
-      const ul = $('#list');
-      if(!cards.length){ ul.innerHTML = "<li><em>Aucune carte en mémoire.</em></li>"; return; }
-      ul.innerHTML = cards.map((c,i)=>(
-        `<li>#${i+1} — <strong>${c.category||'-'}</strong> | ${c.front||''} | <span style="color:#475569">${c.image||''}</span></li>`
-      )).join("");
-    }
+      const q = (searchInput.value||'').toLowerCase().trim();
+      const cat = filterCategory.value;
+      const filtered = cards.filter(card => {
+        const okCat = (cat==='__ALL__') || (card.category === cat);
+        const txt = `${card.category||''} ${card.front||''} ${card.back||''} ${card.caption||''}`.toLowerCase();
+        const okQ = !q || q.split(/\s+/).every(w => txt.includes(w));
+        return okCat && okQ;
+      });
 
-    // ---------- Actions ----------
-    async function loadCardsJson(){
-      const {owner, repo, branch, token} = repoCfg();
-      try{
-        const cur = await ghGetContent({owner, repo, path:"data/cards.json", token, ref: branch});
-        if(cur && cur.content){
-          const text = b64decodeUtf8(cur.content);
-          const json = JSON.parse(text);
-          cards = Array.isArray(json.cards) ? json.cards : [];
-          jsonSha = cur.sha || null;
-          log(`Chargé ${cards.length} carte(s) depuis data/cards.json (sha: ${jsonSha?.slice(0,7) || 'new'})`);
-        }else{
-          cards = [];
-          jsonSha = null;
-          log("data/cards.json introuvable : il sera créé au prochain enregistrement.");
-        }
-        renderList();
-      }catch(e){
-        log("Erreur chargement JSON: " + e.message);
-        alert("Erreur chargement JSON (voir journal).");
-      }
-    }
+      countLabel.textContent = `— ${filtered.length} / ${cards.length}`;
 
-    async function uploadImage(){
-      const {owner, repo, branch, token} = repoCfg();
-      const file = $('#imgFile').files[0];
-      const path = $('#imgPath').value.trim();
-      if(!token) return alert("Token requis");
-      if(!file)  return alert("Sélectionne un fichier");
-      if(!path)  return alert("Renseigne un chemin cible (ex: images/dermoscopie/141.png)");
-
-      try{
-        // lire le fichier en ArrayBuffer -> base64
-        const buf = await file.arrayBuffer();
-        let binary = '';
-        const bytes = new Uint8Array(buf);
-        const chunk = 0x8000;
-        for(let i=0; i<bytes.length; i+=chunk){
-          binary += String.fromCharCode.apply(null, bytes.subarray(i, i+chunk));
-        }
-        const b64 = btoa(binary);
-
-        // récupérer sha si le fichier existe déjà
-        let sha = null;
-        const existing = await ghGetContent({owner, repo, path, token, ref: branch});
-        if(existing?.sha) sha = existing.sha;
-
-        await ghPutBinary({
-          owner, repo, path,
-          message:`feat(image): ${path}`,
-          base64Content: b64,
-          token, branch, sha
+      listEl.innerHTML = '';
+      filtered.forEach((card, displayIdx) => {
+        const trueIdx = cards.indexOf(card);
+        const row = document.createElement('div');
+        row.className = 'list-item';
+        row.innerHTML = `
+          <div>${trueIdx+1}</div>
+          <div><span class="pill">${card.category||''}</span></div>
+          <div>${short(card.front||card.back||'(sans question)')}</div>
+          <div>${card.image? `<img class="thumb" src="${computePreview(card.image)}" alt="thumb">` : '<span class="tiny">(aucune)</span>'}</div>
+          <div class="actions">
+            <button class="btn ghost" data-act="up">↑</button>
+            <button class="btn ghost" data-act="down">↓</button>
+            <button class="btn secondary" data-act="edit">Éditer</button>
+            <button class="btn" data-act="dup">Dupliquer</button>
+            <button class="btn warn" data-act="del">Supprimer</button>
+          </div>
+        `;
+        row.addEventListener('click', (e)=>{
+          const b = e.target.closest('button'); if(!b) return;
+          const act = b.dataset.act;
+          if(act==='edit') selectForEdit(trueIdx);
+          else if(act==='del') removeAt(trueIdx);
+          else if(act==='dup') duplicateAt(trueIdx);
+          else if(act==='up') move(trueIdx, -1);
+          else if(act==='down') move(trueIdx, +1);
         });
-        log(`Image uploadée → ${path}`);
-        // On copie le chemin vers le champ image de la carte pour enchaîner
-        if(!$('#imgRel').value) $('#imgRel').value = path;
-      }catch(e){
-        log("Upload image KO: " + e.message);
-        alert("Upload image échoué (voir journal).");
-      }
+        listEl.appendChild(row);
+      });
     }
 
-    function addCardLocal(){
-      const card = {
-        category: $('#cat').value.trim(),
-        front:    $('#front').value.trim(),
-        back:     $('#back').value.trim(),
-        caption:  $('#caption').value.trim(),
-        image:    $('#imgRel').value.trim()
+    // =============================
+    // CRUD helpers
+    // =============================
+    function clearForm(){
+      categorySel.value = CATEGORIES.find(c=>!c.virtual)?.name || '';
+      frontEl.value = '';
+      backEl.value = '';
+      captionEl.value = '';
+      imageEl.value = '';
+      imgPreview.src = '';
+      previewUrl.textContent = '';
+      editedIndex = -1;
+      editState.innerHTML = 'Mode : <strong>création</strong> (aucune carte sélectionnée)';
+      duplicateBtn.disabled = true; deleteBtn.disabled = true;
+    }
+
+    function selectForEdit(idx){
+      const c = cards[idx]; if(!c) return;
+      editedIndex = idx;
+      categorySel.value = c.category || '';
+      frontEl.value = c.front || '';
+      backEl.value = c.back || '';
+      captionEl.value = c.caption || '';
+      imageEl.value = c.image || '';
+      updatePreview();
+      editState.innerHTML = `Mode : <strong>édition</strong> (carte #${idx+1})`;
+      duplicateBtn.disabled = false; deleteBtn.disabled = false;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function removeAt(idx){
+      if(idx<0 || idx>=cards.length) return;
+      if(!confirm('Supprimer cette carte ?')) return;
+      cards.splice(idx,1); saveDraft(); renderList();
+      if(editedIndex===idx) clearForm();
+    }
+
+    function duplicateAt(idx){
+      const c = cards[idx]; if(!c) return;
+      const clone = JSON.parse(JSON.stringify(c));
+      const insertAt = idx+1;
+      cards.splice(insertAt, 0, clone);
+      saveDraft(); renderList();
+      selectForEdit(insertAt);
+    }
+
+    function move(idx, delta){
+      const j = idx + delta; if(j<0 || j>=cards.length) return;
+      const tmp = cards[idx]; cards[idx] = cards[j]; cards[j] = tmp;
+      saveDraft(); renderList();
+    }
+
+    function updatePreview(){
+      const url = computePreview(imageEl.value.trim());
+      previewUrl.textContent = url || '(aucune)';
+      imgPreview.src = url || '';
+    }
+
+    function validateForm(){
+      const errors = [];
+      const category = categorySel.value.trim();
+      const front = frontEl.value.trim();
+      const back = backEl.value.trim();
+      const image = imageEl.value.trim();
+      if(!category) errors.push('Catégorie requise');
+      // Contenu minimal: au moins front/back OU image
+      if(!front && !back && !image) errors.push('Renseigner au moins une Question/Réponse ou une Image');
+      return errors;
+    }
+
+    function saveFromForm(){
+      const errs = validateForm();
+      if(errs.length){ alert('Impossible d\'enregistrer :\n- ' + errs.join('\n- ')); return; }
+      const dto = {
+        category: categorySel.value.trim(),
+        front: frontEl.value.trim(),
+        back: backEl.value.trim(),
+        caption: captionEl.value.trim(),
+        image: imageEl.value.trim()
       };
-      if(!card.category || !card.front || !card.back){
-        alert("Catégorie, question et réponse sont requis.");
-        return;
-      }
-      cards.push(card);
-      renderList();
-      log("Carte ajoutée en mémoire.");
+      if(editedIndex>=0){ cards[editedIndex] = dto; }
+      else { cards.push(dto); }
+      cards = dedupe(cards);
+      saveDraft(); renderList();
+      selectForEdit(cards.indexOf(dto));
     }
 
-    async function saveJson(){
-      const {owner, repo, branch, token} = repoCfg();
-      if(!token) return alert("Token requis");
+    // =============================
+    // Fichier / GitHub
+    // =============================
+    async function loadFromGithub(){
       try{
-        const contentStr = JSON.stringify({ cards }, null, 2);
-        const res = await ghPutText({
-          owner, repo, path:"data/cards.json",
-          message:"chore: update cards.json via admin",
-          text: contentStr,
-          token, branch, sha: jsonSha || undefined
-        });
-        jsonSha = res.content?.sha || null;
-        log(`cards.json enregistré (${cards.length} cartes) — sha: ${jsonSha?.slice(0,7) || 'new'}`);
-        alert("JSON enregistré ✅");
-      }catch(e){
-        log("Enregistrement JSON KO: " + e.message);
-        alert("Échec enregistrement (voir journal).");
-      }
+        const res = await fetch(DATA_URL + `?t=${Date.now()}`, { cache: 'no-store' });
+        if(!res.ok) throw new Error('HTTP '+res.status);
+        const json = await res.json();
+        if(!json || !Array.isArray(json.cards)) throw new Error('Format inattendu');
+        cards = json.cards;
+        saveDraft(); renderList(); clearForm();
+        alert(`Import GitHub: ${cards.length} cartes chargées.`);
+      }catch(e){ alert('Échec du chargement GitHub : '+e.message); }
     }
 
-    // ---------- Wiring UI ----------
-    $('#btnLoad').addEventListener('click', loadCardsJson);
-    $('#btnUploadImg').addEventListener('click', uploadImage);
-    $('#btnAdd').addEventListener('click', addCardLocal);
-    $('#btnSaveJson').addEventListener('click', saveJson);
-    $('#btnAddAndSave').addEventListener('click', async ()=>{
-      addCardLocal(); await saveJson();
-    });
-    $('#btnRefresh').addEventListener('click', loadCardsJson);
-    $('#btnClearLocal').addEventListener('click', ()=>{
-      if(confirm("Vider la liste locale (non poussé) ?")){
-        cards = []; renderList(); log("Liste locale vidée.");
-      }
-    });
+    function importFromFile(file){
+      const reader = new FileReader();
+      reader.onload = () => {
+        try{
+          const json = JSON.parse(reader.result);
+          const arr = Array.isArray(json) ? json : json.cards; // on accepte les deux formats
+          if(!Array.isArray(arr)) throw new Error('Format invalide');
+          cards = arr; saveDraft(); renderList(); clearForm();
+          alert(`Import local: ${cards.length} cartes.`);
+        }catch(e){ alert('Fichier JSON invalide: '+e.message); }
+      };
+      reader.readAsText(file);
+    }
 
-    // Pré-remplir automatiquement imgRel quand on tape dans imgPath
-    $('#imgPath').addEventListener('input', e=>{
-      if(!$('#imgRel').value) $('#imgRel').value = e.target.value.trim();
-    });
+    function exportJson(){
+      const payload = { cards };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'cards.json';
+      document.body.appendChild(a); a.click(); a.remove();
+    }
 
-    // Auto-focus token au chargement
-    window.addEventListener('DOMContentLoaded', ()=> $('#ghToken').focus());
+    function hardReset(){
+      if(!confirm('Tout effacer (brouillon local) ?')) return;
+      cards = []; saveDraft(); renderList(); clearForm();
+    }
+
+    // =============================
+    // Wire-up
+    // =============================
+    populateCategorySelects();
+    loadDraft();
+    renderList();
+    clearForm();
+
+    imageEl.addEventListener('input', updatePreview);
+    saveBtn.addEventListener('click', saveFromForm);
+    clearBtn.addEventListener('click', clearForm);
+    duplicateBtn.addEventListener('click', ()=>{ if(editedIndex>=0) duplicateAt(editedIndex); });
+    deleteBtn.addEventListener('click', ()=>{ if(editedIndex>=0) removeAt(editedIndex); });
+
+    searchInput.addEventListener('input', renderList);
+    filterCategory.addEventListener('change', renderList);
+
+    loadGithubBtn.addEventListener('click', loadFromGithub);
+    fileInput.addEventListener('change', (e)=>{ const f = e.target.files?.[0]; if(f) importFromFile(f); e.target.value=''; });
+    exportBtn.addEventListener('click', exportJson);
+    resetBtn.addEventListener('click', hardReset);
   </script>
 </body>
 </html>
-
