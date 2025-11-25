@@ -1770,6 +1770,30 @@
     function saveErreurs() {
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(erreurIds)); } catch (e) {}
     }
+    // --- Sources Admin/Local ---
+const CUSTOM_CARDS_KEY   = "FLASHCARDS_CARDS_JSON"; // là où l'admin sauvegarde
+const CUSTOM_VERSION_KEY = "FLASHCARDS_VERSION";    // sert à rafraîchir automatiquement
+const IMG_LOCAL_PREFIX   = "./images/";             // dossier des images locales
+    // Charge les cartes créées dans admin.html (stockées en localStorage)
+function loadCustomCards() {
+  try {
+    const raw = localStorage.getItem(CUSTOM_CARDS_KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  } catch {
+    return [];
+  }
+}
+
+    
+    // [Auto-refresh] Recharge index.html quand admin.html sauvegarde
+window.addEventListener("storage", (e) => {
+  if (e.key === CUSTOM_VERSION_KEY) {
+    location.reload();
+  }
+});
+
+
 
     // =========================
     // Chargement REMOTE (GitHub) + fusion
@@ -1789,31 +1813,65 @@
         const key = (c.category||"")+"||"+(c.front||"")+"||"+(c.image||"");
         if (!seen.has(key)) { seen.add(key); res.push(c); }
       }
+      
       return res;
     }
 
+   function normalizeImagePath(img) {
+  if (!img) return "";
+  // Laisser passer URLs valides: http(s), data:, blob:, chemins absolus/relatifs déjà ok
+  if (/^(https?:|data:|blob:)/.test(img) || img.startsWith("/") || img.startsWith("./")) {
+    return img;
+  }
+  // éviter double "images/images"
+  const clean = img.replace(/^images\//i, "");
+  return IMG_LOCAL_PREFIX + clean; // ex: "./images/nom.png"
+}
+
+
+
+
     async function loadCards() {
-      const cardEl = document.getElementById("card");
-      if (cardEl) cardEl.innerHTML = "<div>Chargement des cartes…</div>";
+  const cardEl = document.getElementById("card");
+  if (cardEl) cardEl.innerHTML = "<div>Chargement des cartes…</div>";
 
-      try {
-        const res = await fetch(DATA_URL + `?t=${Date.now()}`, { cache: "no-store" });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json = await res.json();
+  // 1) Base locale (tes cartes codées en dur)
+  let merged = normalizeCards(LOCAL_CARDS);
 
-        const remote = (json.cards || []).map(c => ({
-          ...c,
-          image: c.image ? (c.image.startsWith("http") ? c.image : (IMG_BASE + c.image)) : ""
-        }));
+  // 2) Ajouter cartes créées dans admin.html (si présentes)
+try {
+  const customCards = loadCustomCards(); // <= renvoie [] si rien
+  if (customCards.length) {
+    merged = merged.concat(normalizeCards(customCards));
+  }
+} catch (e) {
+  console.warn("Cartes admin illisibles:", e);
+}
 
-        allCards = dedupeCards([...LOCAL_CARDS, ...remote]);
-      } catch (e) {
-        console.warn("Chargement distant impossible, fallback sur LOCAL_CARDS uniquement.", e);
-        allCards = dedupeCards([...LOCAL_CARDS]);
-      }
+  // 3) Essayer de charger le JSON GitHub (optionnel)
+  try {
+    const res = await fetch(DATA_URL + `?t=${Date.now()}`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
 
-      applyCategory("Aléatoire");
-    }
+    const remote = (json.cards || []).map(c => ({
+      ...c,
+      image: c.image
+        ? (c.image.startsWith("http") ? c.image : (IMG_BASE + c.image))
+        : ""
+    }));
+
+    merged = merged.concat(normalizeCards(remote));
+  } catch (e) {
+    console.warn("Chargement distant impossible, on reste local/admin.", e);
+  }
+
+  // 4) Dédupliquer et afficher
+  allCards = dedupeCards(normalizeCards(merged));
+  applyCategory("Aléatoire");
+}
+
+
 
     // =========================
     // État courant + refs DOM
