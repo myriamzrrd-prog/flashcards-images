@@ -1,517 +1,295 @@
-
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Admin Flashcards – Bolognia</title>
+  <title>Admin — Flashcards Bolognia</title>
   <style>
-    :root { --bg:#f6f7fb; --ink:#0f172a; --muted:#6b7280; --brand:#111827; --ok:#16a34a; --err:#dc2626; }
-    * { box-sizing:border-box; }
-    html,body{ margin:0; padding:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background:var(--bg); color:var(--ink); }
-    header{ position:sticky; top:0; background:white; border-bottom:1px solid #e5e7eb; padding:12px 16px; z-index:5; display:flex; gap:16px; align-items:center; justify-content:space-between; }
-    header h1{ margin:0; font-size:1.1rem; font-weight:700; }
+    :root { --bg:#f6f7fb; --ink:#0f172a; --muted:#6b7280; --line:#e5e7eb; --brand:#111827; --ok:#16a34a; --warn:#dc2626; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background:var(--bg); color:var(--ink); }
+    header { position:sticky; top:0; z-index:10; background:white; border-bottom:1px solid var(--line); }
+    .wrap { max-width:1100px; margin:0 auto; padding:16px; }
+    h1 { font-size:1.4rem; margin:0 0 4px; }
+    .sub { color:var(--muted); font-size:.9rem; }
 
-    .wrap{ display:grid; grid-template-columns: 380px 1fr; gap:16px; padding:16px; }
-    @media (max-width: 980px){ .wrap{ grid-template-columns: 1fr; } }
+    .toolbar { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; align-items:center; }
+    .toolbar input[type="text"]{ padding:8px 10px; border:1px solid var(--line); border-radius:999px; min-width:240px; }
+    .toolbar select{ padding:8px 10px; border:1px solid var(--line); border-radius:12px; }
+    button{ padding:8px 12px; border:none; border-radius:12px; background:var(--brand); color:white; cursor:pointer; }
+    button.secondary{ background:white; color:var(--ink); border:1px solid var(--line); }
+    button.ok{ background:var(--ok); }
+    button.warn{ background:var(--warn); }
+    .small{ font-size:.85rem; color:var(--muted); }
 
-    .card{ background:white; border-radius:14px; box-shadow: 0 6px 20px rgba(0,0,0,.06); }
-    .card h2{ margin:0 0 12px; font-size:1rem; }
-    .pane{ padding:16px; }
-    .row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-    .row > * { flex:1 1 auto; }
-    .muted{ color:var(--muted); font-size:.9rem; }
-    .hint{ color:var(--muted); font-size:.8rem; margin-top:6px; }
+    main { padding:16px; }
+    .panel { background:white; border:1px solid var(--line); border-radius:16px; padding:12px; }
 
-    label{ display:block; font-size:.9rem; margin:10px 0 6px; }
-    input[type="text"], select, textarea{ width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:.95rem; outline:none; }
-    textarea{ min-height:96px; resize:vertical; }
+    table { width:100%; border-collapse: collapse; }
+    thead th { position:sticky; top:0; background:#fafafa; border-bottom:1px solid var(--line); padding:8px; text-align:left; font-size:.9rem; }
+    tbody td { border-bottom:1px solid var(--line); padding:8px; vertical-align: top; }
+    tbody tr:hover { background:#fafafa; }
 
-    .btn{ appearance:none; border:none; background:var(--brand); color:white; padding:10px 14px; border-radius:999px; cursor:pointer; font-weight:600; font-size:.9rem; }
-    .btn.secondary{ background:#334155; }
-    .btn.ghost{ background:transparent; color:var(--brand); border:1px solid #cbd5e1; }
-    .btn.warn{ background:var(--err); }
-    .btn.ok{ background:var(--ok); }
-    .btn:disabled{ opacity:.45; cursor:default; }
+    input[type="text"].cell, textarea.cell { width:100%; font: inherit; border:1px solid var(--line); border-radius:8px; padding:6px 8px; }
+    textarea.cell { resize: vertical; min-height: 52px; }
+    .actions { display:flex; gap:6px; }
 
-    .toolbar{ display:flex; gap:8px; flex-wrap:wrap; }
+    .grid2 { display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:center; }
+    .right { text-align:right; }
+    .mt8{ margin-top:8px; }
+    .mt12{ margin-top:12px; }
+    .mt16{ margin-top:16px; }
 
-    .list-head, .list-item{ display:grid; grid-template-columns: 56px 190px 1fr 110px 210px; gap:10px; align-items:center; }
-    .list-head{ padding:10px 12px; font-size:.8rem; color:#475569; border-bottom:1px solid #e5e7eb; }
-    .list-item{ padding:10px 12px; border-bottom:1px solid #f1f5f9; background:white; }
-    .list-item:hover{ background:#fbfdff; }
+    .toast { position:fixed; right:16px; bottom:16px; background:#111827; color:white; padding:10px 12px; border-radius:12px; opacity:0; transform: translateY(6px); transition: all .2s ease; }
+    .toast.show { opacity:1; transform: translateY(0); }
 
-    .pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:999px; background:#eef2ff; color:#3730a3; font-size:.75rem; }
-    .thumb{ width:100px; height:70px; border-radius:8px; background:#f3f4f6; object-fit:cover; }
-
-    .tiny{ font-size:.8rem; color:#64748b; }
-    .actions{ display:flex; gap:6px; justify-content:flex-end; }
-    .actions .btn{ padding:6px 10px; font-size:.8rem; }
-
-    .preview-box{ display:flex; gap:12px; align-items:flex-start; }
-    .preview-box img{ width:180px; height:130px; object-fit:contain; background:#f3f4f6; border:1px solid #e5e7eb; border-radius:12px; }
-
-    .footer{ padding:12px 16px; text-align:center; color:#94a3b8; font-size:.85rem; }
-
-    .badge{ background:#ecfeff; color:#155e75; font-weight:700; padding:2px 8px; border-radius:999px; font-size:.75rem; }
+    @media (max-width:900px){ thead .hide-sm { display:none; } tbody .hide-sm { display:none; } }
   </style>
 </head>
 <body>
+  <!--
+    Cette page admin écrit dans localStorage :
+      - CUSTOM_CARDS_KEY   = "FLASHCARDS_CARDS_JSON"  → { cards: [ {category,front,back,image,caption} ] }
+      - CUSTOM_VERSION_KEY = "FLASHCARDS_VERSION"     → bump (Date.now()) pour dire à index.html de recharger
+  -->
+
   <header>
-    <h1>Admin Flashcards – Bolognia <span class="badge">v1</span></h1>
-    <div class="toolbar">
-      <button id="loadGithubBtn" class="btn">Charger depuis GitHub</button>
-      <label class="btn ghost" for="fileInput">Importer JSON<input id="fileInput" type="file" accept="application/json" style="display:none;"></label>
-      <button id="exportBtn" class="btn ok">Exporter cards.json</button>
-      <button id="resetBtn" class="btn warn">Réinitialiser (vide)</button>
+    <div class="wrap">
+      <h1>Admin Flashcards</h1>
+      <div class="sub" id="meta">Chargement…</div>
+      <div class="toolbar">
+        <input type="text" id="q" placeholder="Rechercher (dans toutes les colonnes)" />
+        <select id="catFilter"><option value="">Toutes les catégories</option></select>
+        <button id="add">+ Ajouter une carte</button>
+        <button id="save" class="ok">💾 Sauvegarder</button>
+        <button id="export" class="secondary">⬇︎ Export JSON</button>
+        <label class="secondary" style="display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border:1px solid var(--line); border-radius:12px; cursor:pointer;">
+          ⬆︎ Import JSON <input id="import" type="file" accept="application/json" style="display:none;" />
+        </label>
+        <a href="index.html" class="small" target="_blank" style="margin-left:auto; text-decoration:none;">▶︎ Ouvrir l'interface (index.html)</a>
+      </div>
     </div>
   </header>
 
-  <div class="wrap">
-    <!-- FORMULAIRE -->
-    <section class="card pane">
-      <h2>Éditer une carte</h2>
-      <p class="muted" id="editState">Mode : <strong>création</strong> (aucune carte sélectionnée)</p>
-
-      <label for="category">Catégorie</label>
-      <select id="category"></select>
-      <p class="hint">Les catégories « Aléatoire » et « Erreurs » sont virtuelles et ne doivent pas être utilisées pour créer des cartes.</p>
-
-      <label for="front">Question (front)</label>
-      <textarea id="front" placeholder="Ex: Que montre cette image ?"></textarea>
-
-      <label for="back">Réponse (back)</label>
-      <textarea id="back" placeholder="Ex: Urticaire annulaire géante."></textarea>
-
-      <label for="caption">Légende (caption)</label>
-      <textarea id="caption" placeholder="Contexte, détails, page du Bolognia, etc."></textarea>
-
-      <label for="image">Image (chemin relatif dans le repo)</label>
-      <input id="image" type="text" placeholder="Ex: images/urticaire_01.png ou 105.png" />
-
-      <div class="preview-box" style="margin-top:10px;">
-        <img id="imgPreview" src="" alt="aperçu" />
-        <div class="tiny">
-          <div>Prévisualisation (si image relative, on affiche via le RAW GitHub ci‑dessous) :</div>
-          <div id="previewUrl" style="word-break: break-all;"></div>
-        </div>
+  <main class="wrap">
+    <div class="panel">
+      <div class="grid2">
+        <div class="small">Astuce : l'image peut être un nom de fichier (ex: <code>105.png</code>) ou une URL complète (<code>https://…</code>).<br/>Catégorie, Question (front) et Réponse (back) sont les plus importants.</div>
+        <div class="right small">Double-clique une cellule pour tout sélectionner ⌘/Ctrl+C</div>
       </div>
-
-      <div class="row" style="margin-top:14px;">
-        <button id="saveBtn" class="btn ok">Enregistrer (créer / maj)</button>
-        <button id="clearBtn" class="btn ghost">Vider le formulaire</button>
-        <button id="duplicateBtn" class="btn secondary" disabled>Dupliquer</button>
-        <button id="deleteBtn" class="btn warn" disabled>Supprimer</button>
+      <div class="mt12" style="overflow:auto; max-height: 70vh;">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:180px;">Catégorie</th>
+              <th>Question (front)</th>
+              <th>Réponse (back)</th>
+              <th class="hide-sm" style="width:220px;">Image</th>
+              <th class="hide-sm" style="width:240px;">Légende</th>
+              <th style="width:170px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
       </div>
-    </section>
+      <div class="mt8 small" id="count"></div>
+    </div>
+  </main>
 
-    <!-- LISTE CARTES -->
-    <section class="card">
-      <div class="pane">
-        <h2>Cartes <span id="countLabel" class="muted"></span></h2>
-        <div class="row" style="margin-bottom:10px;">
-          <select id="filterCategory"></select>
-          <input id="search" type="text" placeholder="Filtrer (mots dans question / réponse / légende)" />
-        </div>
-      </div>
-      <div class="list-head">
-        <div>#</div>
-        <div>Catégorie</div>
-        <div>Question</div>
-        <div>Image</div>
-        <div class="actions">Actions</div>
-      </div>
-      <div id="list"></div>
-    </section>
-  </div>
-
-  <div class="footer">Export = fichier <code>cards.json</code> au format { cards: [...] }. Les chemins d'images sont exportés tels quels.</div>
+  <div id="toast" class="toast">Sauvegardé ✔︎</div>
 
   <script>
-    // =============================
-    // CONFIG GITHUB (pour aperçu)
-    // =============================
-    const OWNER = "myriamzrrd-prog";
-    const REPO  = "flashcards-images";
-    const BRANCH= "main";
-    const DATA_URL = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/data/cards.json`;
-    const IMG_BASE = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/`;
+    // --- Clés partagées avec index.html ---
+    const CUSTOM_CARDS_KEY   = "FLASHCARDS_CARDS_JSON";
+    const CUSTOM_VERSION_KEY = "FLASHCARDS_VERSION";
 
-    // =============================
-    // Catégories (liste complète)
-    // =============================
-    const CATEGORIES = [
-      // Virtuelles (non sélectionnables pour création)
-      { name: "Aléatoire", virtual: true },
-      { name: "Erreurs", virtual: true },
-      // Réelles
-      { name: "Dermoscopie" },
-      { name: "Prurit et dysesthésies" },
-      { name: "Affections psychocutanées" },
-      { name: "Psoriasis" },
-      { name: "Autres affections papulosquameuses" },
-      { name: "Erythrodermie" },
-      { name: "Lichen plan et dermatoses lichénoïdes" },
-      { name: "Dermatite atopique" },
-      { name: "Autres éruptions eczémateuses" },
-      { name: "Dermatites de contact / pro / aux plantes" },
-      { name: "Approche clinique des dermatoses régionales" },
-      { name: "Urticaire et angio-oedème" },
-      { name: "Erythèmes figurés" },
-      { name: "Erythème polymorphe, SJS et NET" },
-      { name: "Réactions aux médicaments" },
-      { name: "Purpura et affections dues à une occlusion microvasculaire" },
-      { name: "Vascularites" },
-      { name: "Dermatoses éosinophiliques" },
-      { name: "Dermatoses neutrophiliques" },
-      { name: "Dermatoses de la grossesse" },
-      { name: "Pemphigus" },
-      { name: "Pemphigoïde et épidermolyse bulleuse acquise" },
-      { name: "Dermatite herpétiforme et dermatose bulleuse à IgA linéaires" },
-      { name: "Épidermolyses bulleuses" },
-      { name: "Autres maladies vésiculobulleuses" },
-      { name: "Affections vésiculopustuleuses et érosives chez les nouveau-nés et nourrissons" },
-      { name: "Acné vulgaire" },
-      { name: "Rosacée et dermatite périorificielle" },
-      { name: "Folliculites" },
-      { name: "Affections des glandes eccrines et apocrines" },
-      { name: "Lupus érythémateux" },
-      { name: "Dermatomyosite" },
-      { name: "Sclérodermie systémique et affections sclérodermoïdes" },
-      { name: "Morphée et lichen scléreux" },
-      { name: "Autres maladies rhumatologiques et maladies auto-inflammatoires" },
-      { name: "Mucinoses" },
-      { name: "Amylose" },
-      { name: "Maladies de surcharge" },
-      { name: "Porphyries" },
-      { name: "Calcinose cutanée et ostéome cutané" },
-      { name: "Désordres nutritionnels" },
-      { name: "Maladie du greffon contre l'hôte" },
-      { name: "Manifestations cutanées des maladies systémiques" },
-      { name: "Ichtyoses et érythrokératodermies" },
-      { name: "Kératodermies" },
-      { name: "Maladie de Darier et maladie de Hailey-Hailey" },
-      { name: "Déficits immunitaires primitifs" },
-      { name: "Neurofibromatose et sclérose tubéreuse de Bourneville" },
-      { name: "Mosaïques cutanées" },
-      { name: "Autres génodermatoses" },
-      { name: "Anomalies du développement" },
-      { name: "Vitiligo et autres affections avec hypopigmentation" },
-      { name: "Maladies avec hyperpigmentation" },
-      { name: "Alopécies" },
-      { name: "Hypertrichose et hirsutisme" },
-      { name: "Affections des ongles" },
-      { name: "Affections orales" },
-      { name: "Maladies anogénitales" },
-      { name: "Infections à mycobactéries" },
-      { name: "Rickettsioses" },
-      { name: "Maladies fongiques" },
-      { name: "Manifestations cutanées de l’infection VIH" },
-      { name: "Papillomavirus humains" },
-      { name: "Herpèsvirus humains" },
-      { name: "Autres maladies virales" },
-      { name: "Infections sexuellement transmissibles" },
-      { name: "Protozoaires et vers" },
-      { name: "Infestations" },
-      { name: "Morsures et piqûres" },
-      { name: "Photodermatoses" },
-      { name: "Atteintes cutanées liées à l'environnement et au sport" },
-      { name: "Signes cutanés des toxicomanies, maltraitances" },
-      { name: "Histiocytoses" },
-      { name: "Xanthomes" },
-      { name: "Affections granulomateuses non infectieuses" },
-      { name: "Affections perforantes" },
-      { name: "Anomalies héréditaires du tissu conjonctif" },
-      { name: "Hypertrophies dermiques" },
-      { name: "Atrophies du tissu conjonctif" },
-      { name: "Panniculites" },
-      { name: "Lipodystrophies" },
-      { name: "Hémangiomes infantiles et malformations vasculaires" },
-      { name: "Ulcères" },
-      { name: "Autres affections vasculaires" },
-      { name: "Kératose actinique, CBC et CE" },
-      { name: "Tumeurs et proliférations épithéliales bénignes" },
-      { name: "Kystes" },
-      { name: "Tumeurs annexielles" },
-      { name: "Néoplasmes mélanocytaires bénins" },
-      { name: "Mélanome cutané" },
-      { name: "Tumeurs vasculaires et proliférations réactionnelles" },
-      { name: "Tumeurs fréquentes des tissus mous/ Proliférations" },
-      { name: "Mastocytose" },
-      { name: "Lymphomes cutanés à cellules B" },
-      { name: "Lymphomes cutanés à cellules T" },
-      { name: "Autres maladies lymphoprolifératives et myéloprolifératives" },
-      { name: "Métastases cutanées" }
-    ];
+    // --- État ---
+    let cards = [];     // jeu en édition
+    let filteredIdx = [];// indices visibles (après filtre + recherche)
 
-    // =============================
-    // État & refs DOM
-    // =============================
-    let cards = [];
-    let editedIndex = -1; // index dans cards actuellement édité
+    // --- Helpers UI ---
+    const $ = (s, r=document) => r.querySelector(s);
+    const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+    const toast = (msg) => { const t=$('#toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 1200); };
 
-    const categorySel = document.getElementById('category');
-    const frontEl = document.getElementById('front');
-    const backEl = document.getElementById('back');
-    const captionEl = document.getElementById('caption');
-    const imageEl = document.getElementById('image');
-    const imgPreview = document.getElementById('imgPreview');
-    const previewUrl = document.getElementById('previewUrl');
-
-    const editState = document.getElementById('editState');
-    const duplicateBtn = document.getElementById('duplicateBtn');
-    const deleteBtn = document.getElementById('deleteBtn');
-
-    const listEl = document.getElementById('list');
-    const countLabel = document.getElementById('countLabel');
-    const filterCategory = document.getElementById('filterCategory');
-    const searchInput = document.getElementById('search');
-
-    const loadGithubBtn = document.getElementById('loadGithubBtn');
-    const fileInput = document.getElementById('fileInput');
-    const exportBtn = document.getElementById('exportBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const saveBtn = document.getElementById('saveBtn');
-    const clearBtn = document.getElementById('clearBtn');
-
-    const LS_KEY = 'adminCardsDraft_v1';
-
-    // =============================
-    // Helpers
-    // =============================
-    function short(s, n=110){ if(!s) return ''; s = String(s); return s.length>n ? s.slice(0,n-1)+'…' : s; }
-    function computePreview(path){
-      if(!path) return '';
-      if(/^https?:\/\//i.test(path)) return path; // déjà absolu
-      return IMG_BASE + path.replace(/^\/?/, '');
-    }
-    function saveDraft(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(cards)); }catch(e){} }
-    function loadDraft(){ try{ const raw = localStorage.getItem(LS_KEY); if(raw){ const val = JSON.parse(raw); if(Array.isArray(val)) cards = val; } }catch(e){} }
-    function dedupe(arr){ const seen = new Set(); const out=[]; for(const c of arr){ const k = (c.category||'')+'||'+(c.front||'')+'||'+(c.image||''); if(!seen.has(k)){ seen.add(k); out.push(c); } } return out; }
-
-    // =============================
-    // UI: remplir selects catégories
-    // =============================
-    function populateCategorySelects(){
-      categorySel.innerHTML = '';
-      filterCategory.innerHTML = '';
-
-      // select de création/édition: on désactive les virtuelles
-      CATEGORIES.forEach(c => {
-        const opt = document.createElement('option');
-        opt.value = c.name; opt.textContent = c.name + (c.virtual ? ' (virtuel)' : '');
-        if(c.virtual) opt.disabled = true;
-        categorySel.appendChild(opt);
-      });
-      // select de filtre: inclure « Toutes » + toutes y.c virtuelles
-      const any = document.createElement('option'); any.value = '__ALL__'; any.textContent = 'Toutes les catégories';
-      filterCategory.appendChild(any);
-      CATEGORIES.forEach(c => {
-        const opt = document.createElement('option');
-        opt.value = c.name; opt.textContent = c.name + (c.virtual ? ' (virtuel)' : '');
-        filterCategory.appendChild(opt);
-      });
-      filterCategory.value = '__ALL__';
-    }
-
-    // =============================
-    // Rendu liste
-    // =============================
-    function renderList(){
-      const q = (searchInput.value||'').toLowerCase().trim();
-      const cat = filterCategory.value;
-      const filtered = cards.filter(card => {
-        const okCat = (cat==='__ALL__') || (card.category === cat);
-        const txt = `${card.category||''} ${card.front||''} ${card.back||''} ${card.caption||''}`.toLowerCase();
-        const okQ = !q || q.split(/\s+/).every(w => txt.includes(w));
-        return okCat && okQ;
-      });
-
-      countLabel.textContent = `— ${filtered.length} / ${cards.length}`;
-
-      listEl.innerHTML = '';
-      filtered.forEach((card, displayIdx) => {
-        const trueIdx = cards.indexOf(card);
-        const row = document.createElement('div');
-        row.className = 'list-item';
-        row.innerHTML = `
-          <div>${trueIdx+1}</div>
-          <div><span class="pill">${card.category||''}</span></div>
-          <div>${short(card.front||card.back||'(sans question)')}</div>
-          <div>${card.image? `<img class="thumb" src="${computePreview(card.image)}" alt="thumb">` : '<span class="tiny">(aucune)</span>'}</div>
-          <div class="actions">
-            <button class="btn ghost" data-act="up">↑</button>
-            <button class="btn ghost" data-act="down">↓</button>
-            <button class="btn secondary" data-act="edit">Éditer</button>
-            <button class="btn" data-act="dup">Dupliquer</button>
-            <button class="btn warn" data-act="del">Supprimer</button>
-          </div>
-        `;
-        row.addEventListener('click', (e)=>{
-          const b = e.target.closest('button'); if(!b) return;
-          const act = b.dataset.act;
-          if(act==='edit') selectForEdit(trueIdx);
-          else if(act==='del') removeAt(trueIdx);
-          else if(act==='dup') duplicateAt(trueIdx);
-          else if(act==='up') move(trueIdx, -1);
-          else if(act==='down') move(trueIdx, +1);
-        });
-        listEl.appendChild(row);
-      });
-    }
-
-    // =============================
-    // CRUD helpers
-    // =============================
-    function clearForm(){
-      categorySel.value = CATEGORIES.find(c=>!c.virtual)?.name || '';
-      frontEl.value = '';
-      backEl.value = '';
-      captionEl.value = '';
-      imageEl.value = '';
-      imgPreview.src = '';
-      previewUrl.textContent = '';
-      editedIndex = -1;
-      editState.innerHTML = 'Mode : <strong>création</strong> (aucune carte sélectionnée)';
-      duplicateBtn.disabled = true; deleteBtn.disabled = true;
-    }
-
-    function selectForEdit(idx){
-      const c = cards[idx]; if(!c) return;
-      editedIndex = idx;
-      categorySel.value = c.category || '';
-      frontEl.value = c.front || '';
-      backEl.value = c.back || '';
-      captionEl.value = c.caption || '';
-      imageEl.value = c.image || '';
-      updatePreview();
-      editState.innerHTML = `Mode : <strong>édition</strong> (carte #${idx+1})`;
-      duplicateBtn.disabled = false; deleteBtn.disabled = false;
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function removeAt(idx){
-      if(idx<0 || idx>=cards.length) return;
-      if(!confirm('Supprimer cette carte ?')) return;
-      cards.splice(idx,1); saveDraft(); renderList();
-      if(editedIndex===idx) clearForm();
-    }
-
-    function duplicateAt(idx){
-      const c = cards[idx]; if(!c) return;
-      const clone = JSON.parse(JSON.stringify(c));
-      const insertAt = idx+1;
-      cards.splice(insertAt, 0, clone);
-      saveDraft(); renderList();
-      selectForEdit(insertAt);
-    }
-
-    function move(idx, delta){
-      const j = idx + delta; if(j<0 || j>=cards.length) return;
-      const tmp = cards[idx]; cards[idx] = cards[j]; cards[j] = tmp;
-      saveDraft(); renderList();
-    }
-
-    function updatePreview(){
-      const url = computePreview(imageEl.value.trim());
-      previewUrl.textContent = url || '(aucune)';
-      imgPreview.src = url || '';
-    }
-
-    function validateForm(){
-      const errors = [];
-      const category = categorySel.value.trim();
-      const front = frontEl.value.trim();
-      const back = backEl.value.trim();
-      const image = imageEl.value.trim();
-      if(!category) errors.push('Catégorie requise');
-      // Contenu minimal: au moins front/back OU image
-      if(!front && !back && !image) errors.push('Renseigner au moins une Question/Réponse ou une Image');
-      return errors;
-    }
-
-    function saveFromForm(){
-      const errs = validateForm();
-      if(errs.length){ alert('Impossible d\'enregistrer :\n- ' + errs.join('\n- ')); return; }
-      const dto = {
-        category: categorySel.value.trim(),
-        front: frontEl.value.trim(),
-        back: backEl.value.trim(),
-        caption: captionEl.value.trim(),
-        image: imageEl.value.trim()
-      };
-      if(editedIndex>=0){ cards[editedIndex] = dto; }
-      else { cards.push(dto); }
-      cards = dedupe(cards);
-      saveDraft(); renderList();
-      selectForEdit(cards.indexOf(dto));
-    }
-
-    // =============================
-    // Fichier / GitHub
-    // =============================
-    async function loadFromGithub(){
+    function readLocalCards(){
       try{
-        const res = await fetch(DATA_URL + `?t=${Date.now()}`, { cache: 'no-store' });
-        if(!res.ok) throw new Error('HTTP '+res.status);
-        const json = await res.json();
-        if(!json || !Array.isArray(json.cards)) throw new Error('Format inattendu');
-        cards = json.cards;
-        saveDraft(); renderList(); clearForm();
-        alert(`Import GitHub: ${cards.length} cartes chargées.`);
-      }catch(e){ alert('Échec du chargement GitHub : '+e.message); }
+        const raw = localStorage.getItem(CUSTOM_CARDS_KEY);
+        if(!raw) return [];
+        const parsed = JSON.parse(raw);
+        if(Array.isArray(parsed)) return parsed; // tolère ancien format
+        if(parsed && Array.isArray(parsed.cards)) return parsed.cards;
+      }catch(e){ console.warn('JSON invalide dans localStorage', e); }
+      return [];
     }
 
-    function importFromFile(file){
-      const reader = new FileReader();
-      reader.onload = () => {
-        try{
-          const json = JSON.parse(reader.result);
-          const arr = Array.isArray(json) ? json : json.cards; // on accepte les deux formats
-          if(!Array.isArray(arr)) throw new Error('Format invalide');
-          cards = arr; saveDraft(); renderList(); clearForm();
-          alert(`Import local: ${cards.length} cartes.`);
-        }catch(e){ alert('Fichier JSON invalide: '+e.message); }
-      };
-      reader.readAsText(file);
+    function writeLocalCards(list){
+      try{
+        localStorage.setItem(CUSTOM_CARDS_KEY, JSON.stringify({ cards: list }));
+        localStorage.setItem(CUSTOM_VERSION_KEY, String(Date.now()));
+      }catch(e){ alert('Erreur en sauvegarde (quota ?): '+ e.message); }
     }
 
-    function exportJson(){
-      const payload = { cards };
-      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    function uniqueCategories(list){
+      return Array.from(new Set(list.map(c=> (c.category||'').trim()).filter(Boolean))).sort((a,b)=> a.localeCompare(b));
+    }
+
+    function updateMeta(){
+      const total = cards.length;
+      const cats = uniqueCategories(cards).length;
+      $('#meta').textContent = `${total} carte(s) • ${cats} catégorie(s)`;
+      $('#count').textContent = `${filteredIdx.length} affichée(s)`;
+    }
+
+    function buildFilters(){
+      const sel = $('#catFilter');
+      const current = sel.value;
+      const opts = [''].concat(uniqueCategories(cards));
+      sel.innerHTML = opts.map(v=>`<option value="${v.replaceAll('"','&quot;')}">${v || 'Toutes les catégories'}</option>`).join('');
+      // restaure valeur si possible
+      if(opts.includes(current)) sel.value = current;
+    }
+
+    function passesSearch(card, q){
+      if(!q) return true;
+      const hay = `${card.category||''} ${card.front||''} ${card.back||''} ${card.caption||''} ${card.image||''}`.toLowerCase();
+      return q.split(/\s+/).filter(Boolean).every(w=> hay.includes(w));
+    }
+
+    function recomputeFiltered(){
+      const q = $('#q').value.trim().toLowerCase();
+      const cat = $('#catFilter').value;
+      filteredIdx = [];
+      cards.forEach((c, i)=>{
+        const okCat = !cat || (c.category||'') === cat;
+        const okQ = passesSearch(c, q);
+        if(okCat && okQ) filteredIdx.push(i);
+      });
+    }
+
+    function render(){
+      recomputeFiltered();
+      buildFilters();
+      updateMeta();
+      const tbody = $('#rows');
+      if(!filteredIdx.length){ tbody.innerHTML = '<tr><td colspan="6" class="small" style="text-align:center; padding:16px; color:var(--muted);">Aucune carte à afficher.</td></tr>'; return; }
+      const rows = filteredIdx.map(i=>{
+        const c = cards[i];
+        const esc = (s)=> (s??'').toString().replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+        return `
+          <tr data-i="${i}">
+            <td><input type="text" class="cell f-cat" value="${esc(c.category)}" placeholder="Catégorie" /></td>
+            <td><textarea class="cell f-front" placeholder="Question">${esc(c.front)}</textarea></td>
+            <td><textarea class="cell f-back" placeholder="Réponse">${esc(c.back)}</textarea></td>
+            <td class="hide-sm"><input type="text" class="cell f-image" value="${esc(c.image)}" placeholder="105.png ou https://…" /></td>
+            <td class="hide-sm"><textarea class="cell f-caption" placeholder="Légende">${esc(c.caption)}</textarea></td>
+            <td>
+              <div class="actions">
+                <button class="secondary btn-dup">Dupliquer</button>
+                <button class="warn btn-del">Supprimer</button>
+              </div>
+            </td>
+          </tr>`;
+      }).join('');
+      tbody.innerHTML = rows;
+    }
+
+    // --- Écouteurs ---
+    $('#q').addEventListener('input', render);
+    $('#catFilter').addEventListener('change', render);
+
+    $('#add').addEventListener('click', ()=>{
+      cards.push({ category:'', front:'', back:'', image:'', caption:'' });
+      render();
+    });
+
+    $('#save').addEventListener('click', ()=>{
+      writeLocalCards(cards);
+      toast('Sauvegardé et signal envoyé à index.html');
+    });
+
+    $('#export').addEventListener('click', ()=>{
+      const blob = new Blob([ JSON.stringify({ cards }, null, 2) ], { type:'application/json' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = 'cards.json';
-      document.body.appendChild(a); a.click(); a.remove();
-    }
+      a.download = 'flashcards-cards.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
 
-    function hardReset(){
-      if(!confirm('Tout effacer (brouillon local) ?')) return;
-      cards = []; saveDraft(); renderList(); clearForm();
-    }
+    $('#import').addEventListener('change', (e)=>{
+      const file = e.target.files && e.target.files[0];
+      if(!file) return;
+      const fr = new FileReader();
+      fr.onload = () => {
+        try{
+          const data = JSON.parse(fr.result);
+          let list = Array.isArray(data) ? data : (data && Array.isArray(data.cards) ? data.cards : null);
+          if(!list) throw new Error('Format attendu: {"cards": [...] } ou [ ... ]');
+          // normalise objets
+          cards = list.map(c => ({
+            category: c.category || '',
+            front: c.front || '',
+            back: c.back || '',
+            image: c.image || '',
+            caption: c.caption || ''
+          }));
+          render();
+          toast('Import OK (pense à sauvegarder)');
+        }catch(err){
+          alert('Import impossible : '+ err.message);
+        }
+        e.target.value = '';
+      };
+      fr.readAsText(file);
+    });
 
-    // =============================
-    // Wire-up
-    // =============================
-    populateCategorySelects();
-    loadDraft();
-    renderList();
-    clearForm();
+    // délégation pour les lignes
+    $('#rows').addEventListener('input', (e)=>{
+      const tr = e.target.closest('tr[data-i]');
+      if(!tr) return;
+      const i = Number(tr.dataset.i);
+      const c = cards[i];
+      if(!c) return;
+      if(e.target.classList.contains('f-cat')) c.category = e.target.value;
+      if(e.target.classList.contains('f-front')) c.front = e.target.value;
+      if(e.target.classList.contains('f-back')) c.back = e.target.value;
+      if(e.target.classList.contains('f-image')) c.image = e.target.value;
+      if(e.target.classList.contains('f-caption')) c.caption = e.target.value;
+      // si la catégorie change, actualiser les filtres
+      if(e.target.classList.contains('f-cat')) buildFilters();
+    });
 
-    imageEl.addEventListener('input', updatePreview);
-    saveBtn.addEventListener('click', saveFromForm);
-    clearBtn.addEventListener('click', clearForm);
-    duplicateBtn.addEventListener('click', ()=>{ if(editedIndex>=0) duplicateAt(editedIndex); });
-    deleteBtn.addEventListener('click', ()=>{ if(editedIndex>=0) removeAt(editedIndex); });
+    $('#rows').addEventListener('click', (e)=>{
+      const tr = e.target.closest('tr[data-i]');
+      if(!tr) return;
+      const i = Number(tr.dataset.i);
+      if(e.target.classList.contains('btn-del')){
+        if(confirm('Supprimer cette carte ?')){
+          cards.splice(i,1);
+          render();
+        }
+      }
+      if(e.target.classList.contains('btn-dup')){
+        const copy = JSON.parse(JSON.stringify(cards[i]));
+        cards.splice(i+1, 0, copy);
+        render();
+      }
+    });
 
-    searchInput.addEventListener('input', renderList);
-    filterCategory.addEventListener('change', renderList);
+    // sélectionner vite le contenu au double-clic
+    document.addEventListener('dblclick', (e)=>{
+      if(e.target.matches('input.cell, textarea.cell')){
+        e.target.select();
+      }
+    });
 
-    loadGithubBtn.addEventListener('click', loadFromGithub);
-    fileInput.addEventListener('change', (e)=>{ const f = e.target.files?.[0]; if(f) importFromFile(f); e.target.value=''; });
-    exportBtn.addEventListener('click', exportJson);
-    resetBtn.addEventListener('click', hardReset);
+    // --- Init ---
+    (function init(){
+      cards = readLocalCards();
+      render();
+    })();
   </script>
 </body>
 </html>
+
