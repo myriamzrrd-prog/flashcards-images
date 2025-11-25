@@ -1651,40 +1651,44 @@ window.addEventListener("storage", (e) => {
   const cardEl = document.getElementById("card");
   if (cardEl) cardEl.innerHTML = "<div>Chargement des cartes…</div>";
 
-  // 1) Remote (GitHub) — on essaie, si ça échoue on ignore
-  let remote = [];
-  try {
-    const res = await fetch(DATA_URL + `?t=${Date.now()}`, { cache: "no-store" });
-    if (res.ok) {
-      const json = await res.json();
-      remote = (json.cards || []).map(c => ({
-        ...c,
-        image: c.image
-          ? (c.image.startsWith("http") ? c.image : (IMG_BASE + c.image))
-          : ""
-      }));
-    }
-  } catch (_) { /* pas grave */ }
+  // 1) Base locale (tes cartes codées en dur)
+  let merged = normalizeCards(LOCAL_CARDS);
 
-  // 2) Local (tes cartes en dur dans le fichier, images dans ./images/)
-  const local = normalizeCards(LOCAL_CARDS);
-
-  // 3) Admin (cartes créées via admin.html et stockées dans localStorage)
-  let custom = [];
+  // 2) Ajouter cartes créées dans admin.html (si présentes)
   try {
-    const raw = localStorage.getItem(CUSTOM_CARDS_KEY);
+    const raw = localStorage.getItem(CUSTOM_CARDS_KEY); // "FLASHCARDS_CARDS_JSON"
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) custom = normalizeCards(parsed);
+      const customCards = Array.isArray(parsed) ? parsed : (parsed.cards || []);
+      merged = merged.concat(normalizeCards(customCards));
     }
-  } catch (_) { /* ignore */ }
+  } catch (e) {
+    console.warn("Cartes admin illisibles:", e);
+  }
 
-  // 4) Fusion + dédoublonnage
-  allCards = dedupeCards([...local, ...remote, ...custom]);
+  // 3) Essayer de charger le JSON GitHub (optionnel)
+  try {
+    const res = await fetch(DATA_URL + `?t=${Date.now()}`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
 
-  // 5) Affiche
+    const remote = (json.cards || []).map(c => ({
+      ...c,
+      image: c.image
+        ? (c.image.startsWith("http") ? c.image : (IMG_BASE + c.image))
+        : ""
+    }));
+
+    merged = merged.concat(normalizeCards(remote));
+  } catch (e) {
+    console.warn("Chargement distant impossible, on reste local/admin.", e);
+  }
+
+  // 4) Dédupliquer et afficher
+  allCards = dedupeCards(merged);
   applyCategory("Aléatoire");
 }
+
 
 
     // =========================
