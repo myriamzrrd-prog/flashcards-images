@@ -1,295 +1,437 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
+  <title>Admin Flashcards — Bolognia</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Admin — Flashcards Bolognia</title>
+  <!-- Supabase JS v2 (UMD) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.46.1/dist/umd/supabase.min.js"></script>
   <style>
-    :root { --bg:#f6f7fb; --ink:#0f172a; --muted:#6b7280; --line:#e5e7eb; --brand:#111827; --ok:#16a34a; --warn:#dc2626; }
-    * { box-sizing: border-box; }
-    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background:var(--bg); color:var(--ink); }
-    header { position:sticky; top:0; z-index:10; background:white; border-bottom:1px solid var(--line); }
-    .wrap { max-width:1100px; margin:0 auto; padding:16px; }
-    h1 { font-size:1.4rem; margin:0 0 4px; }
-    .sub { color:var(--muted); font-size:.9rem; }
-
-    .toolbar { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; align-items:center; }
-    .toolbar input[type="text"]{ padding:8px 10px; border:1px solid var(--line); border-radius:999px; min-width:240px; }
-    .toolbar select{ padding:8px 10px; border:1px solid var(--line); border-radius:12px; }
-    button{ padding:8px 12px; border:none; border-radius:12px; background:var(--brand); color:white; cursor:pointer; }
-    button.secondary{ background:white; color:var(--ink); border:1px solid var(--line); }
-    button.ok{ background:var(--ok); }
-    button.warn{ background:var(--warn); }
-    .small{ font-size:.85rem; color:var(--muted); }
-
-    main { padding:16px; }
-    .panel { background:white; border:1px solid var(--line); border-radius:16px; padding:12px; }
-
-    table { width:100%; border-collapse: collapse; }
-    thead th { position:sticky; top:0; background:#fafafa; border-bottom:1px solid var(--line); padding:8px; text-align:left; font-size:.9rem; }
-    tbody td { border-bottom:1px solid var(--line); padding:8px; vertical-align: top; }
-    tbody tr:hover { background:#fafafa; }
-
-    input[type="text"].cell, textarea.cell { width:100%; font: inherit; border:1px solid var(--line); border-radius:8px; padding:6px 8px; }
-    textarea.cell { resize: vertical; min-height: 52px; }
-    .actions { display:flex; gap:6px; }
-
-    .grid2 { display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:center; }
-    .right { text-align:right; }
-    .mt8{ margin-top:8px; }
-    .mt12{ margin-top:12px; }
-    .mt16{ margin-top:16px; }
-
-    .toast { position:fixed; right:16px; bottom:16px; background:#111827; color:white; padding:10px 12px; border-radius:12px; opacity:0; transform: translateY(6px); transition: all .2s ease; }
-    .toast.show { opacity:1; transform: translateY(0); }
-
-    @media (max-width:900px){ thead .hide-sm { display:none; } tbody .hide-sm { display:none; } }
+    :root { --bg:#0f172a; --card:#ffffff; --ink:#111827; --muted:#6b7280; --ink2:#374151; --brand:#111827; }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial; background:#f5f5f5;color:var(--ink)}
+    header{background:var(--bg);color:white;padding:16px}
+    header h1{margin:0;font-size:1.25rem}
+    .wrap{max-width:1000px;margin:20px auto;padding:0 16px;display:grid;grid-template-columns:1fr;gap:16px}
+    .card{background:var(--card);border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:16px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    @media (max-width:900px){ .grid{grid-template-columns:1fr} }
+    label{font-size:.9rem;color:var(--ink2);margin-bottom:6px;display:block}
+    input[type="text"], textarea, select{
+      width:100%;padding:10px 12px;border-radius:12px;border:1px solid #e5e7eb;font-size:.95rem; outline:none
+    }
+    textarea{min-height:88px;resize:vertical}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .btn{background:var(--brand);color:white;border:none;border-radius:999px;padding:10px 14px;font-size:.95rem;cursor:pointer}
+    .btn:disabled{opacity:.5;cursor:default}
+    .note{color:var(--muted);font-size:.85rem}
+    .ok{color:#16a34a}
+    .err{color:#b91c1c}
+    /* dropzone */
+    .drop{
+      border:2px dashed #cbd5e1;border-radius:16px; padding:18px; text-align:center; background:#fafafa; cursor:pointer
+    }
+    .drop.drag{background:#eef2ff;border-color:#6366f1}
+    .thumb{display:flex;gap:12px;align-items:center;margin-top:10px}
+    .thumb img{width:72px;height:72px;object-fit:cover;border-radius:12px;border:1px solid #e5e7eb}
+    .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+    .item{border:1px solid #e5e7eb;border-radius:12px;padding:10px;background:white}
+    .item h4{margin:0 0 6px;font-size:.95rem}
+    .item img{width:100%;height:150px;object-fit:cover;border-radius:8px;border:1px solid #eee}
+    .row-between{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .pill{font-size:.75rem;background:#eef2ff;color:#1e3a8a;padding:4px 8px;border-radius:999px}
+    .danger{background:#fee2e2;color:#7f1d1d}
+    .mini{font-size:.85rem;padding:6px 10px}
   </style>
 </head>
 <body>
-  <!--
-    Cette page admin écrit dans localStorage :
-      - CUSTOM_CARDS_KEY   = "FLASHCARDS_CARDS_JSON"  → { cards: [ {category,front,back,image,caption} ] }
-      - CUSTOM_VERSION_KEY = "FLASHCARDS_VERSION"     → bump (Date.now()) pour dire à index.html de recharger
-  -->
+<header>
+  <h1>Admin — Flashcards Bolognia (drag & drop + upload Supabase)</h1>
+</header>
 
-  <header>
-    <div class="wrap">
-      <h1>Admin Flashcards</h1>
-      <div class="sub" id="meta">Chargement…</div>
-      <div class="toolbar">
-        <input type="text" id="q" placeholder="Rechercher (dans toutes les colonnes)" />
-        <select id="catFilter"><option value="">Toutes les catégories</option></select>
-        <button id="add">+ Ajouter une carte</button>
-        <button id="save" class="ok">💾 Sauvegarder</button>
-        <button id="export" class="secondary">⬇︎ Export JSON</button>
-        <label class="secondary" style="display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border:1px solid var(--line); border-radius:12px; cursor:pointer;">
-          ⬆︎ Import JSON <input id="import" type="file" accept="application/json" style="display:none;" />
-        </label>
-        <a href="index.html" class="small" target="_blank" style="margin-left:auto; text-decoration:none;">▶︎ Ouvrir l'interface (index.html)</a>
+<div class="wrap">
+
+  <!-- CONFIG -->
+  <section class="card">
+    <h2 style="margin-top:0">Configuration</h2>
+    <div class="grid">
+      <div>
+        <label>SUPABASE_URL</label>
+        <input id="cfg_url" type="text" placeholder="https://xxxx.supabase.co">
+      </div>
+      <div>
+        <label>SUPABASE_ANON_KEY</label>
+        <input id="cfg_key" type="text" placeholder="eyJhbGciOiJI...">
       </div>
     </div>
-  </header>
-
-  <main class="wrap">
-    <div class="panel">
-      <div class="grid2">
-        <div class="small">Astuce : l'image peut être un nom de fichier (ex: <code>105.png</code>) ou une URL complète (<code>https://…</code>).<br/>Catégorie, Question (front) et Réponse (back) sont les plus importants.</div>
-        <div class="right small">Double-clique une cellule pour tout sélectionner ⌘/Ctrl+C</div>
-      </div>
-      <div class="mt12" style="overflow:auto; max-height: 70vh;">
-        <table>
-          <thead>
-            <tr>
-              <th style="width:180px;">Catégorie</th>
-              <th>Question (front)</th>
-              <th>Réponse (back)</th>
-              <th class="hide-sm" style="width:220px;">Image</th>
-              <th class="hide-sm" style="width:240px;">Légende</th>
-              <th style="width:170px;">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="rows"></tbody>
-        </table>
-      </div>
-      <div class="mt8 small" id="count"></div>
+    <div class="row" style="margin-top:10px">
+      <span class="note">Ces valeurs sont sauvegardées en local sur ton navigateur (pas sur le serveur).</span>
+      <button id="cfg_save" class="btn mini">Sauvegarder la config</button>
     </div>
-  </main>
+    <div id="cfg_status" class="note"></div>
+  </section>
 
-  <div id="toast" class="toast">Sauvegardé ✔︎</div>
+  <!-- FORM -->
+  <section class="card">
+    <h2 style="margin-top:0">Créer une carte</h2>
 
-  <script>
-    // --- Clés partagées avec index.html ---
-    const CUSTOM_CARDS_KEY   = "FLASHCARDS_CARDS_JSON";
-    const CUSTOM_VERSION_KEY = "FLASHCARDS_VERSION";
+    <div class="grid">
+      <div>
+        <label>Catégorie</label>
+        <select id="category"></select>
+      </div>
+      <div>
+        <label>Question (face avant)</label>
+        <input id="front" type="text" placeholder="Que montre cette image ?">
+      </div>
+      <div>
+        <label>Réponse (face arrière)</label>
+        <input id="back" type="text" placeholder="…">
+      </div>
+      <div>
+        <label>Légende (caption, optionnel)</label>
+        <textarea id="caption" placeholder="Bolognia p.xx, détails cliniques…"></textarea>
+      </div>
+    </div>
 
-    // --- État ---
-    let cards = [];     // jeu en édition
-    let filteredIdx = [];// indices visibles (après filtre + recherche)
+    <div style="margin-top:8px">
+      <label>Image (drag & drop ou clic)</label>
+      <div id="drop" class="drop">
+        Dépose une image ici, ou clique pour choisir un fichier.
+        <input id="file" type="file" accept="image/*" style="display:none">
+      </div>
+      <div id="thumb" class="thumb" style="display:none">
+        <img id="thumb_img" src="" alt="aperçu">
+        <div>
+          <div id="thumb_name" class="note"></div>
+          <div id="upload_status" class="note"></div>
+        </div>
+      </div>
+    </div>
 
-    // --- Helpers UI ---
-    const $ = (s, r=document) => r.querySelector(s);
-    const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
-    const toast = (msg) => { const t=$('#toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 1200); };
+    <div style="margin-top:8px">
+      <label>URL image (auto)</label>
+      <input id="image_url" type="text" placeholder="sera rempli après upload" readonly>
+      <div class="note">Le champ se remplit automatiquement après l’upload vers Supabase.</div>
+    </div>
 
-    function readLocalCards(){
-      try{
-        const raw = localStorage.getItem(CUSTOM_CARDS_KEY);
-        if(!raw) return [];
-        const parsed = JSON.parse(raw);
-        if(Array.isArray(parsed)) return parsed; // tolère ancien format
-        if(parsed && Array.isArray(parsed.cards)) return parsed.cards;
-      }catch(e){ console.warn('JSON invalide dans localStorage', e); }
-      return [];
-    }
+    <div class="row" style="margin-top:12px">
+      <button id="save" class="btn">Enregistrer la carte</button>
+      <span id="save_status" class="note"></span>
+    </div>
+  </section>
 
-    function writeLocalCards(list){
-      try{
-        localStorage.setItem(CUSTOM_CARDS_KEY, JSON.stringify({ cards: list }));
-        localStorage.setItem(CUSTOM_VERSION_KEY, String(Date.now()));
-      }catch(e){ alert('Erreur en sauvegarde (quota ?): '+ e.message); }
-    }
+  <!-- LISTE -->
+  <section class="card">
+    <div class="row-between">
+      <h2 style="margin:0">Cartes enregistrées (localStorage)</h2>
+      <div class="row">
+        <label for="filter">Filtrer par catégorie</label>
+        <select id="filter"></select>
+        <button id="clear_all" class="btn danger mini">Tout supprimer</button>
+      </div>
+    </div>
+    <div id="count" class="note" style="margin:6px 0 12px"></div>
+    <div id="list" class="list"></div>
+  </section>
 
-    function uniqueCategories(list){
-      return Array.from(new Set(list.map(c=> (c.category||'').trim()).filter(Boolean))).sort((a,b)=> a.localeCompare(b));
-    }
+</div>
 
-    function updateMeta(){
-      const total = cards.length;
-      const cats = uniqueCategories(cards).length;
-      $('#meta').textContent = `${total} carte(s) • ${cats} catégorie(s)`;
-      $('#count').textContent = `${filteredIdx.length} affichée(s)`;
-    }
+<script>
+/* =======================
+   CONSTANTES / STORAGE KEYS
+   ======================= */
+const BUCKET = 'flashcards';
+const CUSTOM_CARDS_KEY   = 'FLASHCARDS_CARDS_JSON';
+const CUSTOM_VERSION_KEY = 'FLASHCARDS_VERSION';
+const CONFIG_URL_KEY     = 'FLASHCARDS_SUPABASE_URL';
+const CONFIG_ANON_KEY    = 'FLASHCARDS_SUPABASE_ANON';
+let supabaseClient = null;
 
-    function buildFilters(){
-      const sel = $('#catFilter');
-      const current = sel.value;
-      const opts = [''].concat(uniqueCategories(cards));
-      sel.innerHTML = opts.map(v=>`<option value="${v.replaceAll('"','&quot;')}">${v || 'Toutes les catégories'}</option>`).join('');
-      // restaure valeur si possible
-      if(opts.includes(current)) sel.value = current;
-    }
+/* =======================
+   CATEGORIES (toutes)
+   ======================= */
+const ALL_CATEGORIES = [
+  "Erreurs","Aléatoire","Dermoscopie","Prurit et dysesthésies","Affections psychocutanées","Psoriasis",
+  "Autres affections papulosquameuses","Erythrodermie","Lichen plan et dermatoses lichénoïdes",
+  "Dermatite atopique","Autres éruptions eczémateuses","Dermatites de contact / pro / aux plantes",
+  "Approche clinique des dermatoses régionales","Urticaire et angio-oedème","Erythèmes figurés",
+  "Erythème polymorphe, SJS et NET","Réactions aux médicaments",
+  "Purpura et affections dues à une occlusion microvasculaire","Vascularites","Dermatoses éosinophiliques",
+  "Dermatoses neutrophiliques","Dermatoses de la grossesse","Pemphigus",
+  "Pemphigoïde et épidermolyse bulleuse acquise",
+  "Dermatite herpétiforme et dermatose bulleuse à IgA linéaires","Épidermolyses bulleuses",
+  "Autres maladies vésiculobulleuses",
+  "Affections vésiculopustuleuses et érosives chez les nouveau-nés et nourrissons",
+  "Acné vulgaire","Rosacée et dermatite périorificielle","Folliculites",
+  "Affections des glandes eccrines et apocrines","Lupus érythémateux","Dermatomyosite",
+  "Sclérodermie systémique et affections sclérodermoïdes","Morphée et lichen scléreux",
+  "Autres maladies rhumatologiques et maladies auto-inflammatoires",
+  "Mucinoses","Amylose","Maladies de surcharge","Porphyries",
+  "Calcinose cutanée et ostéome cutané","Désordres nutritionnels",
+  "Maladie du greffon contre l'hôte","Manifestations cutanées des maladies systémiques",
+  "Ichtyoses et érythrokératodermies","Kératodermies","Maladie de Darier et maladie de Hailey-Hailey",
+  "Déficits immunitaires primitifs","Neurofibromatose et sclérose tubéreuse de Bourneville",
+  "Mosaïques cutanées","Autres génodermatoses","Anomalies du développement",
+  "Vitiligo et autres affections avec hypopigmentation","Maladies avec hyperpigmentation",
+  "Alopécies","Hypertrichose et hirsutisme","Affections des ongles","Affections orales",
+  "Maladies anogénitales","Infections à mycobactéries","Rickettsioses","Maladies fongiques",
+  "Manifestations cutanées de l’infection VIH","Papillomavirus humains","Herpèsvirus humains",
+  "Autres maladies virales","Infections sexuellement transmissibles","Protozoaires et vers",
+  "Infestations","Morsures et piqûres","Photodermatoses",
+  "Atteintes cutanées liées à l'environnement et au sport",
+  "Signes cutanés des toxicomanies, maltraitances","Histiocytoses","Xanthomes",
+  "Affections granulomateuses non infectieuses","Affections perforantes",
+  "Anomalies héréditaires du tissu conjonctif","Hypertrophies dermiques",
+  "Atrophies du tissu conjonctif","Panniculites","Lipodystrophies",
+  "Hémangiomes infantiles et malformations vasculaires","Ulcères","Autres affections vasculaires",
+  "Kératose actinique, CBC et CE","Tumeurs et proliférations épithéliales bénignes",
+  "Kystes","Tumeurs annexielles","Néoplasmes mélanocytaires bénins","Mélanome cutané",
+  "Tumeurs vasculaires et proliférations réactionnelles",
+  "Tumeurs fréquentes des tissus mous/ Proliférations","Mastocytose",
+  "Lymphomes cutanés à cellules B","Lymphomes cutanés à cellules T",
+  "Autres maladies lymphoprolifératives et myéloprolifératives","Métastases cutanées"
+];
 
-    function passesSearch(card, q){
-      if(!q) return true;
-      const hay = `${card.category||''} ${card.front||''} ${card.back||''} ${card.caption||''} ${card.image||''}`.toLowerCase();
-      return q.split(/\s+/).filter(Boolean).every(w=> hay.includes(w));
-    }
+/* =======================
+   HELPERS localStorage
+   ======================= */
+function loadCardsLS() {
+  try {
+    const raw = localStorage.getItem(CUSTOM_CARDS_KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  } catch { return []; }
+}
+function saveCardsLS(arr) {
+  localStorage.setItem(CUSTOM_CARDS_KEY, JSON.stringify(arr));
+  localStorage.setItem(CUSTOM_VERSION_KEY, String(Date.now())); // ping index.html
+}
 
-    function recomputeFiltered(){
-      const q = $('#q').value.trim().toLowerCase();
-      const cat = $('#catFilter').value;
-      filteredIdx = [];
-      cards.forEach((c, i)=>{
-        const okCat = !cat || (c.category||'') === cat;
-        const okQ = passesSearch(c, q);
-        if(okCat && okQ) filteredIdx.push(i);
-      });
-    }
+/* =======================
+   INIT UI (catégories + filtres)
+   ======================= */
+const selCat = document.getElementById('category');
+const selFilter = document.getElementById('filter');
+function fillCategories() {
+  selCat.innerHTML = ALL_CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('');
+  selFilter.innerHTML = ['(Tous)', ...ALL_CATEGORIES].map(c => `<option value="${c}">${c}</option>`).join('');
+}
+fillCategories();
 
-    function render(){
-      recomputeFiltered();
-      buildFilters();
-      updateMeta();
-      const tbody = $('#rows');
-      if(!filteredIdx.length){ tbody.innerHTML = '<tr><td colspan="6" class="small" style="text-align:center; padding:16px; color:var(--muted);">Aucune carte à afficher.</td></tr>'; return; }
-      const rows = filteredIdx.map(i=>{
-        const c = cards[i];
-        const esc = (s)=> (s??'').toString().replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
-        return `
-          <tr data-i="${i}">
-            <td><input type="text" class="cell f-cat" value="${esc(c.category)}" placeholder="Catégorie" /></td>
-            <td><textarea class="cell f-front" placeholder="Question">${esc(c.front)}</textarea></td>
-            <td><textarea class="cell f-back" placeholder="Réponse">${esc(c.back)}</textarea></td>
-            <td class="hide-sm"><input type="text" class="cell f-image" value="${esc(c.image)}" placeholder="105.png ou https://…" /></td>
-            <td class="hide-sm"><textarea class="cell f-caption" placeholder="Légende">${esc(c.caption)}</textarea></td>
-            <td>
-              <div class="actions">
-                <button class="secondary btn-dup">Dupliquer</button>
-                <button class="warn btn-del">Supprimer</button>
-              </div>
-            </td>
-          </tr>`;
-      }).join('');
-      tbody.innerHTML = rows;
-    }
+/* =======================
+   CONFIG SUPABASE (sauvegardée localement)
+   ======================= */
+const cfgUrl = document.getElementById('cfg_url');
+const cfgKey = document.getElementById('cfg_key');
+const cfgSave = document.getElementById('cfg_save');
+const cfgStatus = document.getElementById('cfg_status');
 
-    // --- Écouteurs ---
-    $('#q').addEventListener('input', render);
-    $('#catFilter').addEventListener('change', render);
+function loadConfig() {
+  cfgUrl.value = localStorage.getItem(CONFIG_URL_KEY) || '';
+  cfgKey.value = localStorage.getItem(CONFIG_ANON_KEY) || '';
+  tryMakeClient();
+}
+function tryMakeClient() {
+  const url = cfgUrl.value.trim();
+  const key = cfgKey.value.trim();
+  if (url && key && window.supabase) {
+    supabaseClient = window.supabase.createClient(url, key);
+    cfgStatus.textContent = 'Client Supabase prêt.';
+    cfgStatus.className = 'note ok';
+  } else {
+    supabaseClient = null;
+    cfgStatus.textContent = 'Renseigne SUPABASE_URL + ANON_KEY puis clique "Sauvegarder la config".';
+    cfgStatus.className = 'note';
+  }
+}
+cfgSave.addEventListener('click', () => {
+  localStorage.setItem(CONFIG_URL_KEY, cfgUrl.value.trim());
+  localStorage.setItem(CONFIG_ANON_KEY, cfgKey.value.trim());
+  tryMakeClient();
+  cfgStatus.textContent = 'Config enregistrée ✅';
+  cfgStatus.className = 'note ok';
+});
+loadConfig();
 
-    $('#add').addEventListener('click', ()=>{
-      cards.push({ category:'', front:'', back:'', image:'', caption:'' });
-      render();
-    });
+/* =======================
+   DRAG & DROP / FILE
+   ======================= */
+const drop = document.getElementById('drop');
+const fileInput = document.getElementById('file');
+const thumb = document.getElementById('thumb');
+const thumbImg = document.getElementById('thumb_img');
+const thumbName = document.getElementById('thumb_name');
+const uploadStatus = document.getElementById('upload_status');
+const imageUrl = document.getElementById('image_url');
 
-    $('#save').addEventListener('click', ()=>{
-      writeLocalCards(cards);
-      toast('Sauvegardé et signal envoyé à index.html');
-    });
+let pendingFile = null;
+let uploadedPublicUrl = '';
 
-    $('#export').addEventListener('click', ()=>{
-      const blob = new Blob([ JSON.stringify({ cards }, null, 2) ], { type:'application/json' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'flashcards-cards.json';
-      a.click();
-      URL.revokeObjectURL(a.href);
-    });
+drop.addEventListener('click', () => fileInput.click());
+drop.addEventListener('dragover', (e) => { e.preventDefault(); drop.classList.add('drag'); });
+drop.addEventListener('dragleave', () => drop.classList.remove('drag'));
+drop.addEventListener('drop', (e) => {
+  e.preventDefault(); drop.classList.remove('drag');
+  const f = e.dataTransfer.files?.[0];
+  if (f) setPendingFile(f);
+});
+fileInput.addEventListener('change', (e) => {
+  const f = e.target.files?.[0];
+  if (f) setPendingFile(f);
+});
 
-    $('#import').addEventListener('change', (e)=>{
-      const file = e.target.files && e.target.files[0];
-      if(!file) return;
-      const fr = new FileReader();
-      fr.onload = () => {
-        try{
-          const data = JSON.parse(fr.result);
-          let list = Array.isArray(data) ? data : (data && Array.isArray(data.cards) ? data.cards : null);
-          if(!list) throw new Error('Format attendu: {"cards": [...] } ou [ ... ]');
-          // normalise objets
-          cards = list.map(c => ({
-            category: c.category || '',
-            front: c.front || '',
-            back: c.back || '',
-            image: c.image || '',
-            caption: c.caption || ''
-          }));
-          render();
-          toast('Import OK (pense à sauvegarder)');
-        }catch(err){
-          alert('Import impossible : '+ err.message);
-        }
-        e.target.value = '';
-      };
-      fr.readAsText(file);
-    });
+function setPendingFile(f) {
+  pendingFile = f;
+  uploadedPublicUrl = '';
+  imageUrl.value = '';
+  thumb.style.display = 'flex';
+  thumbImg.src = URL.createObjectURL(f);
+  thumbName.textContent = `${f.name} — ${(f.size/1024/1024).toFixed(2)} MB`;
+  uploadStatus.textContent = 'Prêt à envoyer…';
+  uploadStatus.className = 'note';
 
-    // délégation pour les lignes
-    $('#rows').addEventListener('input', (e)=>{
-      const tr = e.target.closest('tr[data-i]');
-      if(!tr) return;
-      const i = Number(tr.dataset.i);
-      const c = cards[i];
-      if(!c) return;
-      if(e.target.classList.contains('f-cat')) c.category = e.target.value;
-      if(e.target.classList.contains('f-front')) c.front = e.target.value;
-      if(e.target.classList.contains('f-back')) c.back = e.target.value;
-      if(e.target.classList.contains('f-image')) c.image = e.target.value;
-      if(e.target.classList.contains('f-caption')) c.caption = e.target.value;
-      // si la catégorie change, actualiser les filtres
-      if(e.target.classList.contains('f-cat')) buildFilters();
-    });
+  // Upload auto
+  uploadNow();
+}
 
-    $('#rows').addEventListener('click', (e)=>{
-      const tr = e.target.closest('tr[data-i]');
-      if(!tr) return;
-      const i = Number(tr.dataset.i);
-      if(e.target.classList.contains('btn-del')){
-        if(confirm('Supprimer cette carte ?')){
-          cards.splice(i,1);
-          render();
-        }
-      }
-      if(e.target.classList.contains('btn-dup')){
-        const copy = JSON.parse(JSON.stringify(cards[i]));
-        cards.splice(i+1, 0, copy);
-        render();
-      }
-    });
+function sanitizeName(name){
+  return name.normalize('NFD').replace(/[\u0300-\u036f]/g,'') // accents
+             .replace(/[^a-zA-Z0-9._-]/g,'_')
+             .toLowerCase();
+}
 
-    // sélectionner vite le contenu au double-clic
-    document.addEventListener('dblclick', (e)=>{
-      if(e.target.matches('input.cell, textarea.cell')){
-        e.target.select();
-      }
-    });
+async function uploadNow(){
+  if (!pendingFile) return;
+  if (!supabaseClient) {
+    uploadStatus.textContent = 'Config Supabase manquante.';
+    uploadStatus.className = 'note err';
+    return;
+  }
+  uploadStatus.textContent = 'Envoi en cours…';
+  uploadStatus.className = 'note';
 
-    // --- Init ---
-    (function init(){
-      cards = readLocalCards();
-      render();
-    })();
-  </script>
+  const stamp = Date.now();
+  const safe = sanitizeName(pendingFile.name);
+  const path = `uploads/${stamp}_${safe}`;
+
+  const { error } = await supabaseClient.storage
+    .from(BUCKET)
+    .upload(path, pendingFile, { upsert: true, contentType: pendingFile.type || 'image/png' });
+
+  if (error) {
+    uploadStatus.textContent = 'Erreur upload: ' + error.message;
+    uploadStatus.className = 'note err';
+    return;
+  }
+
+  const { data } = supabaseClient.storage.from(BUCKET).getPublicUrl(path);
+  uploadedPublicUrl = data.publicUrl;
+  imageUrl.value = uploadedPublicUrl;
+  uploadStatus.textContent = 'Upload ok ✅';
+  uploadStatus.className = 'note ok';
+}
+
+/* =======================
+   SAVE CARD
+   ======================= */
+const btnSave = document.getElementById('save');
+const saveStatus = document.getElementById('save_status');
+const inputFront = document.getElementById('front');
+const inputBack = document.getElementById('back');
+const inputCaption = document.getElementById('caption');
+
+btnSave.addEventListener('click', () => {
+  const card = {
+    category: selCat.value,
+    front: inputFront.value.trim(),
+    back: inputBack.value.trim(),
+    caption: inputCaption.value.trim(),
+    image: imageUrl.value.trim() // déjà rempli si upload ok
+  };
+
+  // Validation simple
+  if (!card.category || !card.front || !card.back) {
+    saveStatus.textContent = 'Complète la catégorie, la question et la réponse.';
+    saveStatus.className = 'note err';
+    return;
+  }
+  if (!card.image) {
+    saveStatus.textContent = 'Ajoute une image et attends la fin de l’upload.';
+    saveStatus.className = 'note err';
+    return;
+  }
+
+  const all = loadCardsLS();
+  all.push(card);
+  saveCardsLS(all);
+
+  saveStatus.textContent = 'Carte enregistrée ✅ (index.html va se rafraîchir automatiquement si ouvert)';
+  saveStatus.className = 'note ok';
+
+  // Reset léger (garde la même catégorie)
+  inputFront.value = '';
+  inputBack.value = '';
+  inputCaption.value = '';
+  imageUrl.value = '';
+  uploadedPublicUrl = '';
+  pendingFile = null;
+  thumb.style.display = 'none';
+
+  renderList();
+});
+
+/* =======================
+   LIST / FILTER / DELETE
+   ======================= */
+const listEl = document.getElementById('list');
+const countEl = document.getElementById('count');
+const btnClearAll = document.getElementById('clear_all');
+const filterSel = document.getElementById('filter');
+
+filterSel.addEventListener('change', renderList);
+btnClearAll.addEventListener('click', () => {
+  if (!confirm('Supprimer TOUTES les cartes locales ?')) return;
+  saveCardsLS([]);
+  renderList();
+});
+
+function renderList(){
+  const all = loadCardsLS();
+  const cat = filterSel.value;
+  const filtered = (cat && cat !== '(Tous)') ? all.filter(c => c.category === cat) : all;
+
+  countEl.textContent = `${filtered.length} carte(s) affichée(s) / ${all.length} total`;
+  listEl.innerHTML = filtered.map((c, i) => `
+    <div class="item">
+      <div class="row-between">
+        <h4>${c.front || '(sans question)'}</h4>
+        <span class="pill">${c.category || 'Sans catégorie'}</span>
+      </div>
+      ${c.image ? `<img src="${c.image}" alt="">` : ''}
+      <div class="note" style="margin:6px 0"><strong>Réponse:</strong> ${c.back || ''}</div>
+      ${c.caption ? `<div class="note"><strong>Légende:</strong> ${c.caption}</div>` : ''}
+      <div class="row" style="margin-top:8px">
+        <button class="btn mini danger" onclick="deleteCard(${i}, '${cat.replace(/'/g,"\\'")}')">Supprimer</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// suppression relative au filtre en cours
+window.deleteCard = function(idxInFiltered, currentFilter){
+  const all = loadCardsLS();
+  const filtered = (currentFilter && currentFilter !== '(Tous)') ? all.map((c, ii) => ({c,ii})).filter(x => x.c.category === currentFilter) : all.map((c, ii) => ({c,ii}));
+  const globalIndex = filtered[idxInFiltered]?.ii;
+  if (globalIndex == null) return;
+  all.splice(globalIndex,1);
+  saveCardsLS(all);
+  renderList();
+}
+
+renderList();
+</script>
 </body>
 </html>
 
