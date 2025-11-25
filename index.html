@@ -1599,6 +1599,17 @@
 const CUSTOM_CARDS_KEY   = "FLASHCARDS_CARDS_JSON"; // là où l'admin sauvegarde
 const CUSTOM_VERSION_KEY = "FLASHCARDS_VERSION";    // sert à rafraîchir automatiquement
 const IMG_LOCAL_PREFIX   = "./images/";             // dossier des images locales
+    // Charge les cartes créées dans admin.html (stockées en localStorage)
+function loadCustomCards() {
+  try {
+    const raw = localStorage.getItem(CUSTOM_CARDS_KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  } catch {
+    return [];
+  }
+}
+
     
     // [Auto-refresh] Recharge index.html quand admin.html sauvegarde
 window.addEventListener("storage", (e) => {
@@ -1631,19 +1642,17 @@ window.addEventListener("storage", (e) => {
       return res;
     }
 
-    function normalizeImagePath(img) {
+   function normalizeImagePath(img) {
   if (!img) return "";
-  // si c'est déjà une URL ou un chemin absolu/relatif, on garde
-  if (/^https?:\/\//.test(img) || img.startsWith("/") || img.startsWith("./")) return img;
-  // sinon, on suppose que le fichier est dans /images/
-  return IMG_LOCAL_PREFIX + img;
+  // Laisser passer URLs valides: http(s), data:, blob:, chemins absolus/relatifs déjà ok
+  if (/^(https?:|data:|blob:)/.test(img) || img.startsWith("/") || img.startsWith("./")) {
+    return img;
+  }
+  // éviter double "images/images"
+  const clean = img.replace(/^images\//i, "");
+  return IMG_LOCAL_PREFIX + clean; // ex: "./images/nom.png"
 }
-    function normalizeCards(cards) {
-  return cards.map(c => ({
-    ...c,
-    image: normalizeImagePath(c.image)
-  }));
-}
+
 
 
 
@@ -1655,16 +1664,14 @@ window.addEventListener("storage", (e) => {
   let merged = normalizeCards(LOCAL_CARDS);
 
   // 2) Ajouter cartes créées dans admin.html (si présentes)
-  try {
-    const raw = localStorage.getItem(CUSTOM_CARDS_KEY); // "FLASHCARDS_CARDS_JSON"
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      const customCards = Array.isArray(parsed) ? parsed : (parsed.cards || []);
-      merged = merged.concat(normalizeCards(customCards));
-    }
-  } catch (e) {
-    console.warn("Cartes admin illisibles:", e);
+try {
+  const customCards = loadCustomCards(); // <= renvoie [] si rien
+  if (customCards.length) {
+    merged = merged.concat(normalizeCards(customCards));
   }
+} catch (e) {
+  console.warn("Cartes admin illisibles:", e);
+}
 
   // 3) Essayer de charger le JSON GitHub (optionnel)
   try {
@@ -1685,7 +1692,7 @@ window.addEventListener("storage", (e) => {
   }
 
   // 4) Dédupliquer et afficher
-  allCards = dedupeCards(merged);
+  allCards = dedupeCards(normalizeCards(merged));
   applyCategory("Aléatoire");
 }
 
