@@ -1595,6 +1595,19 @@
     function saveErreurs() {
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(erreurIds)); } catch (e) {}
     }
+    // --- Sources Admin/Local ---
+const CUSTOM_CARDS_KEY   = "FLASHCARDS_CARDS_JSON"; // là où l'admin sauvegarde
+const CUSTOM_VERSION_KEY = "FLASHCARDS_VERSION";    // sert à rafraîchir automatiquement
+const IMG_LOCAL_PREFIX   = "./images/";             // dossier des images locales
+    
+    // [Auto-refresh] Recharge index.html quand admin.html sauvegarde
+window.addEventListener("storage", (e) => {
+  if (e.key === CUSTOM_VERSION_KEY) {
+    location.reload();
+  }
+});
+
+
 
     // =========================
     // Chargement REMOTE (GitHub) + fusion
@@ -1614,31 +1627,65 @@
         const key = (c.category||"")+"||"+(c.front||"")+"||"+(c.image||"");
         if (!seen.has(key)) { seen.add(key); res.push(c); }
       }
+      
       return res;
     }
 
+    function normalizeImagePath(img) {
+  if (!img) return "";
+  // si c'est déjà une URL ou un chemin absolu/relatif, on garde
+  if (/^https?:\/\//.test(img) || img.startsWith("/") || img.startsWith("./")) return img;
+  // sinon, on suppose que le fichier est dans /images/
+  return IMG_LOCAL_PREFIX + img;
+}
+    function normalizeCards(cards) {
+  return cards.map(c => ({
+    ...c,
+    image: normalizeImagePath(c.image)
+  }));
+}
+
+
+
     async function loadCards() {
-      const cardEl = document.getElementById("card");
-      if (cardEl) cardEl.innerHTML = "<div>Chargement des cartes…</div>";
+  const cardEl = document.getElementById("card");
+  if (cardEl) cardEl.innerHTML = "<div>Chargement des cartes…</div>";
 
-      try {
-        const res = await fetch(DATA_URL + `?t=${Date.now()}`, { cache: "no-store" });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json = await res.json();
-
-        const remote = (json.cards || []).map(c => ({
-          ...c,
-          image: c.image ? (c.image.startsWith("http") ? c.image : (IMG_BASE + c.image)) : ""
-        }));
-
-        allCards = dedupeCards([...LOCAL_CARDS, ...remote]);
-      } catch (e) {
-        console.warn("Chargement distant impossible, fallback sur LOCAL_CARDS uniquement.", e);
-        allCards = dedupeCards([...LOCAL_CARDS]);
-      }
-
-      applyCategory("Aléatoire");
+  // 1) Remote (GitHub) — on essaie, si ça échoue on ignore
+  let remote = [];
+  try {
+    const res = await fetch(DATA_URL + `?t=${Date.now()}`, { cache: "no-store" });
+    if (res.ok) {
+      const json = await res.json();
+      remote = (json.cards || []).map(c => ({
+        ...c,
+        image: c.image
+          ? (c.image.startsWith("http") ? c.image : (IMG_BASE + c.image))
+          : ""
+      }));
     }
+  } catch (_) { /* pas grave */ }
+
+  // 2) Local (tes cartes en dur dans le fichier, images dans ./images/)
+  const local = normalizeCards(LOCAL_CARDS);
+
+  // 3) Admin (cartes créées via admin.html et stockées dans localStorage)
+  let custom = [];
+  try {
+    const raw = localStorage.getItem(CUSTOM_CARDS_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) custom = normalizeCards(parsed);
+    }
+  } catch (_) { /* ignore */ }
+
+  // 4) Fusion + dédoublonnage
+  allCards = dedupeCards([...local, ...remote, ...custom]);
+
+  // 5) Affiche
+  applyCategory("Aléatoire");
+}
+
 
     // =========================
     // État courant + refs DOM
