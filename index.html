@@ -336,6 +336,7 @@
         <div class="category-list">
           <button class="category-item" data-category="Erreurs">Erreurs</button>
           <button class="category-item active" data-category="Aléatoire">Aléatoire</button>
+          <button class="category-item" data-category="Aléatoire filtré">Aléatoire filtré</button>
           <button class="category-item" data-category="Dermoscopie">Dermoscopie</button>
 
           <button class="category-item" data-category="Prurit et dysesthésies">Prurit et dysesthésies</button>
@@ -464,6 +465,18 @@
             <button id="searchBtn">Chercher</button>
           </div>
         </div>
+        <div id="chapterFilterBox" style="display:none; width:100%; max-width:900px; background:white; border-radius:16px; padding:16px; box-shadow:0 4px 12px rgba(0,0,0,0.06);">
+  <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
+    <strong>Choisis les chapitres à réviser</strong>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button id="selectAllChaptersBtn" type="button">Tout cocher</button>
+      <button id="clearChaptersBtn" type="button">Tout décocher</button>
+      <button id="applyChapterFilterBtn" type="button">Appliquer le filtre</button>
+    </div>
+  </div>
+
+  <div id="chapterCheckboxes" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:8px;"></div>
+</div>
 
         <!-- Mode révision -->
         <section id="reviewMode">
@@ -3480,7 +3493,12 @@ window.addEventListener("storage", (e) => {
   const clean = img.replace(/^images\//i, "");
   return IMG_LOCAL_PREFIX + clean; // ex: "./images/nom.png"
 }
-
+function normalizeCards(cards) {
+  return (cards || []).map(c => ({
+    ...c,
+    image: normalizeImagePath(c.image)
+  }));
+}
 
 
 
@@ -3530,9 +3548,10 @@ try {
     // État courant + refs DOM
     // =========================
     let currentCategory = "Aléatoire";
-    let filteredCards = [];
-    let currentIndex = 0;
-    let isFront = true;
+let filteredCards = [];
+let currentIndex = 0;
+let isFront = true;
+let selectedChapters = [];
 
     const cardDiv = document.getElementById("card");
     const infoEl = document.getElementById("info");
@@ -3549,6 +3568,11 @@ try {
     const exitSearchBtn = document.getElementById("exitSearchBtn");
     const searchInput = document.getElementById("searchInput");
     const searchBtn = document.getElementById("searchBtn");
+    const chapterFilterBox = document.getElementById("chapterFilterBox");
+const chapterCheckboxes = document.getElementById("chapterCheckboxes");
+const applyChapterFilterBtn = document.getElementById("applyChapterFilterBtn");
+const clearChaptersBtn = document.getElementById("clearChaptersBtn");
+const selectAllChaptersBtn = document.getElementById("selectAllChaptersBtn");
 
     function shuffleArray(arr) {
       const a = [...arr];
@@ -3566,25 +3590,75 @@ try {
     function enterSearchMode() { reviewModeEl.style.display = "none"; searchModeEl.style.display = "block"; }
     function exitSearchMode() { searchModeEl.style.display = "none"; reviewModeEl.style.display = "block"; }
 
+function getAllRealCategories() {
+  const cats = [...new Set(allCards.map(card => card.category).filter(Boolean))];
+  return cats.sort((a, b) => a.localeCompare(b, "fr"));
+}
+
+function renderChapterCheckboxes() {
+  const categories = getAllRealCategories();
+
+  chapterCheckboxes.innerHTML = categories.map(cat => `
+    <label style="display:flex; align-items:center; gap:8px; font-size:0.9rem;">
+      <input type="checkbox" value="${cat}" ${selectedChapters.includes(cat) ? "checked" : ""}>
+      <span>${cat}</span>
+    </label>
+  `).join("");
+}
+
+function getCheckedChaptersFromUI() {
+  return [...chapterCheckboxes.querySelectorAll('input[type="checkbox"]:checked')]
+    .map(input => input.value);
+}
+
+function showChapterFilterBox() {
+  chapterFilterBox.style.display = "block";
+  renderChapterCheckboxes();
+}
+
+function hideChapterFilterBox() {
+  chapterFilterBox.style.display = "none";
+}
+
+    
     function applyCategory(categoryName) {
-      currentCategory = categoryName;
+  currentCategory = categoryName;
 
-      if (categoryName === "Aléatoire") {
-        filteredCards = shuffleArray(allCards);
-      } else if (categoryName === "Erreurs") {
-        filteredCards = buildErrorsCards();
-      } else {
-        filteredCards = allCards.filter(card => card.category === categoryName);
-      }
+  if (categoryName === "Aléatoire") {
+    hideChapterFilterBox();
+    filteredCards = shuffleArray(allCards);
 
-      currentIndex = 0;
-      isFront = true;
-      renderCard();
+  } else if (categoryName === "Aléatoire filtré") {
+    showChapterFilterBox();
+
+    if (selectedChapters.length > 0) {
+      filteredCards = shuffleArray(
+        allCards.filter(card => selectedChapters.includes(card.category))
+      );
+    } else {
+      filteredCards = [];
     }
 
-    function renderCard() {
-      if (!filteredCards || filteredCards.length === 0) {
-        cardDiv.innerHTML = "<div>Aucune carte pour cette catégorie pour l’instant.</div>";
+  } else if (categoryName === "Erreurs") {
+    hideChapterFilterBox();
+    filteredCards = buildErrorsCards();
+
+  } else {
+    hideChapterFilterBox();
+    filteredCards = allCards.filter(card => card.category === categoryName);
+  }
+
+  currentIndex = 0;
+  isFront = true;
+  renderCard();
+}
+
+    if (!filteredCards || filteredCards.length === 0) {
+  if (currentCategory === "Aléatoire filtré" && selectedChapters.length === 0) {
+    cardDiv.innerHTML = "<div>Coche un ou plusieurs chapitres puis clique sur “Appliquer le filtre”.</div>";
+  } else {
+    cardDiv.innerHTML = "<div>Aucune carte pour cette catégorie pour l’instant.</div>";
+  }
         infoEl.textContent = "";
         prevBtn.disabled = true;
         flipBtn.disabled = true;
@@ -3776,6 +3850,25 @@ try {
       const idx = parseInt(btn.dataset.index, 10);
       if (!Number.isNaN(idx)) jumpToCard(idx);
     });
+
+    applyChapterFilterBtn.addEventListener("click", () => {
+  selectedChapters = getCheckedChaptersFromUI();
+  applyCategory("Aléatoire filtré");
+});
+
+clearChaptersBtn.addEventListener("click", () => {
+  selectedChapters = [];
+  renderChapterCheckboxes();
+  filteredCards = [];
+  currentIndex = 0;
+  isFront = true;
+  renderCard();
+});
+
+selectAllChaptersBtn.addEventListener("click", () => {
+  selectedChapters = getAllRealCategories();
+  renderChapterCheckboxes();
+});
 
     // ============== Raccourcis clavier ==============
     document.addEventListener("keydown", (e) => {
