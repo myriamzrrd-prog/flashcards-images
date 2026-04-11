@@ -465,17 +465,24 @@
             <button id="searchBtn">Chercher</button>
           </div>
         </div>
-        <div id="chapterFilterBox" style="display:none; width:100%; max-width:900px; background:white; border-radius:16px; padding:16px; box-shadow:0 4px 12px rgba(0,0,0,0.06);">
-  <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
-    <strong>Choisis les chapitres à réviser</strong>
-    <div style="display:flex; gap:8px; flex-wrap:wrap;">
-      <button id="selectAllChaptersBtn" type="button">Tout cocher</button>
-      <button id="clearChaptersBtn" type="button">Tout décocher</button>
-      <button id="applyChapterFilterBtn" type="button">Appliquer le filtre</button>
-    </div>
+        <div id="chapterFilterWrapper" style="display:none; width:100%; max-width:900px;">
+  <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:8px;">
+    <button id="toggleChapterFilterBtn" type="button">Afficher les filtres de chapitres</button>
+    <span id="chapterFilterSummary" style="font-size:0.9rem; color:#4b5563;"></span>
   </div>
 
-  <div id="chapterCheckboxes" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:8px;"></div>
+  <div id="chapterFilterBox" style="display:none; background:white; border-radius:16px; padding:16px; box-shadow:0 4px 12px rgba(0,0,0,0.06);">
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
+      <strong>Choisis les chapitres à réviser</strong>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button id="selectAllChaptersBtn" type="button">Tout cocher</button>
+        <button id="clearChaptersBtn" type="button">Tout décocher</button>
+        <button id="applyChapterFilterBtn" type="button">Appliquer le filtre</button>
+      </div>
+    </div>
+
+    <div id="chapterCheckboxes" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:8px;"></div>
+  </div>
 </div>
 
         <!-- Mode révision -->
@@ -3568,11 +3575,14 @@ let selectedChapters = [];
     const exitSearchBtn = document.getElementById("exitSearchBtn");
     const searchInput = document.getElementById("searchInput");
     const searchBtn = document.getElementById("searchBtn");
-    const chapterFilterBox = document.getElementById("chapterFilterBox");
+    const chapterFilterWrapper = document.getElementById("chapterFilterWrapper");
+const chapterFilterBox = document.getElementById("chapterFilterBox");
 const chapterCheckboxes = document.getElementById("chapterCheckboxes");
 const applyChapterFilterBtn = document.getElementById("applyChapterFilterBtn");
 const clearChaptersBtn = document.getElementById("clearChaptersBtn");
 const selectAllChaptersBtn = document.getElementById("selectAllChaptersBtn");
+const toggleChapterFilterBtn = document.getElementById("toggleChapterFilterBtn");
+const chapterFilterSummary = document.getElementById("chapterFilterSummary");
 
     function shuffleArray(arr) {
       const a = [...arr];
@@ -3611,13 +3621,41 @@ function getCheckedChaptersFromUI() {
     .map(input => input.value);
 }
 
-function showChapterFilterBox() {
+function updateChapterFilterSummary() {
+  if (!selectedChapters.length) {
+    chapterFilterSummary.textContent = "Aucun chapitre sélectionné";
+  } else if (selectedChapters.length === 1) {
+    chapterFilterSummary.textContent = "1 chapitre sélectionné";
+  } else {
+    chapterFilterSummary.textContent = `${selectedChapters.length} chapitres sélectionnés`;
+  }
+}
+
+function openChapterFilterBox() {
   chapterFilterBox.style.display = "block";
+  toggleChapterFilterBtn.textContent = "Masquer les filtres de chapitres";
+}
+
+function closeChapterFilterBox() {
+  chapterFilterBox.style.display = "none";
+  toggleChapterFilterBtn.textContent = "Afficher les filtres de chapitres";
+}
+
+function showChapterFilterBox() {
+  chapterFilterWrapper.style.display = "block";
   renderChapterCheckboxes();
+  updateChapterFilterSummary();
+
+  if (selectedChapters.length === 0) {
+    openChapterFilterBox();
+  } else {
+    closeChapterFilterBox();
+  }
 }
 
 function hideChapterFilterBox() {
-  chapterFilterBox.style.display = "none";
+  chapterFilterWrapper.style.display = "none";
+  closeChapterFilterBox();
 }
 
     
@@ -3796,6 +3834,14 @@ function hideChapterFilterBox() {
     // Événements
     // =========================
     const cardEl = document.getElementById("card"); // pour le click flip
+    
+    toggleChapterFilterBtn.addEventListener("click", () => {
+  if (chapterFilterBox.style.display === "none") {
+    openChapterFilterBox();
+  } else {
+    closeChapterFilterBox();
+  }
+});
     cardEl.addEventListener("click", () => { if (!filteredCards.length) return; isFront = !isFront; renderCard(); });
     flipBtn.addEventListener("click", () => { if (!filteredCards.length) return; isFront = !isFront; renderCard(); });
 
@@ -3855,12 +3901,15 @@ function hideChapterFilterBox() {
 
     applyChapterFilterBtn.addEventListener("click", () => {
   selectedChapters = getCheckedChaptersFromUI();
+  updateChapterFilterSummary();
+  closeChapterFilterBox();
   applyCategory("Aléatoire filtré");
 });
 
 clearChaptersBtn.addEventListener("click", () => {
   selectedChapters = [];
   renderChapterCheckboxes();
+  updateChapterFilterSummary();
   filteredCards = [];
   currentIndex = 0;
   isFront = true;
@@ -3870,6 +3919,7 @@ clearChaptersBtn.addEventListener("click", () => {
 selectAllChaptersBtn.addEventListener("click", () => {
   selectedChapters = getAllRealCategories();
   renderChapterCheckboxes();
+  updateChapterFilterSummary();
 });
 
     // ============== Raccourcis clavier ==============
