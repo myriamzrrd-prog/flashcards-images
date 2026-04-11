@@ -3653,20 +3653,45 @@ function hideChapterFilterBox() {
   renderCard();
 }
 
-    if (!filteredCards || filteredCards.length === 0) {
-  if (currentCategory === "Aléatoire filtré" && selectedChapters.length === 0) {
-    cardDiv.innerHTML = "<div>Coche un ou plusieurs chapitres puis clique sur “Appliquer le filtre”.</div>";
-  } else {
-    cardDiv.innerHTML = "<div>Aucune carte pour cette catégorie pour l’instant.</div>";
+    function renderCard() {
+  if (!filteredCards || filteredCards.length === 0) {
+    if (currentCategory === "Aléatoire filtré" && selectedChapters.length === 0) {
+      cardDiv.innerHTML = "<div>Coche un ou plusieurs chapitres puis clique sur “Appliquer le filtre”.</div>";
+    } else {
+      cardDiv.innerHTML = "<div>Aucune carte pour cette catégorie pour l’instant.</div>";
+    }
+
+    infoEl.textContent = "";
+    prevBtn.disabled = true;
+    flipBtn.disabled = true;
+    knowBtn.disabled = true;
+    errorBtn.disabled = true;
+    errorBtn.classList.remove("active-error");
+    return;
   }
-        infoEl.textContent = "";
-        prevBtn.disabled = true;
-        flipBtn.disabled = true;
-        knowBtn.disabled = true;
-        errorBtn.disabled = true;
-        errorBtn.classList.remove("active-error");
-        return;
-      }
+
+  const current = filteredCards[currentIndex];
+  const mainText = isFront ? (current.front || "") : (current.back || "");
+  let html = "";
+
+  if (mainText) html += `<div class="card-text">${mainText}</div>`;
+  if (current.caption && !isFront) html += `<p class="caption">${current.caption}</p>`;
+  if (current.image) html += `<img src="${current.image}" alt="Image de la carte">`;
+  if (!html) html = "<div>Aucun contenu pour cette carte.</div>";
+
+  cardDiv.innerHTML = html;
+
+  infoEl.textContent = `Catégorie : ${currentCategory} — Carte ${currentIndex + 1} / ${filteredCards.length}`;
+
+  prevBtn.disabled = currentIndex === 0;
+  flipBtn.disabled = false;
+  knowBtn.disabled = false;
+  errorBtn.disabled = false;
+
+  const globalIndex = allCards.indexOf(current);
+  const isError = globalIndex !== -1 && erreurIds.includes(globalIndex);
+  errorBtn.classList.toggle("active-error", isError);
+}
 
       const current = filteredCards[currentIndex];
       const mainText = isFront ? (current.front || "") : (current.back || "");
